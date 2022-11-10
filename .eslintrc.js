@@ -5,25 +5,23 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier',
     'plugin:react-hooks/recommended',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
   env: {
     browser: true,
     es6: true,
     jest: true,
-    node: true
+    node: true,
   },
   root: true,
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  plugins: [
-    '@typescript-eslint', 'react', 'prettier', 'react-hooks'
-  ],
+  plugins: ['@typescript-eslint', 'react', 'prettier', 'react-hooks'],
   rules: {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
@@ -40,12 +38,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-var-reqiures': 'off',
     'react/jsx-uses-react': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
   },
   settings: {
     react: {
       pragma: 'React',
-      version: 'detect'
-    }
-  }
-}
+      version: 'detect',
+    },
+  },
+};
