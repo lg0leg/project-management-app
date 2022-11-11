@@ -1,5 +1,6 @@
 import React from 'react';
 import { Main } from '../components/Main';
+import Footer from './Footer';
 
 function App() {
   return (
@@ -7,8 +8,7 @@ function App() {
       {/* Replace with real Header */}
       <header>Header</header>
       <Main />
-      {/* Replace with real Footer */}
-      <footer>Footer</footer>
+      <Footer />
     </>
   );
 }
