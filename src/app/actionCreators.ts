@@ -1,6 +1,6 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
-import authSlice from './slices/authSlice';
+import { authSlice } from './slices/authSlice';
 
 interface IRegisterRequest {
   name: string;
@@ -19,16 +19,18 @@ interface ILoginResponse {
 export const FetchRegister = (data: IRegisterRequest) => {
   return async (dispatch: AppDispatch) => {
     try {
-      const responseRegister = await api.post<IRegisterResponse>(`auth/register`, data);
-
-      const responseLogin = await api.post<ILoginResponse>(`auth/login`, {
+      const responseRegister = await api.post<IRegisterResponse>(`auth/signup`, data);
+      if (!responseRegister.status) {
+        return new Error();
+      }
+      const responseLogin = await api.post<ILoginResponse>(`auth/signin`, {
         login: data.login,
         password: data.password,
       });
 
       dispatch(
         authSlice.actions.loginSuccess({
-          token: responseLogin.data.token
+          token: responseLogin.data.token,
           login: data.login,
         })
       );
