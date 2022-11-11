@@ -10,7 +10,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 export const Main: FC = () => {
   return (
-    <main>
+    <main className=" min-h-[calc(100vh-100px-80px)]">
       <Routes>
         <Route index path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<SignIn />} />
