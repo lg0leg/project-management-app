@@ -1,7 +1,16 @@
 import React from 'react';
+import { Main } from '../components/Main';
 
 function App() {
-  return <h1 className="text-3xl font-bold underline text-amber-400">Hello world!</h1>;
+  return (
+    <>
+      {/* Replace with real Header */}
+      <header>Header</header>
+      <Main />
+      {/* Replace with real Footer */}
+      <footer>Footer</footer>
+    </>
+  );
 }
 
 export default App;
