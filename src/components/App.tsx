@@ -1,12 +1,12 @@
 import React from 'react';
 import { Main } from '../components/Main';
 import Footer from './Footer';
+import Header from './Header';
 
 function App() {
   return (
     <>
-      {/* Replace with real Header */}
-      <header>Header</header>
+      <Header />
       <Main />
       <Footer />
     </>

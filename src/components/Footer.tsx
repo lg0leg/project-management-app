@@ -7,7 +7,7 @@ export default function Footer() {
   const [lang, setLang] = useState('en');
 
   return (
-    <div className="flex flex-col items-center justify-around gap-[40px] bg-slate-400 p-[20px] text-2xl text-amber-400 sm:flex-row sm:gap-[0px]">
+    <footer className="flex min-h-[80px] flex-col items-center justify-around gap-[40px] bg-slate-400 p-[20px] text-2xl text-amber-400 sm:flex-row sm:gap-[0px]">
       <div className="transition duration-300 hover:scale-105">
         <a href="https://rs.school/react/" target="_blank" rel="noreferrer">
           <img className="w-[100px]" src={rslogo} alt="rs logo" />
@@ -34,6 +34,6 @@ export default function Footer() {
         </li>
       </ul>
       <p className="w-[100px] text-center">©2022</p>
-    </div>
+    </footer>
   );
 }

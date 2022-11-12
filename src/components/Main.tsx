@@ -11,7 +11,7 @@ import { RoutesPath } from 'constants/routes';
 
 export const Main: FC = () => {
   return (
-    <main className="w-[calc(100vh-100px-80px)]">
+    <main className=" min-h-[calc(100vh-100px-80px)]">
       <Routes>
         <Route index path={RoutesPath.WELCOME} element={<Welcome />} />
         <Route path={RoutesPath.SIGN_IN} element={<SignIn />} />
