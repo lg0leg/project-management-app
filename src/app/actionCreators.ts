@@ -12,21 +12,23 @@ export const fetchRegister = (data: IRegisterRequest) => {
   return async (dispatch: AppDispatch) => {
     try {
       console.log(data);
-      const responseRegister = await api.post<IRegisterResponse>(`auth/signup`, data);
-      console.log(responseRegister.statusText);
-      console.log(responseRegister.status);
-      if (responseRegister.status !== 200) {
+      const response = await api.post<IRegisterResponse>(`auth/signup`, data);
+      console.log(response.statusText);
+      console.log(response.status);
+      if (response.status < 200 && response.status > 299) {
+        dispatch(
+          authSlice.actions.handleError({
+            code: response.status,
+            token: '',
+            login: '',
+          })
+        );
         throw new Error('responseRegister ERROR');
       }
-      const responseLogin = await api.post<ILoginResponse>(`auth/signin`, {
-        login: data.login,
-        password: data.password,
-      });
-
       dispatch(
-        authSlice.actions.loginSuccess({
-          token: responseLogin.data.token,
-          login: data.login,
+        fetchLogin({
+          password: data.password,
+          login: response.data.login,
         })
       );
     } catch (e) {
@@ -38,14 +40,25 @@ export const fetchRegister = (data: IRegisterRequest) => {
 export const fetchLogin = (data: ILoginRequest) => {
   return async (dispatch: AppDispatch) => {
     try {
-      const responseLogin = await api.post<ILoginResponse>(`auth/signin`, {
+      const response = await api.post<ILoginResponse>(`auth/signin`, {
         login: data.login,
         password: data.password,
       });
+      if (response.status < 200 && response.status > 299) {
+        dispatch(
+          authSlice.actions.handleError({
+            code: response.status,
+            token: '',
+            login: '',
+          })
+        );
+        throw new Error('response ERROR');
+      }
       dispatch(
         authSlice.actions.loginSuccess({
-          token: responseLogin.data.token,
+          token: response.data.token,
           login: data.login,
+          code: 200,
         })
       );
     } catch (e) {

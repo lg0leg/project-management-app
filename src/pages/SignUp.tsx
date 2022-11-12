@@ -3,11 +3,12 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { IAuthRequest, IRegisterRequest } from 'model/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators';
 
 export const SignUp: FC = () => {
   const dispatch = useAppDispatch();
+  const { errorText, isError } = useAppSelector((state) => state.authReducer);
   const [lang] = useState('en');
 
   const name = lang === 'en' ? 'Your name:' : 'Ваше имя';
@@ -18,8 +19,9 @@ export const SignUp: FC = () => {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-101px)] w-full items-center justify-center bg-gray-50">
+    <div className="flex min-h-[calc(100vh-101px)] w-screen items-center justify-center bg-gray-50">
       <form className="rounded-xl border-2 border-gray-400 p-5" onSubmit={handleSubmit(onSubmit)}>
+        {isError && <div className="w-full text-base text-red-500">{errorText}</div>}
         <AuthInput
           label="name"
           title={name}
