@@ -14,8 +14,8 @@ export const Main: FC = () => {
     <main>
       <Routes>
         <Route index path={RoutesPath.WELCOME} element={<Welcome />} />
-        <Route path={RoutesPath.SIGNIN} element={<SignIn />} />
-        <Route path={RoutesPath.SIGNUP} element={<SignUp />} />
+        <Route path={RoutesPath.SIGN_IN} element={<SignIn />} />
+        <Route path={RoutesPath.SIGN_UP} element={<SignUp />} />
         <Route path={RoutesPath.BOARDS} element={<Boards />} />
         <Route path={RoutesPath.BOARD} element={<Board />} />
         <Route path={RoutesPath.PROFILE} element={<Profile />} />
