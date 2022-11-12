@@ -1,0 +1,37 @@
+.switcher-label {
+  display: flex;
+  width: 60px;
+  height: 30px;
+  border: 1px solid rgb(59, 130, 246, 0.7);
+  border-radius: 5px;
+  position: relative;
+  transition: transform 0.5s ease-in-out;
+  transform-origin: 50% 50%;
+  cursor: pointer;
+}
+
+.switcher-label:before {
+  transition: transform 0.5s ease;
+  /* transition-delay: 0.1s; */
+  content: '';
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 3px;
+  top: 4px;
+  left: 4px;
+}
+
+.switcher-input[type='checkbox'] {
+  display: none;
+}
+
+.switcher-input[type='checkbox']:checked + .switcher-label {
+  background-color: rgb(59, 130, 246, 1);
+}
+
+.switcher-input[type='checkbox']:checked + .switcher-label:before {
+  transform: translateX(30px);
+}
