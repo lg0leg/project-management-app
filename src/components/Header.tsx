@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Switcher from 'utils/switcher/switcher';
+import Switcher from './switcher/switcher';
 import { HiOutlineHome } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 
