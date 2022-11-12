@@ -1,27 +1,22 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { authSlice } from './slices/authSlice';
+import {
+  ILoginRequest,
+  ILoginResponse,
+  IRegisterRequest,
+  IRegisterResponse,
+} from 'model/typescript';
 
-interface IRegisterRequest {
-  name: string;
-  login: string;
-  password: string;
-}
-interface IRegisterResponse {
-  _id: 'string';
-  name: 'string';
-  login: 'string';
-}
-interface ILoginResponse {
-  token: string;
-}
-
-export const FetchRegister = (data: IRegisterRequest) => {
+export const fetchRegister = (data: IRegisterRequest) => {
   return async (dispatch: AppDispatch) => {
     try {
+      console.log(data);
       const responseRegister = await api.post<IRegisterResponse>(`auth/signup`, data);
-      if (!responseRegister.status) {
-        return new Error();
+      console.log(responseRegister.statusText);
+      console.log(responseRegister.status);
+      if (responseRegister.status !== 200) {
+        throw new Error('responseRegister ERROR');
       }
       const responseLogin = await api.post<ILoginResponse>(`auth/signin`, {
         login: data.login,
@@ -36,6 +31,25 @@ export const FetchRegister = (data: IRegisterRequest) => {
       );
     } catch (e) {
       console.log('Error register', e);
+    }
+  };
+};
+
+export const fetchLogin = (data: ILoginRequest) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const responseLogin = await api.post<ILoginResponse>(`auth/signin`, {
+        login: data.login,
+        password: data.password,
+      });
+      dispatch(
+        authSlice.actions.loginSuccess({
+          token: responseLogin.data.token,
+          login: data.login,
+        })
+      );
+    } catch (e) {
+      console.log('Error login', e);
     }
   };
 };

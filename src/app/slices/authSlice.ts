@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
 interface IAuthPayload {
   login: string;
   token: string;
