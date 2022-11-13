@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
+import { StorageKey } from 'constants/storageKey';
 
 interface ILogoutPayload {
   navigate: (path: string) => void;
@@ -18,10 +19,9 @@ interface IStatusPayload {
 }
 
 const initialState = {
-  login: localStorage.getItem('LOGIN') || '',
-  token: localStorage.getItem('TOKEN') || '',
-  // !!!TODO!!! isAuth: Boolean(localStorage.getItem('TOKEN') ?? ''),
-  isAuth: false,
+  login: localStorage.getItem(StorageKey.LOGIN) || '',
+  token: localStorage.getItem(StorageKey.TOKEN) || '',
+  isAuth: Boolean(localStorage.getItem(StorageKey.TOKEN) ?? ''),
   isError: false,
   errorText: '',
   isLoading: false,
@@ -39,9 +39,9 @@ export const authSlice = createSlice({
       state.isError = false;
       state.errorText = '';
 
-      localStorage.removeItem('TOKEN');
-      localStorage.removeItem('LOGIN');
-      localStorage.removeItem('IS_AUTH');
+      localStorage.removeItem(StorageKey.TOKEN);
+      localStorage.removeItem(StorageKey.LOGIN);
+      localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
 
@@ -53,9 +53,9 @@ export const authSlice = createSlice({
       state.isError = false;
       state.errorText = '';
 
-      localStorage.setItem('TOKEN', action.payload.token);
-      localStorage.setItem('LOGIN', action.payload.login);
-      localStorage.setItem('IS_AUTH', 'true');
+      localStorage.setItem(StorageKey.TOKEN, action.payload.token);
+      localStorage.setItem(StorageKey.LOGIN, action.payload.login);
+      localStorage.setItem(StorageKey.IS_AUTH, 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
 
