@@ -19,6 +19,7 @@ interface ILoadingPayload {
 const initialState = {
   login: localStorage.getItem('LOGIN') || '',
   token: localStorage.getItem('TOKEN') || '',
+  // isAuth: Boolean(localStorage.getItem('TOKEN') ?? ''),
   isAuth: false,
   isError: false,
   errorText: '',
