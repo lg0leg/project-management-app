@@ -12,13 +12,17 @@ interface ILoginSuccessPayload {
 interface IHandleErrorPayload {
   code: number;
 }
+interface ILoadingPayload {
+  isLoading: boolean;
+}
 
 const initialState = {
-  login: '',
-  token: '',
+  login: localStorage.getItem('LOGIN') || '',
+  token: localStorage.getItem('TOKEN') || '',
   isAuth: false,
   isError: false,
   errorText: '',
+  isLoading: false,
 };
 
 export const authSlice = createSlice({
@@ -27,6 +31,7 @@ export const authSlice = createSlice({
   reducers: {
     logout(state, action: PayloadAction<ILogoutPayload>) {
       state.isAuth = false;
+      state.isLoading = false;
       state.token = '';
       state.login = '';
       state.isError = false;
@@ -37,9 +42,11 @@ export const authSlice = createSlice({
       localStorage.removeItem('IS_AUTH');
       action.payload.navigate(RoutesPath.WELCOME);
     },
+
     loginSuccess(state, action: PayloadAction<ILoginSuccessPayload>) {
       state.login = action.payload.login;
       state.token = action.payload.token;
+      state.isLoading = false;
       state.isAuth = true;
       state.isError = false;
       state.errorText = '';
@@ -49,7 +56,9 @@ export const authSlice = createSlice({
       localStorage.setItem('IS_AUTH', 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
+
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {
+      state.isLoading = false;
       state.isError = true;
       switch (action.payload.code) {
         case 409:
@@ -59,6 +68,10 @@ export const authSlice = createSlice({
           state.errorText = 'Wrong password/login';
           break;
       }
+    },
+
+    setLoading(state, action: PayloadAction<ILoadingPayload>) {
+      state.isLoading = action.payload.isLoading;
     },
   },
 });

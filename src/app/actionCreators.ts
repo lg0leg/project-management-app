@@ -17,7 +17,14 @@ interface IPropsLogin {
 export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
+      dispatch(
+        authSlice.actions.setLoading({
+          isLoading: true,
+        })
+      );
+
       const response = await api.post<IRegisterResponse>(`auth/signup`, data);
+
       dispatch(
         fetchLogin({
           password: data.password,
@@ -40,10 +47,17 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
 export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
+      dispatch(
+        authSlice.actions.setLoading({
+          isLoading: true,
+        })
+      );
+
       const response = await api.post<ILoginResponse>(`auth/signin`, {
         login,
         password,
       });
+
       dispatch(
         authSlice.actions.loginSuccess({
           token: response.data.token,
