@@ -7,62 +7,70 @@ import {
   IRegisterRequest,
   IRegisterResponse,
 } from 'model/typescript';
+import { AxiosError } from 'axios';
 
-export const fetchRegister = (data: IRegisterRequest) => {
+interface IPropsRegister {
+  data: IRegisterRequest;
+  navigate: (path: string) => void;
+}
+interface IPropsLogin {
+  password: string;
+  login: string;
+  navigate: (path: string) => void;
+}
+
+export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
-      console.log(data);
       const response = await api.post<IRegisterResponse>(`auth/signup`, data);
-      console.log(response.statusText);
-      console.log(response.status);
-      if (response.status < 200 && response.status > 299) {
-        dispatch(
-          authSlice.actions.handleError({
-            code: response.status,
-            token: '',
-            login: '',
-          })
-        );
-        throw new Error('responseRegister ERROR');
-      }
       dispatch(
         fetchLogin({
           password: data.password,
           login: response.data.login,
+          navigate,
         })
       );
     } catch (e) {
-      console.log('Error register', e);
+      if (e instanceof AxiosError) {
+        dispatch(
+          authSlice.actions.handleError({
+            code: e.response?.status as number,
+            token: '',
+            login: '',
+            navigate,
+          })
+        );
+      }
     }
   };
 };
 
-export const fetchLogin = (data: ILoginRequest) => {
+export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
       const response = await api.post<ILoginResponse>(`auth/signin`, {
-        login: data.login,
-        password: data.password,
+        login,
+        password,
       });
-      if (response.status < 200 && response.status > 299) {
-        dispatch(
-          authSlice.actions.handleError({
-            code: response.status,
-            token: '',
-            login: '',
-          })
-        );
-        throw new Error('response ERROR');
-      }
       dispatch(
         authSlice.actions.loginSuccess({
           token: response.data.token,
-          login: data.login,
+          login,
           code: 200,
+          navigate,
         })
       );
     } catch (e) {
-      console.log('Error login', e);
+      if (e instanceof AxiosError) {
+        dispatch(
+          authSlice.actions.handleError({
+            code: e.response?.status as number,
+            token: '',
+            login: '',
+            navigate,
+          })
+        );
+      }
     }
   };
 };

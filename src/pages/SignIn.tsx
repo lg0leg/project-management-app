@@ -6,20 +6,32 @@ import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators';
+import { useNavigate } from 'react-router-dom';
 
 export const SignIn: FC = () => {
+  const nav = useNavigate();
+  const navigate = (path: string) => nav(path);
   const dispatch = useAppDispatch();
   const { errorText, isError } = useAppSelector((state) => state.authReducer);
-  const { register, handleSubmit } = useForm<IAuthRequest>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (data) => {
-    dispatch(fetchLogin(data));
+    const { login, password } = data;
+    dispatch(fetchLogin({ login, password, navigate }));
   };
   console.log(isError);
   console.log(errorText);
   return (
     <div className="flex min-h-[calc(100vh-101px)] w-screen items-center justify-center bg-gray-50">
       <form className="rounded-xl border-2 border-gray-400 p-5" onSubmit={handleSubmit(onSubmit)}>
-        {isError && <div className="w-full text-base text-red-500">{errorText}</div>}
+        <div>
+          {isError && (
+            <div className="w-full text-center text-base font-medium text-red-500">{errorText}</div>
+          )}
+        </div>
         <AuthInput
           label="login"
           title="Your login:"
@@ -28,6 +40,7 @@ export const SignIn: FC = () => {
           type="text"
           minLength={2}
           maxLength={20}
+          errors={errors}
         />
         <AuthInput
           label="password"
@@ -35,8 +48,9 @@ export const SignIn: FC = () => {
           placeholder="Password"
           register={register}
           type="password"
-          minLength={2}
+          minLength={6}
           maxLength={20}
+          errors={errors}
         />
         <AuthSubmit text="Sign in" />
         <p className="pt-3 text-sm font-light text-gray-600">
