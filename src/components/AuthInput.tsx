@@ -18,6 +18,7 @@ interface IProps {
     }>
   >;
 }
+
 export default function AuthInput({
   type,
   placeholder,
@@ -28,17 +29,22 @@ export default function AuthInput({
   maxLength,
   errors,
 }: IProps) {
-  const borderColor = errors[label] ? 'border-red-500' : 'border-gray-400';
+  const borderColor = errors[label]
+    ? 'border-red-500 focus:outline-red-500'
+    : 'border-gray-400 focus:outline-blue-1000';
+
+  const errorText = `Please enter from ${minLength} to ${maxLength} chapters`;
   return (
     <div>
       <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>
       <input
         type={type}
-        className={`${borderColor} focus:outline-blue-1000 block w-full rounded-lg  border-2 p-2 text-black hover:border-gray-600`}
+        className={`${borderColor}  block w-full rounded-lg  border-2 p-2 text-black hover:border-gray-600`}
         placeholder={placeholder}
         {...register(label, { minLength, maxLength })}
         required
       />
+      {errors[label] && <p className="text-center text-sm font-medium text-red-500">{errorText}</p>}
     </div>
   );
 }
