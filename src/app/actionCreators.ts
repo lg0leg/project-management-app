@@ -1,12 +1,7 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { authSlice } from './slices/authSlice';
-import {
-  ILoginRequest,
-  ILoginResponse,
-  IRegisterRequest,
-  IRegisterResponse,
-} from 'model/typescript';
+import { ILoginResponse, IRegisterRequest, IRegisterResponse } from 'model/typescript';
 import { AxiosError } from 'axios';
 
 interface IPropsRegister {
@@ -35,9 +30,6 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
         dispatch(
           authSlice.actions.handleError({
             code: e.response?.status as number,
-            token: '',
-            login: '',
-            navigate,
           })
         );
       }
@@ -56,7 +48,6 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         authSlice.actions.loginSuccess({
           token: response.data.token,
           login,
-          code: 200,
           navigate,
         })
       );
@@ -65,9 +56,6 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         dispatch(
           authSlice.actions.handleError({
             code: e.response?.status as number,
-            token: '',
-            login: '',
-            navigate,
           })
         );
       }
