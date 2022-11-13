@@ -4,8 +4,11 @@ import { HiOutlineHome } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
 import { BiAddToQueue } from 'react-icons/bi';
+import { useAppSelector } from 'app/hooks';
 
 export default function Header() {
+  // const { isAuth } = useAppSelector((state) => state.authReducer);
+
   // const [isAuth, setIsAuth] = useState(false);
   const [isAuth, setIsAuth] = useState(true);
   const [lang, setLang] = useState('en');
