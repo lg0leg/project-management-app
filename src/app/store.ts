@@ -11,7 +11,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types
-        ignoredActions: ['auth/loginSuccess'],
+        ignoredActions: ['auth/loginSuccess', 'auth/logout'],
       },
     }),
 });

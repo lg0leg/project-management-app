@@ -12,14 +12,15 @@ interface ILoginSuccessPayload {
 interface IHandleErrorPayload {
   code: number;
 }
-interface ILoadingPayload {
+interface IStatusPayload {
   isLoading: boolean;
+  isError: boolean;
 }
 
 const initialState = {
   login: localStorage.getItem('LOGIN') || '',
   token: localStorage.getItem('TOKEN') || '',
-  // isAuth: Boolean(localStorage.getItem('TOKEN') ?? ''),
+  // !!!TODO!!! isAuth: Boolean(localStorage.getItem('TOKEN') ?? ''),
   isAuth: false,
   isError: false,
   errorText: '',
@@ -71,8 +72,9 @@ export const authSlice = createSlice({
       }
     },
 
-    setLoading(state, action: PayloadAction<ILoadingPayload>) {
+    setStatus(state, action: PayloadAction<IStatusPayload>) {
       state.isLoading = action.payload.isLoading;
+      state.isError = action.payload.isError;
     },
   },
 });

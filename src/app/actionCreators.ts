@@ -18,8 +18,9 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
-        authSlice.actions.setLoading({
+        authSlice.actions.setStatus({
           isLoading: true,
+          isError: false,
         })
       );
 
@@ -48,8 +49,9 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
-        authSlice.actions.setLoading({
+        authSlice.actions.setStatus({
           isLoading: true,
+          isError: false,
         })
       );
 
@@ -74,5 +76,11 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         );
       }
     }
+  };
+};
+
+export const logout = (navigate: (path: string) => void) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(authSlice.actions.logout({ navigate }));
   };
 };

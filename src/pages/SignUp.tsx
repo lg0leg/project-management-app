@@ -3,14 +3,12 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { IAuthRequest, IRegisterRequest } from 'model/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators';
-import { useNavigate } from 'react-router-dom';
 import Spinner from 'components/Spinner';
 
 export const SignUp: FC = () => {
-  const nav = useNavigate();
-  const navigate = (path: string) => nav(path);
+  const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const [lang] = useState('en');
