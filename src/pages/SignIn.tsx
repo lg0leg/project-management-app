@@ -5,7 +5,7 @@ import { IAuthRequest } from 'model/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
-import { fetchLogin } from 'app/actionCreators';
+import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 
 export const SignIn: FC = () => {

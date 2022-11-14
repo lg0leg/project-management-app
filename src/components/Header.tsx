@@ -6,7 +6,7 @@ import { RoutesPath } from 'constants/routes';
 import { BiAddToQueue } from 'react-icons/bi';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 
-import { logout } from 'app/actionCreators';
+import { logout } from 'app/actionCreators/authActionCreators';
 
 export default function Header() {
   const { isAuth } = useAppSelector((state) => state.authReducer);

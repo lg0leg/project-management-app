@@ -4,7 +4,7 @@ import { IAuthRequest, IRegisterRequest } from 'model/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
-import { fetchRegister } from 'app/actionCreators';
+import { fetchRegister } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 
 export const SignUp: FC = () => {

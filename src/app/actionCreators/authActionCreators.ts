@@ -1,6 +1,6 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
-import { authSlice } from './slices/authSlice';
+import { authSlice } from '../slices/authSlice';
 import { ILoginResponse, IRegisterRequest, IRegisterResponse } from 'model/typescript';
 import { AxiosError } from 'axios';
 
