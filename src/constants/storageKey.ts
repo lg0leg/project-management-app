@@ -3,4 +3,5 @@ export const enum StorageKey {
   LOGIN = 'LOGIN',
   IS_AUTH = 'IS_AUTH',
   LANG = 'LANG',
+  ID = 'ID',
 }

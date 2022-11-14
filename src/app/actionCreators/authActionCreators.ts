@@ -63,7 +63,6 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
       dispatch(
         authSlice.actions.loginSuccess({
           token: response.data.token,
-          login,
           navigate,
         })
       );
