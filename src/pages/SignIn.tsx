@@ -9,10 +9,10 @@ import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 
 export const SignIn: FC = () => {
-  const [lang] = useState('en');
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { lang } = useAppSelector((state) => state.langReducer);
   const {
     register,
     handleSubmit,
