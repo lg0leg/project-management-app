@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Switcher from './switcher/switcher';
 import { HiOutlineHome } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
@@ -11,10 +10,8 @@ import { logout } from 'app/actionCreators/authActionCreators';
 export default function Header() {
   const { isAuth } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
-  // const [lang] = useState('en');
 
   return (
-    // <header className="sticky top-0 z-50 flex h-[100px] w-full items-center justify-between bg-slate-100 px-[20px]">
     <header className="sticky top-0 z-50 grid h-[100px] w-full grid-cols-[1fr] items-center  bg-slate-100 px-[20px] sm:grid-cols-[1fr_1fr_1fr]">
       <div className="flex gap-[20px] ">
         {isAuth == true ? (
@@ -32,14 +29,14 @@ export default function Header() {
       {isAuth == true ? (
         <div className="hidden items-center justify-center sm:flex ">
           <button
-            className="flex  gap-[5px]  rounded py-2 px-4 font-semibold  text-blue-500 hover:bg-blue-100"
+            className="flex gap-[5px] rounded py-2 px-4 font-semibold text-blue-500 hover:bg-blue-100"
             // onClick={() => {
             //   openCreateBoardmodal()
             //   console.log('новая доска');
             // }}
           >
             <BiAddToQueue size={30} color="rgb(59, 130, 246, 1)" />
-            <p className="text-xl text-blue-500">
+            <p className="text-left text-xl text-blue-500">
               {lang == 'en' ? 'Create board' : 'Добавить доску'}
             </p>
           </button>
