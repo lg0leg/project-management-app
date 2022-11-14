@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 import { RoutesPath } from 'constants/routes';
@@ -7,6 +7,7 @@ import { RoutesPath } from 'constants/routes';
 export const NotFound: FC = () => {
   // TODO - context lang change
   const [lang, setLang] = useState('en');
+  const navigate = useNavigate();
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center px-6 pb-6">
@@ -33,13 +34,15 @@ export const NotFound: FC = () => {
             ? 'Oops! Looks like you followed a bad link. If you think this is a problem with us, please tell us.'
             : 'Ой! Похоже вы перешли по неправильной ссылке. Если вам кажется что проблема с нашим сайтом, пожалуйста, свяжитесь с нами.'}
         </p>
-        <NavLink
-          className="mr-3 inline-flex items-center rounded-lg bg-blue-700 py-1 px-2.5 text-center text-xs font-medium text-white sm:py-2.5 sm:px-5 sm:text-sm"
-          to={RoutesPath.BOARDS}
+        <button
+          className="mr-2 mb-2 inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          onClick={() => {
+            navigate(RoutesPath.BOARDS);
+          }}
         >
           <MdKeyboardArrowLeft className="-ml-1 mr-2 h-5 w-5" />
           {lang === 'en' ? 'Go back Home' : 'Вернутся на главную'}
-        </NavLink>
+        </button>
       </div>
     </div>
   );
