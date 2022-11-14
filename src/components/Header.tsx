@@ -10,7 +10,8 @@ import { logout } from 'app/actionCreators/authActionCreators';
 
 export default function Header() {
   const { isAuth } = useAppSelector((state) => state.authReducer);
-  const [lang, setLang] = useState('en');
+  const { lang } = useAppSelector((state) => state.langReducer);
+  // const [lang] = useState('en');
 
   return (
     // <header className="sticky top-0 z-50 flex h-[100px] w-full items-center justify-between bg-slate-100 px-[20px]">
