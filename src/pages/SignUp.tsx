@@ -1,6 +1,6 @@
 import React, { useState, FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { IAuthRequest, IRegisterRequest } from 'model/typescript';
+import { IAuthRequest, IRegisterRequest } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
