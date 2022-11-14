@@ -4,13 +4,12 @@ import { HiOutlineHome } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
 import { BiAddToQueue } from 'react-icons/bi';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
+
+import { logout } from 'app/actionCreators/authActionCreators';
 
 export default function Header() {
-  // const { isAuth } = useAppSelector((state) => state.authReducer);
-
-  // const [isAuth, setIsAuth] = useState(false);
-  const [isAuth, setIsAuth] = useState(true);
+  const { isAuth } = useAppSelector((state) => state.authReducer);
   const [lang, setLang] = useState('en');
 
   return (
@@ -72,6 +71,8 @@ function SignInSignUp(props: { lang: string }) {
 }
 
 function SignOut(props: { lang: string }) {
+  const dispatch = useAppDispatch();
+  const navigate = useAppNavigate();
   return (
     <div className="flex justify-end gap-[10px]">
       <div className="flex items-center pr-[26px] sm:hidden">
@@ -95,10 +96,9 @@ function SignOut(props: { lang: string }) {
 
       <button
         className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
-        // onClick={() => {
-        //   dispath(`SignOut`);
-        //   console.log('вышел');
-        // }}
+        onClick={() => {
+          dispatch(logout(navigate));
+        }}
       >
         {props.lang == 'en' ? 'Sign out' : 'Выйти'}
       </button>

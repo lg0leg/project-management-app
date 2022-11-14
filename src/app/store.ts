@@ -1,7 +1,19 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, ThunkAction, Action } from '@reduxjs/toolkit';
+import authReducer from './slices/authSlice';
+
+const rootReducer = combineReducers({
+  authReducer,
+});
 
 export const store = configureStore({
-  reducer: {},
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: ['auth/loginSuccess', 'auth/logout'],
+      },
+    }),
 });
 
 export type AppDispatch = typeof store.dispatch;
