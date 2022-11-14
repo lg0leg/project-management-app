@@ -4,15 +4,13 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { IAuthRequest } from 'model/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { fetchLogin } from 'app/actionCreators';
-import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
+import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 
 export const SignIn: FC = () => {
   const [lang] = useState('en');
-  const nav = useNavigate();
-  const navigate = (path: string) => nav(path);
+  const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const {

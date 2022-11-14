@@ -1,26 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
+import { StorageKey } from 'constants/storageKey';
+import { decodeToken } from 'react-jwt';
+import { IToken } from 'model/typescript';
 
 interface ILogoutPayload {
   navigate: (path: string) => void;
 }
 interface ILoginSuccessPayload {
-  login: string;
   token: string;
   navigate: (path: string) => void;
 }
 interface IHandleErrorPayload {
   code: number;
 }
-interface ILoadingPayload {
+interface IStatusPayload {
   isLoading: boolean;
+  isError: boolean;
 }
 
 const initialState = {
-  login: localStorage.getItem('LOGIN') || '',
-  token: localStorage.getItem('TOKEN') || '',
-  // isAuth: Boolean(localStorage.getItem('TOKEN') ?? ''),
-  isAuth: false,
+  id: localStorage.getItem(StorageKey.ID) || '',
+  login: localStorage.getItem(StorageKey.LOGIN) || '',
+  token: localStorage.getItem(StorageKey.TOKEN) || '',
+  isAuth: Boolean(localStorage.getItem(StorageKey.TOKEN) ?? ''),
   isError: false,
   errorText: '',
   isLoading: false,
@@ -35,26 +38,32 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.token = '';
       state.login = '';
+      state.id = '';
       state.isError = false;
       state.errorText = '';
 
-      localStorage.removeItem('TOKEN');
-      localStorage.removeItem('LOGIN');
-      localStorage.removeItem('IS_AUTH');
+      localStorage.removeItem(StorageKey.TOKEN);
+      localStorage.removeItem(StorageKey.LOGIN);
+      localStorage.removeItem(StorageKey.ID);
+      localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
 
     loginSuccess(state, action: PayloadAction<ILoginSuccessPayload>) {
-      state.login = action.payload.login;
+      const myDecodedToken = decodeToken(action.payload.token) as IToken;
       state.token = action.payload.token;
+      state.login = myDecodedToken.login;
+      state.id = myDecodedToken.id;
+
       state.isLoading = false;
       state.isAuth = true;
       state.isError = false;
       state.errorText = '';
 
-      localStorage.setItem('TOKEN', action.payload.token);
-      localStorage.setItem('LOGIN', action.payload.login);
-      localStorage.setItem('IS_AUTH', 'true');
+      localStorage.setItem(StorageKey.TOKEN, action.payload.token);
+      localStorage.setItem(StorageKey.LOGIN, myDecodedToken.login);
+      localStorage.setItem(StorageKey.ID, myDecodedToken.id);
+      localStorage.setItem(StorageKey.IS_AUTH, 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
 
@@ -71,8 +80,9 @@ export const authSlice = createSlice({
       }
     },
 
-    setLoading(state, action: PayloadAction<ILoadingPayload>) {
+    setStatus(state, action: PayloadAction<IStatusPayload>) {
       state.isLoading = action.payload.isLoading;
+      state.isError = action.payload.isError;
     },
   },
 });

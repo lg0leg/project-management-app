@@ -1,6 +1,6 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
-import { authSlice } from './slices/authSlice';
+import { authSlice } from '../slices/authSlice';
 import { ILoginResponse, IRegisterRequest, IRegisterResponse } from 'model/typescript';
 import { AxiosError } from 'axios';
 
@@ -18,8 +18,9 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
-        authSlice.actions.setLoading({
+        authSlice.actions.setStatus({
           isLoading: true,
+          isError: false,
         })
       );
 
@@ -48,8 +49,9 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
-        authSlice.actions.setLoading({
+        authSlice.actions.setStatus({
           isLoading: true,
+          isError: false,
         })
       );
 
@@ -61,7 +63,6 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
       dispatch(
         authSlice.actions.loginSuccess({
           token: response.data.token,
-          login,
           navigate,
         })
       );
@@ -74,5 +75,11 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         );
       }
     }
+  };
+};
+
+export const logout = (navigate: (path: string) => void) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(authSlice.actions.logout({ navigate }));
   };
 };
