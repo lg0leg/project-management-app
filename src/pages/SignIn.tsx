@@ -7,7 +7,7 @@ import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
-useAppSelector;
+
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
