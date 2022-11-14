@@ -1,8 +1,9 @@
 import { configureStore, combineReducers, ThunkAction, Action } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-
+import langReducer from './slices/langSlice';
 const rootReducer = combineReducers({
   authReducer,
+  langReducer,
 });
 
 export const store = configureStore({
