@@ -22,3 +22,10 @@ export interface IRegisterResponse {
 export interface ILoginResponse {
   token: string;
 }
+
+export interface IToken {
+  id: string;
+  login: string;
+  iat: number;
+  exp: number;
+}
