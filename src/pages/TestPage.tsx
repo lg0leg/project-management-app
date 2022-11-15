@@ -1,3 +1,4 @@
+import { logout } from 'app/actionCreators/authActionCreators';
 import {
   fetchDeleteUser,
   fetchGetUser,
@@ -5,10 +6,11 @@ import {
   fetchUpdateUser,
 } from 'app/actionCreators/userActionCreator';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
-import AuthInput from 'components/AuthInput';
-import React, { useState, useEffect } from 'react';
+import Spinner from 'components/Spinner';
+import type { IToken } from 'models/typescript';
+import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-
+import { isExpired, decodeToken } from 'react-jwt';
 interface IUserInput {
   name: string;
   login: string;
@@ -19,17 +21,34 @@ export default function TestPage() {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { register, handleSubmit } = useForm<IUserInput>();
-  const { user, users, isLoading } = useAppSelector((state) => state.userReducer);
-  const { id } = useAppSelector((state) => state.authReducer);
+  const { user, users, isLoading, isError, errorText } = useAppSelector(
+    (state) => state.userReducer
+  );
+  const { _id } = user;
+
+  //такую проверку добавить на boards, board, и welcome page
+  const { token } = useAppSelector((state) => state.authReducer);
   useEffect(() => {
-    dispatch(fetchGetUser({ id, navigate }));
-  }, [dispatch, id, navigate]);
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    }
+  });
+  //--------------------------------------------------------
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    } else {
+      const { id: _id } = decodeToken(token) as IToken;
+      dispatch(fetchGetUser({ _id, navigate }));
+    }
+  }, []);
+
   const getUsers = () => {
     dispatch(fetchGetUsers(navigate));
   };
 
   const getUser = () => {
-    dispatch(fetchGetUser({ id, navigate }));
+    dispatch(fetchGetUser({ _id: user._id, navigate }));
   };
 
   const updateUser: SubmitHandler<IUserInput> = (data) => {
@@ -37,18 +56,19 @@ export default function TestPage() {
     const newLogin = data.login || user.login;
     const newName = data.name || user.name;
     dispatch(
-      fetchUpdateUser({ id, login: newLogin, name: newName, password: data.password, navigate })
+      fetchUpdateUser({ _id, login: newLogin, name: newName, password: data.password, navigate })
     );
   };
 
   const deleteUser = () => {
-    dispatch(fetchDeleteUser({ id, navigate }));
+    dispatch(fetchDeleteUser({ _id, navigate }));
   };
 
   return (
     <div className="w-full border-2">
       <h2 className="ml-auto mr-auto">userReduser</h2>
-
+      {isLoading && <Spinner />}
+      {isError && <p className="text-[20px] font-semibold text-red-500">{errorText}</p>}
       <div className="mb-4 flex">
         <h2>get users</h2>
         <button className="w-[100px] bg-blue-500" onClick={getUsers}>
@@ -68,7 +88,6 @@ export default function TestPage() {
           })}
         </div>
       </div>
-
       <hr />
       <div className="mb-4 flex">
         <h2>get user</h2>
@@ -81,7 +100,6 @@ export default function TestPage() {
           <p>{user._id}</p>
         </div>
       </div>
-
       <hr />
       <form className="mb-4 flex flex-col" onSubmit={handleSubmit(updateUser)}>
         <h2>update user</h2>

@@ -38,15 +38,20 @@ export const userSlice = createSlice({
   reducers: {
     getUsers(state, action: PayloadAction<IGetUsersPayload>) {
       state.users = action.payload.users;
+      state.isLoading = false;
+      state.isError = false;
     },
 
     getUser(state, action: PayloadAction<IGetUserPayload>) {
       state.user = action.payload.user;
+      state.isLoading = false;
+      state.isError = false;
     },
 
     updateUser(state, action: PayloadAction<IGetUserPayload>) {
-      console.log(action.payload.user);
       state.user = action.payload.user;
+      state.isLoading = false;
+      state.isError = false;
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

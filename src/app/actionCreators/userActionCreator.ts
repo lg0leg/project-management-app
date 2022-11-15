@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 
 interface IUserProps {
-  id: string;
+  _id: string;
   navigate: (path: string) => void;
 }
 
@@ -43,7 +43,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
   };
 };
 
-export const fetchGetUser = ({ id, navigate }: IUserProps) => {
+export const fetchGetUser = ({ _id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -53,7 +53,7 @@ export const fetchGetUser = ({ id, navigate }: IUserProps) => {
         })
       );
 
-      const response = await apiToken<IUser>(`/users/${id}`);
+      const response = await apiToken<IUser>(`/users/${_id}`);
 
       dispatch(
         userSlice.actions.getUser({
@@ -71,7 +71,7 @@ export const fetchGetUser = ({ id, navigate }: IUserProps) => {
   };
 };
 
-export const fetchUpdateUser = ({ id, login, name, password, navigate }: IUpdateUserProps) => {
+export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdateUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -81,7 +81,7 @@ export const fetchUpdateUser = ({ id, login, name, password, navigate }: IUpdate
         })
       );
 
-      const response = await apiToken.put<IUser>(`/users/${id}`, { login, name, password });
+      const response = await apiToken.put<IUser>(`/users/${_id}`, { login, name, password });
 
       dispatch(
         userSlice.actions.getUser({
@@ -106,7 +106,7 @@ export const fetchUpdateUser = ({ id, login, name, password, navigate }: IUpdate
   };
 };
 
-export const fetchDeleteUser = ({ id, navigate }: IUserProps) => {
+export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -116,7 +116,7 @@ export const fetchDeleteUser = ({ id, navigate }: IUserProps) => {
         })
       );
 
-      const response = await apiToken.delete<IUser>(`/users/${id}`);
+      const response = await apiToken.delete<IUser>(`/users/${_id}`);
       if (response.status === 200) {
         dispatch(logout(navigate));
       }

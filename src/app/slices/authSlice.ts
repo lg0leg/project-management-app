@@ -16,8 +16,6 @@ interface IHandleErrorPayload {
 }
 
 const initialState = {
-  id: localStorage.getItem(StorageKey.ID) || '',
-  login: localStorage.getItem(StorageKey.LOGIN) || '',
   token: localStorage.getItem(StorageKey.TOKEN) || '',
   isAuth: Boolean(localStorage.getItem(StorageKey.TOKEN) ?? ''),
   isError: false,
@@ -33,14 +31,10 @@ export const authSlice = createSlice({
       state.isAuth = false;
       state.isLoading = false;
       state.token = '';
-      state.login = '';
-      state.id = '';
       state.isError = false;
       state.errorText = '';
 
       localStorage.removeItem(StorageKey.TOKEN);
-      localStorage.removeItem(StorageKey.LOGIN);
-      localStorage.removeItem(StorageKey.ID);
       localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
@@ -48,8 +42,6 @@ export const authSlice = createSlice({
     loginSuccess(state, action: PayloadAction<ILoginSuccessPayload>) {
       const myDecodedToken = decodeToken(action.payload.token) as IToken;
       state.token = action.payload.token;
-      state.login = myDecodedToken.login;
-      state.id = myDecodedToken.id;
 
       state.isLoading = false;
       state.isAuth = true;
@@ -57,8 +49,6 @@ export const authSlice = createSlice({
       state.errorText = '';
 
       localStorage.setItem(StorageKey.TOKEN, action.payload.token);
-      localStorage.setItem(StorageKey.LOGIN, myDecodedToken.login);
-      localStorage.setItem(StorageKey.ID, myDecodedToken.id);
       localStorage.setItem(StorageKey.IS_AUTH, 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
