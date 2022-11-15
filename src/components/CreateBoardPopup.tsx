@@ -9,17 +9,28 @@ export default function CreateBoardPopup(props: {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const overlayStyles =
+  const overlayStylesBase =
+    'fixed top-0 left-0 z-10 flex h-screen w-screen items-center justify-center bg-black/20';
+
+  const overlayStylesCurrent =
     props.popupVisible == true
-      ? 'fixed top-0 left-0 z-10 flex h-screen w-screen items-center justify-center bg-black/20 '
-      : 'hidden';
+      ? ' opacity-100 duration-500 pointer-events-auto visible'
+      : 'opacity-0 duration-500 pointer-events-none invisible';
+
+  const popupStylesBase =
+    'flex h-[400px] w-[280px] flex-col items-center justify-between rounded-xl bg-white p-[20px] sm:h-[500px] sm:w-[400px] sm:pt-[40px] ';
+
+  const popupStylesCurrent =
+    props.popupVisible == true
+      ? 'scale-100 pointer-events-auto visible duration-500'
+      : 'scale-50  pointer-events-none invisible';
 
   return (
-    <div className={overlayStyles} onClick={() => props.setPopupVisible(false)}>
-      <div
-        className="flex h-[400px]  w-[280px] flex-col items-center justify-between rounded-xl bg-white p-[20px] sm:h-[500px] sm:w-[400px] sm:pt-[40px]"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div
+      className={overlayStylesBase + overlayStylesCurrent}
+      onClick={() => props.setPopupVisible(false)}
+    >
+      <div className={popupStylesBase + popupStylesCurrent} onClick={(e) => e.stopPropagation()}>
         <h2 className="text-3xl font-medium text-blue-700">
           {lang == 'en' ? 'Create board' : 'Создать доску'}
         </h2>
