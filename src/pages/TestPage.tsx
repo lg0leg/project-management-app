@@ -41,7 +41,7 @@ export default function TestPage() {
       const { id: _id } = decodeToken(token) as IToken;
       dispatch(fetchGetUser({ _id, navigate }));
     }
-  }, []);
+  }, [token]);
 
   const getUsers = () => {
     dispatch(fetchGetUsers(navigate));
