@@ -1,15 +1,17 @@
+import { useState } from 'react';
 import Switcher from './switcher/switcher';
 import { HiOutlineHome } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
 import { BiAddToQueue } from 'react-icons/bi';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
-
 import { logout } from 'app/actionCreators/authActionCreators';
+import CreateBoardPopup from './CreateBoardPopup';
 
 export default function Header() {
   const { isAuth } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
+  const [popupVisible, setPopupVisible] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 grid h-[100px] w-full grid-cols-[1fr] items-center  bg-slate-100 px-[20px] sm:grid-cols-[1fr_1fr_1fr]">
@@ -30,10 +32,9 @@ export default function Header() {
         <div className="hidden items-center justify-center sm:flex ">
           <button
             className="flex gap-[5px] rounded py-2 px-4 font-semibold text-blue-500 hover:bg-blue-100"
-            // onClick={() => {
-            //   openCreateBoardmodal()
-            //   console.log('новая доска');
-            // }}
+            onClick={() => {
+              setPopupVisible(true);
+            }}
           >
             <BiAddToQueue size={30} color="rgb(59, 130, 246, 1)" />
             <p className="text-left text-xl text-blue-500">
@@ -45,7 +46,13 @@ export default function Header() {
         <div></div>
       )}
 
-      {isAuth ? <SignOut lang={lang} /> : <SignInSignUp lang={lang} />}
+      {isAuth ? (
+        <SignOut lang={lang} setPopupVisible={setPopupVisible} />
+      ) : (
+        <SignInSignUp lang={lang} />
+      )}
+
+      <CreateBoardPopup popupVisible={popupVisible} setPopupVisible={setPopupVisible} />
     </header>
   );
 }
@@ -68,7 +75,7 @@ function SignInSignUp(props: { lang: string }) {
   );
 }
 
-function SignOut(props: { lang: string }) {
+function SignOut(props: { lang: string; setPopupVisible: (arg: boolean) => void }) {
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
   return (
@@ -76,10 +83,9 @@ function SignOut(props: { lang: string }) {
       <div className="flex items-center pr-[26px] sm:hidden">
         <button
           className="flex  rounded  py-1 px-1 font-semibold text-blue-500  hover:bg-blue-100"
-          // onClick={() => {
-          //   openCreateBoardmodal()
-          //   console.log('новая доска');
-          // }}
+          onClick={() => {
+            props.setPopupVisible(true);
+          }}
         >
           <BiAddToQueue size={30} color="rgb(59, 130, 246, 1)" />
           {/* <p className="text-sm text-blue-500">{props.lang == 'en' ? 'Add ' : 'Добавить'}</p> */}
