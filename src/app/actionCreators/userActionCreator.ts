@@ -5,9 +5,15 @@ import type { IUser } from 'models/typescript';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 
-interface IPropsUser {
-  _id: string;
+interface IUserProps {
+  id: string;
   navigate: (path: string) => void;
+}
+
+interface IUpdateUserProps extends IUserProps {
+  login: string;
+  name: string;
+  password: string;
 }
 
 export const fetchGetUsers = (navigate: (path: string) => void) => {
@@ -20,7 +26,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
         })
       );
 
-      const response = await apiToken<IUser[]>(`auth/users`);
+      const response = await apiToken<IUser[]>(`/users`);
       dispatch(
         userSlice.actions.getUsers({
           users: response.data,
@@ -37,7 +43,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
   };
 };
 
-export const fetchGetUser = ({ _id, navigate }: IPropsUser) => {
+export const fetchGetUser = ({ id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -47,7 +53,7 @@ export const fetchGetUser = ({ _id, navigate }: IPropsUser) => {
         })
       );
 
-      const response = await apiToken<IUser>(`auth/users/${_id}`);
+      const response = await apiToken<IUser>(`/users/${id}`);
 
       dispatch(
         userSlice.actions.getUser({
@@ -65,7 +71,7 @@ export const fetchGetUser = ({ _id, navigate }: IPropsUser) => {
   };
 };
 
-export const fetchUpdateUser = ({ _id, navigate }: IPropsUser) => {
+export const fetchUpdateUser = ({ id, login, name, password, navigate }: IUpdateUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -75,7 +81,7 @@ export const fetchUpdateUser = ({ _id, navigate }: IPropsUser) => {
         })
       );
 
-      const response = await apiToken.put<IUser>(`auth/users/${_id}`);
+      const response = await apiToken.put<IUser>(`/users/${id}`, { login, name, password });
 
       dispatch(
         userSlice.actions.getUser({
@@ -100,7 +106,7 @@ export const fetchUpdateUser = ({ _id, navigate }: IPropsUser) => {
   };
 };
 
-export const fetchDeleteUser = ({ _id, navigate }: IPropsUser) => {
+export const fetchDeleteUser = ({ id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -110,7 +116,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IPropsUser) => {
         })
       );
 
-      const response = await apiToken.delete<IUser>(`auth/users/${_id}`);
+      const response = await apiToken.delete<IUser>(`/users/${id}`);
       if (response.status === 200) {
         dispatch(logout(navigate));
       }
