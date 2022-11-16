@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
 import { StorageKey } from 'constants/storageKey';
-import { decodeToken } from 'react-jwt';
-import { IToken } from 'model/typescript';
-
+import type { IStatusPayload } from 'models/typescript';
+import { isExpired } from 'react-jwt';
 interface ILogoutPayload {
   navigate: (path: string) => void;
 }
@@ -14,18 +13,12 @@ interface ILoginSuccessPayload {
 interface IHandleErrorPayload {
   code: number;
 }
-interface IStatusPayload {
-  isLoading: boolean;
-  isError: boolean;
-}
 
 const initialState = {
-  id: localStorage.getItem(StorageKey.ID) || '',
-  login: localStorage.getItem(StorageKey.LOGIN) || '',
   token: localStorage.getItem(StorageKey.TOKEN) || '',
-  isAuth: Boolean(localStorage.getItem(StorageKey.TOKEN) ?? ''),
+  isAuth: Boolean(!isExpired(localStorage.getItem(StorageKey.TOKEN) ?? '')),
   isError: false,
-  errorText: '',
+  httpCode: 200,
   isLoading: false,
 };
 
@@ -37,47 +30,30 @@ export const authSlice = createSlice({
       state.isAuth = false;
       state.isLoading = false;
       state.token = '';
-      state.login = '';
-      state.id = '';
       state.isError = false;
-      state.errorText = '';
+      state.httpCode = 200;
 
       localStorage.removeItem(StorageKey.TOKEN);
-      localStorage.removeItem(StorageKey.LOGIN);
-      localStorage.removeItem(StorageKey.ID);
       localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
 
     loginSuccess(state, action: PayloadAction<ILoginSuccessPayload>) {
-      const myDecodedToken = decodeToken(action.payload.token) as IToken;
       state.token = action.payload.token;
-      state.login = myDecodedToken.login;
-      state.id = myDecodedToken.id;
 
       state.isLoading = false;
       state.isAuth = true;
       state.isError = false;
-      state.errorText = '';
+      state.httpCode = 200;
 
       localStorage.setItem(StorageKey.TOKEN, action.payload.token);
-      localStorage.setItem(StorageKey.LOGIN, myDecodedToken.login);
-      localStorage.setItem(StorageKey.ID, myDecodedToken.id);
-      localStorage.setItem(StorageKey.IS_AUTH, 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
 
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {
       state.isLoading = false;
       state.isError = true;
-      switch (action.payload.code) {
-        case 409:
-          state.errorText = 'This login is already taken';
-          break;
-        case 401:
-          state.errorText = 'Wrong password/login';
-          break;
-      }
+      state.httpCode = action.payload.code;
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

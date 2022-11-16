@@ -1,17 +1,18 @@
-import React, { useState, FC } from 'react';
+import React, { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { IAuthRequest, IRegisterRequest } from 'model/typescript';
+import { IAuthRequest, IRegisterRequest } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
+import { LangKey } from 'constants/lang';
 
 export const SignUp: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
-  const [lang] = useState('en');
+  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { lang } = useAppSelector((state) => state.langReducer);
 
   const name = lang === 'en' ? 'Your name:' : 'Ваше имя';
 
@@ -24,6 +25,11 @@ export const SignUp: FC = () => {
     const data = res as IRegisterRequest;
     dispatch(fetchRegister({ data, navigate }));
   };
+
+  let errorText = '';
+  if (httpCode === 409) {
+    errorText = lang === LangKey.EN ? 'This login already exists' : 'Такой логин уже существует';
+  }
 
   return (
     <div className="min-h-[100%] bg-gray-300">

@@ -1,18 +1,20 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { IAuthRequest } from 'model/typescript';
+import { IAuthRequest } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
+import { LangKey } from 'constants/lang';
+import { RoutesPath } from 'constants/routes';
 
 export const SignIn: FC = () => {
-  const [lang] = useState('en');
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { lang } = useAppSelector((state) => state.langReducer);
   const {
     register,
     handleSubmit,
@@ -22,6 +24,11 @@ export const SignIn: FC = () => {
     const { login, password } = data;
     dispatch(fetchLogin({ login, password, navigate }));
   };
+
+  let errorText = '';
+  if (httpCode === 401) {
+    errorText = lang === LangKey.EN ? 'Wrong login/password' : 'Неправильный пароль/логин';
+  }
   return (
     <div className="min-h-[100%] bg-gray-300">
       <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
@@ -60,7 +67,10 @@ export const SignIn: FC = () => {
           <AuthSubmit text="Sign in" />
           <p className="pt-3 text-sm font-light text-gray-600">
             Don’t have an account yet?
-            <Link to="/register" className="pl-2 font-bold text-gray-600 hover:text-blue-600">
+            <Link
+              to={RoutesPath.SIGN_UP}
+              className="pl-2 font-bold text-gray-600 hover:text-blue-600"
+            >
               Sign up
             </Link>
           </p>
