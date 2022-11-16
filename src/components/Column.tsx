@@ -1,82 +1,78 @@
-import { useDrag } from '@use-gesture/react';
-import { IColumn, ITask } from 'models/dbTypes';
 import React, { FC, useState } from 'react';
+import { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd } from 'react-icons/md';
 import { Task } from './Task';
-
-const tasksListMocks: ITask[] = [
-  {
-    _id: 'Task id',
-    title: 'Task title1',
-    order: 1,
-    boardId: 'id of board',
-    columnId: 'Column id1',
-    description: 'Task decription1',
-    userId: 'User1',
-    users: ['User1'],
-  },
-  {
-    _id: 'Task id2',
-    title: 'Task title2',
-    order: 0,
-    boardId: 'id of board',
-    columnId: 'Column id1',
-    description: 'Task decription2',
-    userId: 'User2',
-    users: ['User2'],
-  },
-  {
-    _id: 'Task id3',
-    title: 'Task title3',
-    order: 0,
-    boardId: 'id of board',
-    columnId: 'Column id2',
-    description: 'Task decription3',
-    userId: 'User1',
-    users: ['User2'],
-  },
-  {
-    _id: 'Task id4',
-    title: 'Task title4',
-    order: 0,
-    boardId: 'id of board',
-    columnId: 'Column id3',
-    description: 'Task decription4',
-    userId: 'User2',
-    users: ['User1', 'User2'],
-  },
-];
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { BiEdit, BiTrash } from 'react-icons/bi';
 
 interface IColumnProps {
+  index: number;
   column: IColumn;
+  tasks: ITask[];
 }
 
-export const Column: FC<IColumnProps> = ({ column }: IColumnProps) => {
+export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps) => {
   const [lang, setLang] = useState('en');
 
   return (
-    <div className="flex w-[20rem] min-w-[20rem] flex-shrink-0 flex-col rounded-lg bg-gray-50">
-      <div className="px-2 pb-2">
-        <h2 className="text-base font-semibold text-gray-900">{column.title}</h2>
-      </div>
-      <div className="v-scrollbar flex flex-col overflow-auto p-2">
-        {tasksListMocks
-          .sort((t1, t2) => t1.order - t2.order)
-          .filter((task) => task.columnId === column._id)
-          .map((task) => {
-            return <Task key={task._id} task={task} />;
-          })}
-      </div>
-      <div className="px-2 pt-2">
-        <button
-          className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500"
-          onClick={() => {}}
+    <Draggable draggableId={'drag.' + column._id} index={index}>
+      {(provided) => (
+        <div
+          className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
         >
-          <MdAdd />
-          {lang === 'en' ? 'Add new card' : 'Добавить карточку'}
-        </button>
-      </div>
-    </div>
+          <div className="flex items-center justify-between p-2">
+            <h2 className="truncate text-lg font-semibold text-gray-900 ">
+              {column.title}{' '}
+              <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800">
+                {tasks.length}
+              </span>
+            </h2>
+            <div className="flex flex-row">
+              <button
+                className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
+                onClick={() => {}}
+              >
+                <BiEdit className="h-5 w-5" />
+              </button>
+              <button
+                className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
+                onClick={() => {}}
+              >
+                <BiTrash className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+          <Droppable droppableId={column._id} type="TASK">
+            {(provided) => (
+              <div
+                className="scrollbar flex w-full flex-col overflow-x-hidden p-2"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {tasks
+                  .sort((t1, t2) => t1.order - t2.order)
+                  .map((task, index) => {
+                    return <Task key={task._id} task={task} index={index} />;
+                  })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+          <div className="p-2">
+            <button
+              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500"
+              onClick={() => {}}
+            >
+              <MdAdd />
+              {lang === 'en' ? 'Add new card' : 'Добавить карточку'}
+            </button>
+          </div>
+        </div>
+      )}
+    </Draggable>
   );
 };
 
