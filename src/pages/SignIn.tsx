@@ -7,11 +7,12 @@ import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
+import { LangKey } from 'constants/lang';
 
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { errorText, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
   const {
     register,
@@ -22,6 +23,11 @@ export const SignIn: FC = () => {
     const { login, password } = data;
     dispatch(fetchLogin({ login, password, navigate }));
   };
+
+  let errorText = '';
+  if (httpCode === 401) {
+    errorText = lang === LangKey.EN ? 'Wrong login/password' : 'Неправильный пароль/логин';
+  }
   return (
     <div className="min-h-[100%] bg-gray-300">
       <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
