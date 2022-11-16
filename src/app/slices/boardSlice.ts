@@ -49,30 +49,6 @@ export const boardSlice = createSlice({
       state.isError = false;
     },
 
-    // updateBoard(state, action: PayloadAction<IBoardsPayload>) {
-    //   state.boards = action.payload.boards;
-    //   state.isLoading = false;
-    //   state.isError = false;
-    // },
-
-    // deleteBoard(state, action: PayloadAction<IBoardsPayload>) {
-    //   state.boards = action.payload.boards;
-    //   state.isLoading = false;
-    //   state.isError = false;
-    // },
-
-    // getBoardsByIds(state, action: PayloadAction<IBoardsPayload>) {
-    //   state.isLoading = false;
-    //   state.isError = false;
-    //   state.boards = action.payload.boards;
-    // },
-
-    // getBoardsByUsersIds(state, action: PayloadAction<IBoardsPayload>) {
-    //   state.isLoading = false;
-    //   state.isError = false;
-    //   state.boards = action.payload.boards;
-    // },
-
     setStatus(state, action: PayloadAction<IStatusPayload>) {
       state.isLoading = action.payload.isLoading;
       state.isError = action.payload.isError;
