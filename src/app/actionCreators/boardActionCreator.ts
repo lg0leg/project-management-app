@@ -30,7 +30,7 @@ interface IBoardsByIdsListProps {
   navigate: (path: string) => void;
   userId: string[];
 }
-
+// получение всех досок (path используется при удалении доски изнутри смотри fetchDeleteBoard)
 export const fetchGetBoards = ({ navigate, path }: IBoardsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -43,13 +43,14 @@ export const fetchGetBoards = ({ navigate, path }: IBoardsProps) => {
 
       const response = await apiToken<IBoard[]>(`/boards`);
 
-      if (response.status >= 200 && response.status < 300 && path) {
+      if (response.status >= 200 && response.status < 300) {
         dispatch(
           boardSlice.actions.getBoards({
             boards: response.data,
           })
         );
-        navigate(path);
+
+        if (path) navigate(path);
       }
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -62,6 +63,7 @@ export const fetchGetBoards = ({ navigate, path }: IBoardsProps) => {
   };
 };
 
+// получение доски по id
 export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -90,6 +92,8 @@ export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
   };
 };
 
+// редактирование доски. Если редактируетсся изнутри, то необходимо передать
+//  fromPage = RoutesPath.Board, иначе fromPage = RoutesPath.Boards
 export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProps) => {
   const { _id, users, title, owner } = board;
   return async (dispatch: AppDispatch) => {
@@ -131,7 +135,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
     }
   };
 };
-
+// удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
 export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -157,7 +161,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
     }
   };
 };
-
+// получение списка досок по ид юзера
 export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
   return async (dispatch: AppDispatch) => {
     try {
