@@ -7,6 +7,7 @@ import {
 } from 'app/actionCreators/userActionCreator';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import Spinner from 'components/Spinner';
+import { LangKey } from 'constants/lang';
 import type { IToken } from 'models/typescript';
 import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -21,10 +22,15 @@ export default function TestPage() {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { register, handleSubmit } = useForm<IUserInput>();
-  const { user, users, isLoading, isError, errorText } = useAppSelector(
+  const { user, users, isLoading, isError, httpCode } = useAppSelector(
     (state) => state.userReducer
   );
+  const { lang } = useAppSelector((state) => state.langReducer);
   const { _id } = user;
+  let errorText = '';
+  if (httpCode === 409) {
+    errorText = lang === LangKey.EN ? 'This login already exists' : 'Такой логин уже существует';
+  }
 
   //такую проверку добавить на boards, board, и welcome page
   const { token } = useAppSelector((state) => state.authReducer);
@@ -108,15 +114,15 @@ export default function TestPage() {
         </button>
         <span className="flex flex-col">id:{user._id}</span>
         <label className="flex flex-col">
-          <span>username:{user.name}</span>
+          <span>username:{user.name}, enter new name:</span>
           <input type="text" className="w-[200px] border-2" {...register('name')} />
         </label>
         <label>
-          <span className="flex flex-col">login:{user.login}</span>
+          <span className="flex flex-col">login:{user.login}, enter new login:</span>
           <input type="text" className="w-[200px] border-2" {...register('login')} />
         </label>
         <label>
-          <span className="flex flex-col">password</span>
+          <span className="flex flex-col">enter new password:</span>
           <input type="password" className="w-[200px] border-2" {...register('password')} />
         </label>
       </form>

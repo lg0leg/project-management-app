@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RoutesPath } from 'constants/routes';
-import { StorageKey } from 'constants/storageKey';
-import { decodeToken } from 'react-jwt';
-import type { IToken, IUser, IStatusPayload } from 'models/typescript';
+import type { IUser, IStatusPayload } from 'models/typescript';
 
 interface IGetUsersPayload {
   users: IUser[];
@@ -29,7 +26,7 @@ const initialState = {
   user: initUser,
   isError: false,
   isLoading: false,
-  errorText: '',
+  httpCode: 200,
 };
 
 export const userSlice = createSlice({
@@ -53,6 +50,11 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.isError = false;
     },
+    deleteUser(state) {
+      state.user = initialState.user;
+      state.isLoading = false;
+      state.isError = false;
+    },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {
       state.isLoading = action.payload.isLoading;
@@ -62,9 +64,7 @@ export const userSlice = createSlice({
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {
       state.isLoading = false;
       state.isError = true;
-      if (action.payload.code === 409) {
-        state.errorText = 'Login is already exist';
-      }
+      state.httpCode = action.payload.code;
     },
   },
 });

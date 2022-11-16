@@ -91,15 +91,14 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
     } catch (e) {
       if (e instanceof AxiosError) {
         const code = e.response?.status as number;
-        if (code === 409) {
-          dispatch(
-            userSlice.actions.handleError({
-              code: 409,
-            })
-          );
-        }
         if (code === 401) {
           dispatch(logout(navigate));
+        } else {
+          dispatch(
+            userSlice.actions.handleError({
+              code,
+            })
+          );
         }
       }
     }
@@ -117,7 +116,8 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
       );
 
       const response = await apiToken.delete<IUser>(`/users/${_id}`);
-      if (response.status === 200) {
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(userSlice.actions.deleteUser());
         dispatch(logout(navigate));
       }
     } catch (e) {
