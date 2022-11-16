@@ -1,6 +1,6 @@
 import React from 'react';
 import { Path, UseFormRegister } from 'react-hook-form';
-import type { IAuthRequest } from 'model/typescript';
+import type { IAuthRequest } from 'models/typescript';
 import type { FieldErrorsImpl } from 'react-hook-form';
 interface IProps {
   type: string;

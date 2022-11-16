@@ -29,3 +29,14 @@ export interface IToken {
   iat: number;
   exp: number;
 }
+
+export interface IUser {
+  _id: string;
+  name: string;
+  login: string;
+}
+
+export interface IStatusPayload {
+  isLoading: boolean;
+  isError: boolean;
+}
