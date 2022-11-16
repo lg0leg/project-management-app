@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
 import { StorageKey } from 'constants/storageKey';
 import type { IStatusPayload } from 'models/typescript';
-
+import { isExpired } from 'react-jwt';
 interface ILogoutPayload {
   navigate: (path: string) => void;
 }
@@ -16,7 +16,7 @@ interface IHandleErrorPayload {
 
 const initialState = {
   token: localStorage.getItem(StorageKey.TOKEN) || '',
-  isAuth: Boolean(localStorage.getItem(StorageKey.TOKEN) ?? ''),
+  isAuth: Boolean(!isExpired(localStorage.getItem(StorageKey.TOKEN) ?? '')),
   isError: false,
   httpCode: 200,
   isLoading: false,
@@ -47,7 +47,6 @@ export const authSlice = createSlice({
       state.httpCode = 200;
 
       localStorage.setItem(StorageKey.TOKEN, action.payload.token);
-      localStorage.setItem(StorageKey.IS_AUTH, 'true');
       action.payload.navigate(RoutesPath.BOARDS);
     },
 

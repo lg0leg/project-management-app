@@ -8,6 +8,7 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
+import { RoutesPath } from 'constants/routes';
 
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
@@ -66,7 +67,10 @@ export const SignIn: FC = () => {
           <AuthSubmit text="Sign in" />
           <p className="pt-3 text-sm font-light text-gray-600">
             Don’t have an account yet?
-            <Link to="/register" className="pl-2 font-bold text-gray-600 hover:text-blue-600">
+            <Link
+              to={RoutesPath.SIGN_UP}
+              className="pl-2 font-bold text-gray-600 hover:text-blue-600"
+            >
               Sign up
             </Link>
           </p>
