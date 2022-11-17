@@ -5,6 +5,7 @@ import type { IUser, navigateType } from 'models/typescript';
 import { IBoard } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError401 } from 'utils/handleErrors';
+import { fetchGetColumnsStore } from './columnActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -113,6 +114,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
     }
   };
 };
+
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
 export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
@@ -129,6 +131,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
     }
   };
 };
+
 // получение списка досок по ид юзера
 export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
   return async (dispatch: AppDispatch) => {
@@ -148,30 +151,22 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps
   };
 };
 
-// export const fetchGetBoardsByIdsList = ({ navigate, idsList }: IBoardsByIdsListProps) => {
-//   return async (dispatch: AppDispatch) => {
-//     try {
-//       dispatch(
-//         boardSlice.actions.setStatus({
-//           isLoading: true,
-//           isError: false,
-//         })
-//       );
+export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
 
-//       const response = await apiToken<IBoard[]>(`/boardsSet`);
+      const response = await apiToken<IBoard>(`/boards/${_id}`);
 
-//       dispatch(
-//         boardSlice.actions.getBoards({
-//           boards: response.data,
-//         })
-//       );
-//     } catch (e) {
-//       if (e instanceof AxiosError) {
-//         const code = e.response?.status as number;
-//         if (code === 401) {
-//           dispatch(logout(navigate));
-//         }
-//       }
-//     }
-//   };
-// };
+      dispatch(
+        boardSlice.actions.getBoard({
+          board: response.data,
+        })
+      );
+
+      dispatch(fetchGetColumnsStore({ boardId: response.data._id, navigate }));
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
