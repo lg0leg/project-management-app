@@ -28,7 +28,7 @@ export interface ITask {
 export interface IFile {
   _id: string;
   name: string;
-  taskId: number;
+  taskId: string;
   boardId: string;
   path: string;
 }
