@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd } from 'react-icons/md';
 import { Task } from './Task';
-import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 
 interface IColumnProps {

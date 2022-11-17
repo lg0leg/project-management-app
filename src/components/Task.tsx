@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { BiEdit, BiTrash } from 'react-icons/bi';
-import { IFile, ITask, IUser } from 'models/dbTypes';
-import { Draggable } from 'react-beautiful-dnd';
+import { IFile, ITask } from 'models/dbTypes';
+import { Draggable } from '@hello-pangea/dnd';
 
 const filesListMocks: IFile[] = [
   {
@@ -25,7 +25,7 @@ export const Task: FC<ITaskProps> = ({ task, index }: ITaskProps) => {
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
         <div
-          className="mb-4 flex max-w-[21rem] cursor-move flex-col rounded-lg bg-white p-5 shadow last:mb-0"
+          className="my-2 flex max-w-[21rem] cursor-move flex-col rounded-lg bg-white p-5 shadow last:mb-0"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}

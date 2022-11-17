@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
 import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 
 export const usersListmocks: IUser[] = [
   {
