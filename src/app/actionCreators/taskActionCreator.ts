@@ -27,6 +27,11 @@ interface ITasksProps {
   boardId: string;
   navigate: navigateType;
 }
+interface ITasksStoreProps {
+  columnsIdList: string[];
+  boardId: string;
+  navigate: navigateType;
+}
 
 interface ITaskProps extends ITasksProps {
   _id: string;
@@ -141,6 +146,29 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetTasks({ navigate, boardId, columnId }));
       }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksStoreProps) => {
+  return async (dispatch: AppDispatch) => {
+    setLoadingStatus(dispatch);
+    try {
+      Promise.all(
+        columnsIdList.map((columnId) =>
+          apiToken<ITask[]>(`/boards/${boardId}/columns/${columnId}/tasks`)
+        )
+      ).then((response) => {
+        console.log(response);
+
+        // dispatch(
+        //   taskSlice.actions.getTasks({
+        //     tasks: response[],
+        //   })
+        // );
+      });
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

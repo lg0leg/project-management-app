@@ -5,7 +5,7 @@ import type { IUser } from 'models/typescript';
 import type { IColumn } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
-import { fetchGetTasks } from './taskActionCreator';
+import { fetchGetTasksStore } from './taskActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -145,12 +145,8 @@ export const fetchGetColumnsStore = ({ navigate, boardId }: IColumnsProps) => {
           columns: response.data,
         })
       );
-
-      Promise.all(
-        response.data.map((item) => {
-          dispatch(fetchGetTasks({ boardId, columnId: item._id, navigate }));
-        })
-      );
+      const columnsIdList = response.data.map((item) => item._id);
+      dispatch(fetchGetTasksStore({ boardId, columnsIdList, navigate }));
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
