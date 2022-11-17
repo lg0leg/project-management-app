@@ -1,29 +1,27 @@
 import { apiToken } from 'API/API';
-import { AppDispatch } from 'app/store';
+import type { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
 import type { IUser } from 'models/typescript';
-import { AxiosError } from 'axios';
-import { logout } from './authActionCreators';
-import { IBoard } from 'models/dbTypes';
-import { RoutesPath } from 'constants/routes';
+import type { IColumn } from 'models/dbTypes';
+import { handleError401 } from 'utils/handleErrors';
 
-interface IBoardProps {
-  _id: string;
+interface IColumnsProps {
+  boardId: string;
   navigate: (path: string) => void;
 }
 
-interface IBoardsProps {
-  path?: string;
-  navigate: (path: string) => void;
+interface IColumnProps extends IColumnsProps {
+  columnId: string;
 }
 
-interface IDeleteBoardProps extends IBoardsProps {
-  _id: string;
+interface ICreateColumnProps extends IColumnsProps {
+  title: string;
+  order: number;
 }
-interface IUpdateBoardProps extends IBoardProps {
-  board: IBoard;
+
+interface IUpdateColumnProps {
+  column: IColumn;
   navigate: (path: string) => void;
-  fromPage: string;
 }
 
 interface IBoardsByIdsListProps {
@@ -31,7 +29,7 @@ interface IBoardsByIdsListProps {
   userId: string[];
 }
 
-export const fetchGetColumns = ({ navigate, boardsId }: IBoardsProps) => {
+export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -41,28 +39,71 @@ export const fetchGetColumns = ({ navigate, boardsId }: IBoardsProps) => {
         })
       );
 
-      const response = await apiToken<IBoard[]>(`/boards/${boardsId}/columns`);
+      const response = await apiToken<IColumn[]>(`/boards/${boardId}/columns`);
 
-      if (response.status >= 200 && response.status < 300 && path) {
+      dispatch(
+        boardSlice.actions.getColumns({
+          columns: response.data,
+        })
+      );
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(
+        boardSlice.actions.setStatus({
+          isLoading: true,
+          isError: false,
+        })
+      );
+
+      const response = await apiToken<IColumn>(`/boards/${boardId}/columns/${columnId}`);
+
+      dispatch(
+        boardSlice.actions.getColumn({
+          column: response.data,
+        })
+      );
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateColumnProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(
+        boardSlice.actions.setStatus({
+          isLoading: true,
+          isError: false,
+        })
+      );
+
+      const response = await apiToken.post<IColumn>(`/boards/${boardId}/columns/`, {
+        title,
+        order,
+      });
+
+      if (response.status >= 200 && response.status < 300) {
         dispatch(
-          boardSlice.actions.getBoards({
-            boards: response.data,
+          fetchGetColumns({
+            boardId,
+            navigate,
           })
         );
-        navigate(path);
       }
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
-    }
+    } catch (e) {}
   };
 };
 
-export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
+export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
+  const { _id: columnId, boardId } = column;
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -72,67 +113,26 @@ export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
         })
       );
 
-      const response = await apiToken<IBoard>(`/boards/${_id}`);
-
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
+      const response = await apiToken.put<IColumn>(
+        `/boards/${boardId}/columns/${columnId}`,
+        column
       );
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
-    }
-  };
-};
-
-export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProps) => {
-  const { _id, users, title, owner } = board;
-  return async (dispatch: AppDispatch) => {
-    try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
-
-      const response = await apiToken.put<IBoard>(`/boards/${_id}`, { users, title, owner });
 
       if (response.status >= 200 && response.status < 300) {
-        if (fromPage === RoutesPath.BOARD) {
-          dispatch(
-            fetchGetBoard({
-              _id,
-              navigate,
-            })
-          );
-        }
-
-        if (fromPage === RoutesPath.BOARDS) {
-          dispatch(
-            fetchGetBoards({
-              navigate,
-            })
-          );
-        }
+        dispatch(
+          fetchGetColumns({
+            boardId,
+            navigate,
+          })
+        );
       }
     } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
+      handleError401(dispatch, e, navigate);
     }
   };
 };
 
-export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
+export const fetchDeleteBoard = ({ columnId, navigate, boardId }: IColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(
@@ -142,49 +142,39 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
         })
       );
 
-      const response = await apiToken.delete<IUser>(`/boards/${_id}`);
+      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetBoards({ navigate, path }));
+        dispatch(fetchGetColumns({ navigate, boardId }));
       }
     } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
+      handleError401(dispatch, e, navigate);
     }
   };
 };
 
-export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+// export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
+//   return async (dispatch: AppDispatch) => {
+//     try {
+//       dispatch(
+//         boardSlice.actions.setStatus({
+//           isLoading: true,
+//           isError: false,
+//         })
+//       );
 
-      const response = await apiToken<IBoard[]>(`/boardsSet/${userId}`);
+//       const response = await apiToken<IBoard[]>(`/boardsSet/${userId}`);
 
-      dispatch(
-        boardSlice.actions.getBoards({
-          boards: response.data,
-        })
-      );
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
-    }
-  };
-};
+//       dispatch(
+//         boardSlice.actions.getBoards({
+//           boards: response.data,
+//         })
+//       );
+//     } catch (e) {
+//       handleError401(dispatch, e, navigate);
+//     }
+//   };
+// };
 
 // export const fetchGetBoardsByIdsList = ({ navigate, idsList }: IBoardsByIdsListProps) => {
 //   return async (dispatch: AppDispatch) => {

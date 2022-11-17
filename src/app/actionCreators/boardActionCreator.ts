@@ -20,10 +20,10 @@ interface IBoardsProps {
 interface IDeleteBoardProps extends IBoardsProps {
   _id: string;
 }
-interface IUpdateBoardProps extends IBoardProps {
+interface IUpdateBoardProps {
   board: IBoard;
-  navigate: (path: string) => void;
   fromPage: string;
+  navigate: (path: string) => void;
 }
 
 interface IBoardsByIdsListProps {

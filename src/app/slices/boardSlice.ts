@@ -1,10 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { IStatusPayload } from 'models/typescript';
-import type { IBoard } from 'models/dbTypes';
+import type { IBoard, IColumn } from 'models/dbTypes';
 
 interface IHandleErrorPayload {
   code: number;
 }
+
+const initColumn: IColumn = {
+  _id: '',
+  title: '',
+  order: 0,
+  boardId: '',
+};
+
+const initColumns: IColumn[] = [];
 
 const initUsers: string[] = [];
 
@@ -23,6 +32,8 @@ const initialState = {
   isError: false,
   isLoading: false,
   httpCode: 200,
+  columns: initColumns,
+  column: initColumn,
 };
 
 interface IBoardsPayload {
@@ -31,6 +42,14 @@ interface IBoardsPayload {
 
 interface IBoardPayload {
   board: IBoard;
+}
+
+interface IColumnsPayload {
+  columns: IColumn[];
+}
+
+interface IColumnPayload {
+  column: IColumn;
 }
 
 export const boardSlice = createSlice({
@@ -45,6 +64,18 @@ export const boardSlice = createSlice({
 
     getBoard(state, action: PayloadAction<IBoardPayload>) {
       state.board = action.payload.board;
+      state.isLoading = false;
+      state.isError = false;
+    },
+
+    getColumns(state, action: PayloadAction<IColumnsPayload>) {
+      state.columns = action.payload.columns;
+      state.isLoading = false;
+      state.isError = false;
+    },
+
+    getColumn(state, action: PayloadAction<IColumnPayload>) {
+      state.column = action.payload.column;
       state.isLoading = false;
       state.isError = false;
     },
