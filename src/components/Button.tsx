@@ -3,6 +3,7 @@ import { FC, ReactNode } from 'react';
 interface IButtonProps {
   children?: ReactNode;
   color?: string;
+  customClasses?: string;
   onClick: () => void;
 }
 
@@ -10,7 +11,12 @@ interface Colors {
   [key: string]: string;
 }
 
-export const Button: FC<IButtonProps> = ({ children, color = 'deafault', onClick }) => {
+export const Button: FC<IButtonProps> = ({
+  children,
+  color = 'deafault',
+  customClasses,
+  onClick,
+}) => {
   const colors: Colors = {
     deafault: 'bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-300',
     alternative:
@@ -24,7 +30,11 @@ export const Button: FC<IButtonProps> = ({ children, color = 'deafault', onClick
   };
   return (
     <button
-      className={`rounded-lg px-5 py-2.5 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-blue-300 ${colors[color]}`}
+      className={
+        !customClasses
+          ? `mx-2 rounded-lg px-5 py-2.5 text-sm font-medium focus:outline-none focus:ring-4 ${colors[color]}`
+          : customClasses
+      }
       onClick={onClick}
     >
       {children}
