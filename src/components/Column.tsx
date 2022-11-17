@@ -4,6 +4,8 @@ import { MdAdd } from 'react-icons/md';
 import { Task } from './Task';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { BiEdit, BiTrash } from 'react-icons/bi';
+import { LangKey } from 'constants/lang';
+import { useAppSelector } from 'app/hooks';
 
 interface IColumnProps {
   index: number;
@@ -12,7 +14,7 @@ interface IColumnProps {
 }
 
 export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps) => {
-  const [lang, setLang] = useState('en');
+  const { lang } = useAppSelector((state) => state.langReducer);
 
   return (
     <Draggable draggableId={'drag.' + column._id} index={index}>
@@ -48,7 +50,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps)
           <Droppable droppableId={column._id} type="TASK">
             {(provided) => (
               <div
-                className="scrollbar flex w-full flex-col overflow-x-hidden p-2"
+                className="scrollbar flex min-h-[2rem] w-full flex-col overflow-x-hidden p-2"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -63,11 +65,11 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps)
           </Droppable>
           <div className="p-2">
             <button
-              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500"
+              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
               onClick={() => {}}
             >
               <MdAdd />
-              {lang === 'en' ? 'Add new card' : 'Добавить карточку'}
+              {lang === LangKey.EN ? 'Add new card' : 'Добавить карточку'}
             </button>
           </div>
         </div>

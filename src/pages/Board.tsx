@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
 import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
+import { MdAdd } from 'react-icons/md';
+import { useAppSelector } from 'app/hooks';
+import { LangKey } from 'constants/lang';
 
 export const usersListmocks: IUser[] = [
   {
@@ -130,6 +133,7 @@ export const boardsListMocks: IBoard[] = [
 
 export const Board: FC = () => {
   const { id } = useParams();
+  const { lang } = useAppSelector((state) => state.langReducer);
   const [board, setBoard] = useState(boardsListMocks);
   const [columns, setColumns] = useState(columnListMocks);
   const [tasks, setTasks] = useState(tasksListMocks);
@@ -222,7 +226,16 @@ export const Board: FC = () => {
                     />
                   );
                 })}
-              <div className="ml-4">{provided.placeholder}</div>
+              {provided.placeholder}
+              <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
+                <button
+                  className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
+                  onClick={() => {}}
+                >
+                  <MdAdd />
+                  {lang === LangKey.EN ? 'Add new column' : 'Добавить колонку'}
+                </button>
+              </div>
             </div>
           )}
         </Droppable>
