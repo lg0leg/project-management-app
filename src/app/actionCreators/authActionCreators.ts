@@ -16,6 +16,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const handleAuthError = (dispatch: AppDispatch, e: unknown) => {
+  if (e instanceof AxiosError) {
+    dispatch(
+      authSlice.actions.handleError({
+        code: e.response?.status as number,
+      })
+    );
+  }
+};
 interface IPropsRegister {
   data: IRegisterRequest;
   navigate: navigateType;
@@ -41,13 +51,7 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
         })
       );
     } catch (e) {
-      if (e instanceof AxiosError) {
-        dispatch(
-          authSlice.actions.handleError({
-            code: e.response?.status as number,
-          })
-        );
-      }
+      handleAuthError(dispatch, e);
     }
   };
 };
@@ -69,13 +73,7 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         })
       );
     } catch (e) {
-      if (e instanceof AxiosError) {
-        dispatch(
-          authSlice.actions.handleError({
-            code: e.response?.status as number,
-          })
-        );
-      }
+      handleAuthError(dispatch, e);
     }
   };
 };
