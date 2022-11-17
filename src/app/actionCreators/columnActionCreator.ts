@@ -1,6 +1,6 @@
 import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
-import { boardSlice } from '../slices/boardSlice';
+import { columnSlice } from '../slices/columnSlice';
 import type { IUser } from 'models/typescript';
 import type { IColumn } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
@@ -8,7 +8,7 @@ import type { navigateType } from 'models/typescript';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
-    boardSlice.actions.setStatus({
+    columnSlice.actions.setStatus({
       isLoading: true,
       isError: false,
     })
@@ -33,11 +33,6 @@ interface IUpdateColumnProps {
   navigate: navigateType;
 }
 
-interface IBoardsByIdsListProps {
-  navigate: navigateType;
-  userId: string[];
-}
-
 export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -45,7 +40,7 @@ export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
       const response = await apiToken<IColumn[]>(`/boards/${boardId}/columns`);
 
       dispatch(
-        boardSlice.actions.getColumns({
+        columnSlice.actions.getColumns({
           columns: response.data,
         })
       );
@@ -63,7 +58,7 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
       const response = await apiToken<IColumn>(`/boards/${boardId}/columns/${columnId}`);
 
       dispatch(
-        boardSlice.actions.getColumn({
+        columnSlice.actions.getColumn({
           column: response.data,
         })
       );
@@ -91,7 +86,9 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
           })
         );
       }
-    } catch (e) {}
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
   };
 };
 

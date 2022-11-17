@@ -3,12 +3,16 @@ import authReducer from './slices/authSlice';
 import langReducer from './slices/langSlice';
 import userReducer from './slices/userSlice';
 import boardSlice from './slices/boardSlice';
+import columnSlice from './slices/columnSlice';
+import taskSlice from './slices/taskSlice';
 
 const rootReducer = combineReducers({
   authReducer,
   langReducer,
   userReducer,
   boardSlice,
+  columnSlice,
+  taskSlice,
 });
 
 export const store = configureStore({

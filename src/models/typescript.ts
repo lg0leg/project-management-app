@@ -36,6 +36,9 @@ export interface IUser {
   login: string;
 }
 
+export interface IHandleErrorPayload {
+  code: number;
+}
 export interface IStatusPayload {
   isLoading: boolean;
   isError: boolean;

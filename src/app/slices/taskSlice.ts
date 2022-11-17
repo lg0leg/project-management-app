@@ -1,30 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { IStatusPayload } from 'models/typescript';
-import type { IBoard, IColumn, ITask } from 'models/dbTypes';
+import type { IStatusPayload, IHandleErrorPayload } from 'models/typescript';
+import type { ITask } from 'models/dbTypes';
 
-interface IHandleErrorPayload {
-  code: number;
-}
-
-const initColumn: IColumn = {
-  _id: '',
-  title: '',
-  order: 0,
-  boardId: '',
-};
-
-const initColumns: IColumn[] = [];
 const initTasks: ITask[] = [];
 
-const initUsersBoard: string[] = [];
 const initUsersTask: string[] = [];
-
-const initBoard = {
-  _id: '',
-  title: '',
-  owner: '',
-  users: initUsersBoard,
-};
 
 const initTask = {
   _id: '',
@@ -37,60 +17,34 @@ const initTask = {
   users: initUsersTask,
 };
 
-const initBoards: IBoard[] = [];
-
 const initialState = {
-  boards: initBoards,
-  board: initBoard,
   isError: false,
   isLoading: false,
   httpCode: 200,
-  columns: initColumns,
-  column: initColumn,
   tasks: initTasks,
   task: initTask,
 };
 
-interface IBoardsPayload {
-  boards: IBoard[];
+interface ITasksPayload {
+  tasks: ITask[];
 }
 
-interface IBoardPayload {
-  board: IBoard;
+interface ITaskPayload {
+  task: ITask;
 }
 
-interface IColumnsPayload {
-  columns: IColumn[];
-}
-
-interface IColumnPayload {
-  column: IColumn;
-}
-
-export const boardSlice = createSlice({
-  name: 'board',
+export const taskSlice = createSlice({
+  name: 'task',
   initialState,
   reducers: {
-    getBoards(state, action: PayloadAction<IBoardsPayload>) {
-      state.boards = action.payload.boards;
+    getTasks(state, action: PayloadAction<ITasksPayload>) {
+      state.tasks = action.payload.tasks;
       state.isLoading = false;
       state.isError = false;
     },
 
-    getBoard(state, action: PayloadAction<IBoardPayload>) {
-      state.board = action.payload.board;
-      state.isLoading = false;
-      state.isError = false;
-    },
-
-    getColumns(state, action: PayloadAction<IColumnsPayload>) {
-      state.columns = action.payload.columns;
-      state.isLoading = false;
-      state.isError = false;
-    },
-
-    getColumn(state, action: PayloadAction<IColumnPayload>) {
-      state.column = action.payload.column;
+    getTask(state, action: PayloadAction<ITaskPayload>) {
+      state.task = action.payload.task;
       state.isLoading = false;
       state.isError = false;
     },
@@ -108,4 +62,4 @@ export const boardSlice = createSlice({
   },
 });
 
-export default boardSlice.reducer;
+export default taskSlice.reducer;

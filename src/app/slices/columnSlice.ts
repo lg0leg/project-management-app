@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { IStatusPayload } from 'models/typescript';
-import type { IBoard, IColumn, ITask } from 'models/dbTypes';
-
-interface IHandleErrorPayload {
-  code: number;
-}
+import type { IStatusPayload, IHandleErrorPayload } from 'models/typescript';
+import type { IColumn } from 'models/dbTypes';
 
 const initColumn: IColumn = {
   _id: '',
@@ -14,50 +10,14 @@ const initColumn: IColumn = {
 };
 
 const initColumns: IColumn[] = [];
-const initTasks: ITask[] = [];
-
-const initUsersBoard: string[] = [];
-const initUsersTask: string[] = [];
-
-const initBoard = {
-  _id: '',
-  title: '',
-  owner: '',
-  users: initUsersBoard,
-};
-
-const initTask = {
-  _id: '',
-  title: '',
-  order: 0,
-  boardId: '',
-  columnId: '',
-  description: '',
-  userId: '',
-  users: initUsersTask,
-};
-
-const initBoards: IBoard[] = [];
 
 const initialState = {
-  boards: initBoards,
-  board: initBoard,
   isError: false,
   isLoading: false,
   httpCode: 200,
   columns: initColumns,
   column: initColumn,
-  tasks: initTasks,
-  task: initTask,
 };
-
-interface IBoardsPayload {
-  boards: IBoard[];
-}
-
-interface IBoardPayload {
-  board: IBoard;
-}
 
 interface IColumnsPayload {
   columns: IColumn[];
@@ -67,22 +27,10 @@ interface IColumnPayload {
   column: IColumn;
 }
 
-export const boardSlice = createSlice({
-  name: 'board',
+export const columnSlice = createSlice({
+  name: 'column',
   initialState,
   reducers: {
-    getBoards(state, action: PayloadAction<IBoardsPayload>) {
-      state.boards = action.payload.boards;
-      state.isLoading = false;
-      state.isError = false;
-    },
-
-    getBoard(state, action: PayloadAction<IBoardPayload>) {
-      state.board = action.payload.board;
-      state.isLoading = false;
-      state.isError = false;
-    },
-
     getColumns(state, action: PayloadAction<IColumnsPayload>) {
       state.columns = action.payload.columns;
       state.isLoading = false;
@@ -108,4 +56,4 @@ export const boardSlice = createSlice({
   },
 });
 
-export default boardSlice.reducer;
+export default columnSlice.reducer;
