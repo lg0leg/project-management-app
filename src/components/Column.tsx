@@ -20,12 +20,11 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps)
     <Draggable draggableId={'drag.' + column._id} index={index}>
       {(provided) => (
         <div
-          className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
+          className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
           ref={provided.innerRef}
         >
-          <div className="flex items-center justify-between p-2">
+          <div className="flex items-center justify-between p-2" {...provided.dragHandleProps}>
             <h2 className="truncate text-lg font-semibold text-gray-900 ">
               {column.title}{' '}
               <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800">
@@ -50,7 +49,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index }: IColumnProps)
           <Droppable droppableId={column._id} type="TASK">
             {(provided) => (
               <div
-                className="scrollbar flex min-h-[2rem] w-full flex-col overflow-x-hidden p-2"
+                className="scrollbar flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden p-2"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >

@@ -203,14 +203,14 @@ export const Board: FC = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex max-h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-        <h1 className="max-h-[70px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
+      <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
+        <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
           {board[0].title}
         </h1>
         <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
           {(provided) => (
             <div
-              className="scrollbar flex h-full w-full space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
+              className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
