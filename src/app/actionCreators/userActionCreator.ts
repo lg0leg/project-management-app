@@ -1,13 +1,22 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { userSlice } from '../slices/userSlice';
-import type { IUser } from 'models/typescript';
+import type { IUser, navigateType } from 'models/typescript';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
-
+import { handleError401 } from 'utils/handleErrors';
+handleError401;
+const setLoadingStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    userSlice.actions.setStatus({
+      isLoading: true,
+      isError: false,
+    })
+  );
+};
 interface IUserProps {
   _id: string;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 
 interface IUpdateUserProps extends IUserProps {
@@ -19,12 +28,7 @@ interface IUpdateUserProps extends IUserProps {
 export const fetchGetUsers = (navigate: (path: string) => void) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        userSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken<IUser[]>(`/users`);
       dispatch(
@@ -33,12 +37,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
         })
       );
     } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
+      handleError401(dispatch, e, navigate);
     }
   };
 };
@@ -46,12 +45,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
 export const fetchGetUser = ({ _id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        userSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken<IUser>(`/users/${_id}`);
 
@@ -61,12 +55,7 @@ export const fetchGetUser = ({ _id, navigate }: IUserProps) => {
         })
       );
     } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
+      handleError401(dispatch, e, navigate);
     }
   };
 };
@@ -74,12 +63,7 @@ export const fetchGetUser = ({ _id, navigate }: IUserProps) => {
 export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdateUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        userSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken.put<IUser>(`/users/${_id}`, { login, name, password });
 
@@ -108,12 +92,7 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
 export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        userSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken.delete<IUser>(`/users/${_id}`);
       if (response.status >= 200 && response.status < 300) {
@@ -121,12 +100,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
         dispatch(logout(navigate));
       }
     } catch (e) {
-      if (e instanceof AxiosError) {
-        const code = e.response?.status as number;
-        if (code === 401) {
-          dispatch(logout(navigate));
-        }
-      }
+      handleError401(dispatch, e, navigate);
     }
   };
 };

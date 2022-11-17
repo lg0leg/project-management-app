@@ -1,28 +1,35 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { authSlice } from '../slices/authSlice';
-import { ILoginResponse, IRegisterRequest, IRegisterResponse } from 'models/typescript';
+import {
+  ILoginResponse,
+  IRegisterRequest,
+  IRegisterResponse,
+  navigateType,
+} from 'models/typescript';
 import { AxiosError } from 'axios';
-
+const setLoadingStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    authSlice.actions.setStatus({
+      isLoading: true,
+      isError: false,
+    })
+  );
+};
 interface IPropsRegister {
   data: IRegisterRequest;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 interface IPropsLogin {
   password: string;
   login: string;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 
 export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        authSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await api.post<IRegisterResponse>(`auth/signup`, data);
 
@@ -48,12 +55,7 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
 export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        authSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await api.post<ILoginResponse>(`auth/signin`, {
         login,

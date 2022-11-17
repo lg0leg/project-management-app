@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
 import { StorageKey } from 'constants/storageKey';
-import type { IStatusPayload } from 'models/typescript';
+import type { IStatusPayload, navigateType } from 'models/typescript';
 import { isExpired } from 'react-jwt';
 interface ILogoutPayload {
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 interface ILoginSuccessPayload {
   token: string;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 interface IHandleErrorPayload {
   code: number;

@@ -40,3 +40,5 @@ export interface IStatusPayload {
   isLoading: boolean;
   isError: boolean;
 }
+
+export type navigateType = (path: string) => void;

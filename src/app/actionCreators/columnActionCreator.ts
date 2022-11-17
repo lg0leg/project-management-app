@@ -4,10 +4,19 @@ import { boardSlice } from '../slices/boardSlice';
 import type { IUser } from 'models/typescript';
 import type { IColumn } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
+import type { navigateType } from 'models/typescript';
 
+const setLoadingStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    boardSlice.actions.setStatus({
+      isLoading: true,
+      isError: false,
+    })
+  );
+};
 interface IColumnsProps {
   boardId: string;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 
 interface IColumnProps extends IColumnsProps {
@@ -21,24 +30,18 @@ interface ICreateColumnProps extends IColumnsProps {
 
 interface IUpdateColumnProps {
   column: IColumn;
-  navigate: (path: string) => void;
+  navigate: navigateType;
 }
 
 interface IBoardsByIdsListProps {
-  navigate: (path: string) => void;
+  navigate: navigateType;
   userId: string[];
 }
 
 export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
-
+      setLoadingStatus(dispatch);
       const response = await apiToken<IColumn[]>(`/boards/${boardId}/columns`);
 
       dispatch(
@@ -55,12 +58,7 @@ export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
 export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken<IColumn>(`/boards/${boardId}/columns/${columnId}`);
 
@@ -78,12 +76,7 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
 export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken.post<IColumn>(`/boards/${boardId}/columns/`, {
         title,
@@ -106,12 +99,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   const { _id: columnId, boardId } = column;
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken.put<IColumn>(
         `/boards/${boardId}/columns/${columnId}`,
@@ -135,12 +123,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
 export const fetchDeleteBoard = ({ columnId, navigate, boardId }: IColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      dispatch(
-        boardSlice.actions.setStatus({
-          isLoading: true,
-          isError: false,
-        })
-      );
+      setLoadingStatus(dispatch);
 
       const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns${columnId}`);
 
