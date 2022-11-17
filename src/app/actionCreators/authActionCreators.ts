@@ -1,13 +1,14 @@
 import { api } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { authSlice } from '../slices/authSlice';
-import {
+import type {
   ILoginResponse,
   IRegisterRequest,
   IRegisterResponse,
   navigateType,
 } from 'models/typescript';
 import { AxiosError } from 'axios';
+
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
     authSlice.actions.setStatus({
