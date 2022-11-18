@@ -19,6 +19,12 @@ interface IBoardProps {
   _id: string;
   navigate: navigateType;
 }
+interface ICreateBoardProps {
+  owner: string;
+  title: string;
+  cb?: () => void;
+  navigate: navigateType;
+}
 
 interface IBoardsProps {
   path?: string;
@@ -81,6 +87,27 @@ export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
   };
 };
 
+export const fetchCreateBoard = ({ title, owner, cb, navigate }: ICreateBoardProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.post<IBoard>(`/boards`, { title, owner });
+
+      dispatch(
+        boardSlice.actions.getBoard({
+          board: response.data,
+        })
+      );
+
+      if (response.status >= 200 && response.status < 300 && cb) {
+        cb();
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
 // редактирование доски. Если редактируетсся изнутри, то необходимо передать
 //  fromPage = RoutesPath.Board, иначе fromPage = RoutesPath.Boards
 export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProps) => {
