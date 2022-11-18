@@ -1,8 +1,8 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
-import type { IUser, navigateType } from 'models/typescript';
-import { IBoard } from 'models/dbTypes';
+import type { navigateType } from 'models/typescript';
+import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError401 } from 'utils/handleErrors';
 import { fetchGetColumnsStore } from './columnActionCreator';
@@ -27,6 +27,7 @@ interface ICreateBoardProps {
 }
 
 interface IBoardsProps {
+  cb?: () => void;
   path?: string;
   navigate: navigateType;
 }
@@ -46,12 +47,13 @@ interface IBoardsByIdsListProps {
 }
 
 // получение всех досок (path используется при удалении доски изнутри смотри fetchDeleteBoard)
-export const fetchGetBoards = ({ navigate, path }: IBoardsProps) => {
+export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard[]>(`/boards`);
+      console.log(response.data);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
@@ -59,7 +61,7 @@ export const fetchGetBoards = ({ navigate, path }: IBoardsProps) => {
             boards: response.data,
           })
         );
-
+        if (cb) cb();
         if (path) navigate(path);
       }
     } catch (e) {
@@ -91,9 +93,11 @@ export const fetchCreateBoard = ({ title, owner, cb, navigate }: ICreateBoardPro
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
+      console.log('title', title);
+      console.log('owner', owner);
 
-      const response = await apiToken.post<IBoard>(`/boards`, { title, owner });
-
+      const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users: [] });
+      console.log('create', response.data);
       dispatch(
         boardSlice.actions.getBoard({
           board: response.data,

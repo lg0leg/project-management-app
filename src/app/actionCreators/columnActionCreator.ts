@@ -1,8 +1,7 @@
 import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { columnSlice } from '../slices/columnSlice';
-import type { IUser } from 'models/typescript';
-import type { IColumn } from 'models/dbTypes';
+import type { IColumn, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetTasksStore } from './taskActionCreator';

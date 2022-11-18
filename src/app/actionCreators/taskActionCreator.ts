@@ -1,8 +1,7 @@
 import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { taskSlice } from '../slices/taskSlice';
-import type { IUser } from 'models/typescript';
-import type { ITask } from 'models/dbTypes';
+import type { ITask, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 

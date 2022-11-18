@@ -1,7 +1,8 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { userSlice } from '../slices/userSlice';
-import type { IUser, navigateType } from 'models/typescript';
+import type { navigateType } from 'models/typescript';
+import { IUser } from 'models/dbTypes';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 import { handleError401 } from 'utils/handleErrors';
@@ -17,12 +18,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
 interface IUserProps {
   _id: string;
   navigate: navigateType;
+  cb?: () => void;
 }
 
 interface IUpdateUserProps extends IUserProps {
   login: string;
   name: string;
   password: string;
+  cb?: () => void;
 }
 
 export const fetchGetUsers = (navigate: (path: string) => void) => {
@@ -42,18 +45,22 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
   };
 };
 
-export const fetchGetUser = ({ _id, navigate }: IUserProps) => {
+export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IUser>(`/users/${_id}`);
-
+      console.log(response.data);
       dispatch(
         userSlice.actions.getUser({
           user: response.data,
         })
       );
+
+      if (response.status >= 200 && response.status < 300 && cb) {
+        cb();
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

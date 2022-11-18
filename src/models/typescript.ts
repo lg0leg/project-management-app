@@ -30,11 +30,11 @@ export interface IToken {
   exp: number;
 }
 
-export interface IUser {
-  _id: string;
-  name: string;
-  login: string;
-}
+// export interface IUser {
+//   _id: string;
+//   name: string;
+//   login: string;
+// }
 
 export interface IHandleErrorPayload {
   code: number;
