@@ -22,6 +22,7 @@ interface IBoardProps {
 interface ICreateBoardProps {
   owner: string;
   title: string;
+  users: string[];
   cb?: () => void;
   navigate: navigateType;
 }
@@ -89,14 +90,14 @@ export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
   };
 };
 
-export const fetchCreateBoard = ({ title, owner, cb, navigate }: ICreateBoardProps) => {
+export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
       console.log('title', title);
       console.log('owner', owner);
 
-      const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users: [] });
+      const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
       console.log('create', response.data);
       dispatch(
         boardSlice.actions.getBoard({
