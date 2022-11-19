@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import { IFile, ITask } from 'models/dbTypes';
@@ -17,9 +17,15 @@ const filesListMocks: IFile[] = [
 interface ITaskProps {
   task: ITask;
   index: number;
+  openModal: (
+    event: MouseEvent<HTMLButtonElement>,
+    modalType: string,
+    modalTargetId?: string,
+    modalTargetType?: string
+  ) => void;
 }
 
-export const Task: FC<ITaskProps> = ({ task, index }: ITaskProps) => {
+export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
   const [lang, setLang] = useState('en');
   return (
     <Draggable draggableId={task._id} index={index}>
@@ -35,13 +41,17 @@ export const Task: FC<ITaskProps> = ({ task, index }: ITaskProps) => {
             <div className="ml-2 flex flex-row">
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={() => {}}
+                onClick={(e) => {
+                  openModal(e, 'modal-edit', task._id, 'task');
+                }}
               >
                 <BiEdit className="h-5 w-5" />
               </button>
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={() => {}}
+                onClick={(e) => {
+                  openModal(e, 'modal-delete', task._id, 'task');
+                }}
               >
                 <BiTrash className="h-5 w-5" />
               </button>

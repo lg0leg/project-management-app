@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
 import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
@@ -6,6 +6,10 @@ import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { MdAdd } from 'react-icons/md';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
+import Popup from 'components/popup/popup';
+import { DeleteConformation } from 'components/DeleteConformation';
+import AddModalContent from 'components/AddModalContent';
+import { ModalTypes } from 'constants/modalTypes';
 
 export const usersListmocks: IUser[] = [
   {
@@ -134,6 +138,44 @@ export const boardsListMocks: IBoard[] = [
 export const Board: FC = () => {
   const { id } = useParams();
   const { lang } = useAppSelector((state) => state.langReducer);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [modalTargetId, setModalTargetId] = useState('');
+  const [modalTargetType, setModalTargetType] = useState('');
+
+  const openModal = (
+    event: MouseEvent<HTMLButtonElement>,
+    modalType: string,
+    modalTargetId?: string,
+    modalTargetType?: string
+  ) => {
+    event.preventDefault();
+    setModalType(modalType);
+    setModalOpen(true);
+    if (modalTargetId) setModalTargetId(modalTargetId);
+    if (modalTargetType) setModalTargetType(modalTargetType);
+  };
+
+  const onConfirm = () => {
+    if (ModalTypes.ADD === modalType) {
+      return;
+    }
+    if (ModalTypes.EDIT === modalType) {
+      console.log(2);
+      return;
+    }
+    if (ModalTypes.DELETE === modalType) {
+      console.log('deleted');
+      setModalType('');
+      setModalOpen(false);
+    }
+  };
+
+  const onCancel = () => {
+    setModalType('');
+    setModalOpen(false);
+  };
+
   const [board, setBoard] = useState(boardsListMocks);
   const [columns, setColumns] = useState(columnListMocks);
   const [tasks, setTasks] = useState(tasksListMocks);
@@ -202,45 +244,59 @@ export const Board: FC = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-        <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-          {board[0].title}
-        </h1>
-        <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
-          {(provided) => (
-            <div
-              className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {columns
-                .sort((col1, col2) => col1.order - col2.order)
-                .map((column, index) => {
-                  return (
-                    <Column
-                      key={column._id}
-                      index={index}
-                      column={column}
-                      tasks={tasks.filter((task) => task.columnId === column._id)}
-                    />
-                  );
-                })}
-              {provided.placeholder}
-              <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
-                <button
-                  className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
-                  onClick={() => {}}
-                >
-                  <MdAdd />
-                  {lang === LangKey.EN ? 'Add new column' : 'Добавить колонку'}
-                </button>
+    <>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
+          <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
+            {board[0].title}
+          </h1>
+          <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
+            {(provided) => (
+              <div
+                className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {columns
+                  .sort((col1, col2) => col1.order - col2.order)
+                  .map((column, index) => {
+                    return (
+                      <Column
+                        key={column._id}
+                        index={index}
+                        column={column}
+                        tasks={tasks.filter((task) => task.columnId === column._id)}
+                        openModal={openModal}
+                      />
+                    );
+                  })}
+                {provided.placeholder}
+                <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
+                  <button
+                    className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
+                    onClick={(e) => {
+                      openModal(e, 'modal-add', '', 'column');
+                    }}
+                  >
+                    <MdAdd />
+                    {lang === LangKey.EN ? 'Add new column' : 'Добавить колонку'}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </Droppable>
-      </div>
-    </DragDropContext>
+            )}
+          </Droppable>
+        </div>
+      </DragDropContext>
+      <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
+        {modalType === ModalTypes.ADD && (
+          <AddModalContent type={modalTargetType} onCancel={onCancel} />
+        )}
+        {modalType === ModalTypes.EDIT}
+        {modalType === ModalTypes.DELETE && (
+          <DeleteConformation type={modalTargetType} onConfirm={onConfirm} onCancel={onCancel} />
+        )}
+      </Popup>
+    </>
   );
 };
 
