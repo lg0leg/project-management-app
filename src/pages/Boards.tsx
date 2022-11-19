@@ -1,5 +1,5 @@
 import { useAppSelector } from 'app/hooks';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -28,6 +28,17 @@ export const Boards: FC = () => {
   const [boards, setBoards] = useState(boardsDataArr);
   const [grid, setGrid] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const gridLS = localStorage.getItem('gridLS');
+    if (gridLS) {
+      setGrid(JSON.parse(gridLS));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('gridLS', JSON.stringify(grid));
+  }, [grid]);
 
   const gridButtonStyle = grid == 'grid' ? 'rgb(59, 130, 246, 1)' : 'rgb(0, 0, 0, 0.5)';
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
