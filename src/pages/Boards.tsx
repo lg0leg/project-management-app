@@ -6,6 +6,7 @@ import React, { FC, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { isExpired } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
+import Spinner from 'components/Spinner';
 
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
@@ -13,6 +14,7 @@ export const Boards: FC = () => {
   const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
+  const isLoading = isLoadingBoards || isLoadingUsers;
   useEffect(() => {
     if (isExpired(token)) {
       dispatch(logout(navigate));
@@ -39,6 +41,7 @@ export const Boards: FC = () => {
   return (
     <>
       <h2>Boards Page</h2>
+      {isLoading && <Spinner />}
       <div className="flex gap-2">
         {boards.map(({ title: titleJSON, owner: ownerId, users: usersId, _id: boardId }) => {
           const { title, description } = JSON.parse(titleJSON);
