@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { BiEdit, BiTrash } from 'react-icons/bi';
-import { IFile, ITask, IUser } from 'models/dbTypes';
-import { Draggable } from 'react-beautiful-dnd';
+import { IFile, ITask } from 'models/dbTypes';
+import { Draggable } from '@hello-pangea/dnd';
 
 const filesListMocks: IFile[] = [
   {
@@ -17,15 +17,21 @@ const filesListMocks: IFile[] = [
 interface ITaskProps {
   task: ITask;
   index: number;
+  openModal: (
+    event: MouseEvent<HTMLButtonElement>,
+    modalType: string,
+    modalTargetId?: string,
+    modalTargetType?: string
+  ) => void;
 }
 
-export const Task: FC<ITaskProps> = ({ task, index }: ITaskProps) => {
+export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
   const [lang, setLang] = useState('en');
   return (
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
         <div
-          className="mb-4 flex max-w-[21rem] cursor-move flex-col rounded-lg bg-white p-5 shadow last:mb-0"
+          className="my-2 flex max-w-[21rem] cursor-move flex-col rounded-lg bg-white p-5 shadow last:mb-0"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
@@ -35,13 +41,17 @@ export const Task: FC<ITaskProps> = ({ task, index }: ITaskProps) => {
             <div className="ml-2 flex flex-row">
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={() => {}}
+                onClick={(e) => {
+                  openModal(e, 'modal-edit', task._id, 'task');
+                }}
               >
                 <BiEdit className="h-5 w-5" />
               </button>
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={() => {}}
+                onClick={(e) => {
+                  openModal(e, 'modal-delete', task._id, 'task');
+                }}
               >
                 <BiTrash className="h-5 w-5" />
               </button>
