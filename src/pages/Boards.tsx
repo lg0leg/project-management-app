@@ -25,7 +25,9 @@ const boardsDataArr = [
 
 export const Boards: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const [boards, setBoards] = useState(boardsDataArr);
   const [grid, setGrid] = useState('grid');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const gridButtonStyle = grid == 'grid' ? 'rgb(59, 130, 246, 1)' : 'rgb(0, 0, 0, 0.5)';
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
@@ -33,26 +35,44 @@ export const Boards: FC = () => {
   return (
     <>
       <section className="min-h-[calc(100vh-100px-80px)] bg-gray-50 ">
-        <div className="flex h-[50px] w-full items-center justify-between px-[20px]  sm:h-[70px] sm:px-[200px]">
+        <div className="flex h-[50px] w-full items-center justify-between gap-[20px] px-[20px] sm:h-[70px] md:px-[100px] lg:px-[200px]">
           <h2 className="text-2xl font-semibold text-gray-600 sm:text-3xl">
             {lang == 'en' ? 'Boards' : 'Доски'}
           </h2>
-          {/* <div>(some filters)</div> */}
-          <div className="flex gap-[5px]">
-            <button className="hover:scale-105 active:scale-95" onClick={() => setGrid('grid')}>
-              <CiGrid41 size={25} color={gridButtonStyle} />
-            </button>
-            <button
-              className="rotate-90 hover:scale-105 active:scale-95"
-              onClick={() => setGrid('list')}
-            >
-              <CiGrid2V size={25} color={listButtonStyle} />
-            </button>
+          <div className="flex gap-[20px]">
+            <input
+              className="w-[100px] rounded border-2 border-gray-200 bg-gray-50 pl-[5px] text-gray-500 focus:border-blue-400 focus:outline-none sm:w-[200px]"
+              type="search"
+              name="search"
+              placeholder={lang == 'en' ? 'Search' : 'Поиск'}
+              value={searchQuery}
+              onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+                setSearchQuery(value.toLowerCase());
+              }}
+            />
+            <div className="flex gap-[5px]">
+              <button className="hover:scale-105 active:scale-95" onClick={() => setGrid('grid')}>
+                <CiGrid41 size={25} color={gridButtonStyle} />
+              </button>
+              <button
+                className="rotate-90 hover:scale-105 active:scale-95"
+                onClick={() => setGrid('list')}
+              >
+                <CiGrid2V size={25} color={listButtonStyle} />
+              </button>
+            </div>
           </div>
         </div>
         {grid == 'grid' ? (
           <div className="flex flex-wrap justify-center gap-[30px] px-[20px] pb-[20px]">
-            {boardsDataArr.map((item) => (
+            {(searchQuery == ''
+              ? boards
+              : boards.filter(
+                  (item) =>
+                    item.title.toLowerCase().includes(searchQuery) ||
+                    item.description.toLowerCase().includes(searchQuery)
+                )
+            ).map((item) => (
               <BoardsCardGrid
                 title={item.title}
                 description={item.description}
@@ -63,7 +83,14 @@ export const Boards: FC = () => {
           </div>
         ) : (
           <div className="grid gap-[20px] px-[30px] pb-[20px]">
-            {boardsDataArr.map((item) => (
+            {(searchQuery == ''
+              ? boards
+              : boards.filter(
+                  (item) =>
+                    item.title.toLowerCase().includes(searchQuery) ||
+                    item.description.toLowerCase().includes(searchQuery)
+                )
+            ).map((item) => (
               <BoardsCardList
                 title={item.title}
                 description={item.description}
@@ -118,7 +145,6 @@ function BoardsCardList(props: { title: string; description: string; id: string 
 
   return (
     <article
-      // className="relative grid h-[100px] w-full cursor-pointer grid-cols-[50px_1fr_6fr] items-center rounded-lg bg-white p-[20px] pr-[50px] shadow hover:shadow-blue-500/100"
       className="relative grid h-[100px] w-full cursor-pointer grid-cols-[50px_1fr] items-center rounded-lg bg-white p-[10px] shadow hover:shadow-blue-500/100 sm:grid-cols-[50px_1fr_6fr] sm:p-[20px] sm:pr-[50px]"
       onClick={() => {
         const path = `board/${props.id}`;
