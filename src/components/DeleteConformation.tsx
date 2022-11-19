@@ -1,6 +1,6 @@
+import { FC } from 'react';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
-import { FC } from 'react';
 import { Button } from './Button';
 
 interface IDeleteConformationProps {
@@ -11,9 +11,10 @@ interface IDeleteConformationProps {
 
 export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfirm, onCancel }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
+
   return (
-    <div className="overflow-y-auto overflow-x-hidden p-4 md:inset-0 md:h-full">
-      <div className="relative h-full w-full max-w-md md:h-auto">
+    <div className="overflow-y-auto overflow-x-hidden p-4">
+      <div className="relative h-full w-full max-w-md ">
         <div className="relative rounded-lg bg-white shadow">
           <button
             onClick={onCancel}
@@ -53,10 +54,10 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
             <h3 className="mb-5 text-lg font-normal text-gray-500">
               Are you sure you want to delete this {type}?
             </h3>
-            <Button onClick={onConfirm} color="red">
+            <Button color="red" onClick={onConfirm}>
               {lang === LangKey.EN ? 'Delete' : 'Удалить'}
             </Button>
-            <Button onClick={onCancel} color="alternative">
+            <Button color="alternative" onClick={onCancel}>
               {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
             </Button>
           </div>
