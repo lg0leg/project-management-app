@@ -32,7 +32,9 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
               <AiOutlineExclamationCircle size={56} />
             </div>
             <h3 className="mb-5 text-lg font-normal text-gray-500">
-              Are you sure you want to delete this {type}?
+              {lang === LangKey.EN
+                ? `Are you sure you want to delete this ${type}?`
+                : `Вы уверены что хотите удалить ${type}?`}
             </h3>
             <Button color="red" onClick={onConfirm}>
               {lang === LangKey.EN ? 'Delete' : 'Удалить'}

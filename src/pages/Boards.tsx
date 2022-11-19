@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { BiTrash } from 'react-icons/bi';
+import DeleteConformation from 'components/DeleteConformation';
+import Popup from 'components/popup/popup';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
@@ -29,6 +31,9 @@ export const Boards: FC = () => {
   const [grid, setGrid] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [currentBoardId, setCurrentBoard] = useState('');
+
   useEffect(() => {
     const gridLS = localStorage.getItem('gridLS');
     if (gridLS) {
@@ -42,6 +47,16 @@ export const Boards: FC = () => {
 
   const gridButtonStyle = grid == 'grid' ? 'rgb(59, 130, 246, 1)' : 'rgb(0, 0, 0, 0.5)';
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
+
+  const onConfirm = () => {
+    // console.log('delete: ' + currentBoardId);
+    // delete currentBoardId
+    setPopupVisible(false);
+  };
+
+  const onCancel = () => {
+    setPopupVisible(false);
+  };
 
   return (
     <>
@@ -88,6 +103,8 @@ export const Boards: FC = () => {
                 title={item.title}
                 description={item.description}
                 id={item.id}
+                setPopupVisible={setPopupVisible}
+                setCurrentBoard={setCurrentBoard}
                 key={item.id}
               />
             ))}
@@ -106,17 +123,33 @@ export const Boards: FC = () => {
                 title={item.title}
                 description={item.description}
                 id={item.id}
+                setPopupVisible={setPopupVisible}
+                setCurrentBoard={setCurrentBoard}
                 key={item.id}
               />
             ))}
           </div>
         )}
+
+        <Popup popupVisible={popupVisible} setPopupVisible={setPopupVisible}>
+          <DeleteConformation
+            type={lang == 'en' ? 'board' : 'эту доску'}
+            onConfirm={onConfirm}
+            onCancel={onCancel}
+          />
+        </Popup>
       </section>
     </>
   );
 };
 
-function BoardsCardGrid(props: { title: string; description: string; id: string }) {
+function BoardsCardGrid(props: {
+  title: string;
+  description: string;
+  id: string;
+  setPopupVisible: (arg: boolean) => void;
+  setCurrentBoard: (arg: string) => void;
+}) {
   const navigate = useNavigate();
 
   return (
@@ -137,7 +170,8 @@ function BoardsCardGrid(props: { title: string; description: string; id: string 
         className="absolute top-[20px] right-[20px] hover:scale-105 active:scale-95"
         onClick={(e) => {
           e.stopPropagation();
-          // delete card
+          props.setCurrentBoard(props.id);
+          props.setPopupVisible(true);
         }}
       >
         <BiTrash size={20} color="rgb(107, 114, 128, 1)" />
@@ -151,7 +185,13 @@ function BoardsCardGrid(props: { title: string; description: string; id: string 
   );
 }
 
-function BoardsCardList(props: { title: string; description: string; id: string }) {
+function BoardsCardList(props: {
+  title: string;
+  description: string;
+  id: string;
+  setPopupVisible: (arg: boolean) => void;
+  setCurrentBoard: (arg: string) => void;
+}) {
   const navigate = useNavigate();
 
   return (
@@ -176,7 +216,8 @@ function BoardsCardList(props: { title: string; description: string; id: string 
         className="absolute top-[15px] right-[20px] hover:scale-105 active:scale-95 sm:top-[40px]"
         onClick={(e) => {
           e.stopPropagation();
-          // delete card
+          props.setCurrentBoard(props.id);
+          props.setPopupVisible(true);
         }}
       >
         <BiTrash size={20} color="rgb(107, 114, 128, 1)" />
