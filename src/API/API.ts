@@ -1,8 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BASE_URL } from 'constants/baseUrl';
 import { StorageKey } from 'constants/storageKey';
-
-const token = localStorage.getItem(StorageKey.TOKEN);
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -10,7 +8,17 @@ export const api = axios.create({
 
 export const apiToken = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
 });
+
+apiToken.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem(StorageKey.TOKEN);
+    if (token) {
+      if (config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error: AxiosError) => console.log(error)
+);

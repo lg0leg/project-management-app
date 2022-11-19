@@ -3,15 +3,28 @@ import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
 import { IBoard, IUser } from 'models/dbTypes';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { isExpired } from 'react-jwt';
+import { logout } from 'app/actionCreators/authActionCreators';
 
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { token } = useAppSelector((state) => state.authReducer);
   useEffect(() => {
-    dispatch(fetchGetUsers(navigate));
-    dispatch(fetchGetBoards({ navigate }));
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    }
+  });
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    } else {
+      dispatch(fetchGetUsers(navigate));
+      dispatch(fetchGetBoards({ navigate }));
+    }
   }, []);
 
   const deleteBoard = (_id: string) => {
@@ -36,6 +49,9 @@ export const Boards: FC = () => {
             .join(', ');
           return (
             <div key={boardId} className="w-[400px] border-2">
+              <Link className="w-[100px] bg-blue-300 py-2" to={`/board/${boardId}`}>
+                open board
+              </Link>
               <button className="w-[100px] bg-red-300 py-2" onClick={() => deleteBoard(boardId)}>
                 delete
               </button>
