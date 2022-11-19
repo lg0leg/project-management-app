@@ -3,7 +3,8 @@ import React, { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
-import { BiEdit, BiTrash } from 'react-icons/bi';
+import { BiTrash } from 'react-icons/bi';
+// import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
 const boardsDataArr = [
@@ -11,12 +12,12 @@ const boardsDataArr = [
   { title: 'Board 2', description: 'description2', id: 'jnkjlkcv2' },
   { title: 'Board 3', description: 'description3', id: 'dsghghj3' },
   { title: 'Board 4', description: 'description4', id: 'jnlkcv4' },
-  { title: 'Board 5', description: 'description5', id: 'dsghjhqda5' },
+  { title: 'Tasks for today', description: 'description5', id: 'dsghjhqda5' },
   {
     title:
       'Cras dui nisl, dignissim nec tincidunt eget, varius non nisi. Aliquam libero nibh, condimentum ac erat sed, aliquam facilisis ex',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac viverra diam. Integer at mauris libero. Vestibulum elementum, velit a porttitor blandit, nisl lacus porttitor elit, eget placerat ante augue nec nulla.',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac viverra diam. Integer at mauris libero. Vestibulum elementum, velit a porttitor blandit, nisl lacus porttitor elit, eget placerat ante augue nec nulla. Cras dui nisl, dignissim nec tincidunt eget, varius non nisi. Aliquam libero nibh, condimentum ac erat sed, aliquam facilisis ex',
     id: 'dsghjhkhksghj6',
   },
   { title: 'Board 7', description: 'description7', id: 'jnkjlkcv7' },
@@ -49,27 +50,40 @@ export const Boards: FC = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-[30px] px-[20px] pb-[20px]">
-          {boardsDataArr.map((item) => (
-            <BoardsCard
-              title={item.title}
-              description={item.description}
-              id={item.id}
-              key={item.id}
-            />
-          ))}
-        </div>
+        {grid == 'grid' ? (
+          <div className="flex flex-wrap justify-center gap-[30px] px-[20px] pb-[20px]">
+            {boardsDataArr.map((item) => (
+              <BoardsCardGrid
+                title={item.title}
+                description={item.description}
+                id={item.id}
+                key={item.id}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-[20px] px-[30px] pb-[20px]">
+            {boardsDataArr.map((item) => (
+              <BoardsCardList
+                title={item.title}
+                description={item.description}
+                id={item.id}
+                key={item.id}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
 };
 
-function BoardsCard(props: { title: string; description: string; id: string }) {
+function BoardsCardGrid(props: { title: string; description: string; id: string }) {
   const navigate = useNavigate();
 
   return (
     <article
-      className="relative h-[200px] w-[300px] cursor-pointer rounded-lg bg-white p-[20px] text-center shadow"
+      className="relative h-[200px] w-[300px] cursor-pointer rounded-lg bg-white p-[20px] text-center shadow hover:shadow-blue-500/100"
       onClick={() => {
         const path = `board/${props.id}`;
         navigate(path);
@@ -91,10 +105,45 @@ function BoardsCard(props: { title: string; description: string; id: string }) {
         <BiTrash size={20} color="rgb(107, 114, 128, 1)" />
       </button>
       <textarea
-        className="text-md mt-[10px] h-[110px] w-full resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none"
+        className="text-md mt-[10px] h-[110px] w-full cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none"
         value={props.description}
         readOnly
       />
+    </article>
+  );
+}
+
+function BoardsCardList(props: { title: string; description: string; id: string }) {
+  const navigate = useNavigate();
+
+  return (
+    <article
+      // className="relative grid h-[100px] w-full cursor-pointer grid-cols-[50px_1fr_6fr] items-center rounded-lg bg-white p-[20px] pr-[50px] shadow hover:shadow-blue-500/100"
+      className="relative grid h-[100px] w-full cursor-pointer grid-cols-[50px_1fr] items-center rounded-lg bg-white p-[10px] shadow hover:shadow-blue-500/100 sm:grid-cols-[50px_1fr_6fr] sm:p-[20px] sm:pr-[50px]"
+      onClick={() => {
+        const path = `board/${props.id}`;
+        navigate(path);
+      }}
+    >
+      <HiOutlineClipboardList size={40} color="rgb(59, 130, 246, 1)" />
+
+      <h3 className="truncate text-xl font-semibold text-gray-700">{props.title}</h3>
+
+      <textarea
+        className="text-md col-span-2 h-[40px] cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none sm:col-auto sm:h-[60px]"
+        value={props.description}
+        readOnly
+      />
+
+      <button
+        className="absolute top-[15px] right-[20px] hover:scale-105 active:scale-95 sm:top-[40px]"
+        onClick={(e) => {
+          e.stopPropagation();
+          // delete card
+        }}
+      >
+        <BiTrash size={20} color="rgb(107, 114, 128, 1)" />
+      </button>
     </article>
   );
 }
