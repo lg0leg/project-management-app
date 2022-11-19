@@ -4,7 +4,8 @@ interface IButtonProps {
   children?: ReactNode;
   color?: string;
   customClasses?: string;
-  onClick: () => void;
+  type?: 'button' | 'submit' | 'reset' | undefined;
+  onClick?: () => void;
 }
 
 interface Colors {
@@ -15,6 +16,7 @@ export const Button: FC<IButtonProps> = ({
   children,
   color = 'deafault',
   customClasses,
+  type = 'button',
   onClick,
 }) => {
   const colors: Colors = {
@@ -30,6 +32,7 @@ export const Button: FC<IButtonProps> = ({
   };
   return (
     <button
+      type={type}
       className={
         !customClasses
           ? `mx-2 rounded-lg px-5 py-2.5 text-sm font-medium focus:outline-none focus:ring-4 ${colors[color]}`
