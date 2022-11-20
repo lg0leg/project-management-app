@@ -3,7 +3,7 @@ import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import { Button } from './Button';
 import { AiOutlineExclamationCircle } from 'react-icons/ai';
-import { HiXMark } from 'react-icons/hi2';
+import { IoClose } from 'react-icons/io5';
 
 interface IDeleteConformationProps {
   type: string;
@@ -23,7 +23,7 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
             className="absolute top-3 right-2.5 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
           >
             <div className="h-5 w-5">
-              <HiXMark size={20} />
+              <IoClose size={20} />
             </div>
             <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
           </button>
