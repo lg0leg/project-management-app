@@ -161,7 +161,7 @@ function BoardsCardGrid(props: {
       }}
     >
       <div className="flex items-center gap-[5px]">
-        <HiOutlineClipboardList size={40} color="rgb(59, 130, 246, 1)" />
+        <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
         <h3 className="max-w-[210px] truncate text-xl font-semibold text-gray-700">
           {props.title}
         </h3>
@@ -177,7 +177,7 @@ function BoardsCardGrid(props: {
         <BiTrash size={20} color="rgb(107, 114, 128, 1)" />
       </button>
       <textarea
-        className="text-md mt-[10px] h-[110px] w-full cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none"
+        className="text-md mt-[15px] h-[110px] w-full cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none"
         value={props.description}
         readOnly
       />
@@ -202,7 +202,7 @@ function BoardsCardList(props: {
         navigate(path);
       }}
     >
-      <HiOutlineClipboardList size={40} color="rgb(59, 130, 246, 1)" />
+      <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
 
       <h3 className="truncate text-xl font-semibold text-gray-700">{props.title}</h3>
 
