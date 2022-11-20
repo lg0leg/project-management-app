@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 import Switcher from './switcher/switcher';
-import { HiOutlineHome } from 'react-icons/hi';
+import { HiOutlineHome, HiOutlineClipboardList } from 'react-icons/hi';
 import { NavLink } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
 import { BiAddToQueue } from 'react-icons/bi';
@@ -40,10 +40,15 @@ export default function Header() {
       className="transition-height sticky top-0 z-50 grid h-[100px] w-full grid-cols-[1fr] items-center bg-slate-100 px-[20px] duration-500 sm:grid-cols-[1fr_1fr_1fr]"
       ref={headerRef}
     >
-      <div className="flex gap-[20px] ">
+      <div className="flex gap-[10px] ">
         {isAuth == true ? (
           <NavLink to={RoutesPath.WELCOME}>
             <HiOutlineHome size={40} color="rgb(59, 130, 246, 1)" />
+          </NavLink>
+        ) : null}
+        {isAuth == true ? (
+          <NavLink to={RoutesPath.BOARDS}>
+            <HiOutlineClipboardList size={40} color="rgb(59, 130, 246, 1)" />
           </NavLink>
         ) : null}
         <div className="flex items-center gap-3 text-xl">
