@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 import { decodeToken } from 'react-jwt';
 import type { IToken } from 'models/typescript';
 import { IUser } from 'models/dbTypes';
+import { RoutesPath } from 'constants/routes';
+import { useLocation } from 'react-router-dom';
 
 export default function CreateBoardPopup(props: {
   popupVisible: boolean;
@@ -17,10 +19,12 @@ export default function CreateBoardPopup(props: {
   const [description, setDescription] = useState('');
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
+  const location = useLocation();
   const hidePopup = () => {
     setTitle('');
     setDescription('');
     props.setPopupVisible(false);
+    if (location.pathname !== RoutesPath.BOARDS) navigate(RoutesPath.BOARDS);
   };
 
   const createBoard = () => {
