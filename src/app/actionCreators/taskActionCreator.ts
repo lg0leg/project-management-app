@@ -160,13 +160,16 @@ export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksS
           apiToken<ITask[]>(`/boards/${boardId}/columns/${columnId}/tasks`)
         )
       ).then((response) => {
-        console.log(response);
-
-        // dispatch(
-        //   taskSlice.actions.getTasks({
-        //     tasks: response[],
-        //   })
-        // );
+        const allTasks: ITask[] = [];
+        response.forEach((columnsTasks) => {
+          allTasks.push(...columnsTasks.data);
+        });
+        console.log(allTasks);
+        dispatch(
+          taskSlice.actions.getTasks({
+            tasks: allTasks,
+          })
+        );
       });
     } catch (e) {
       handleError401(dispatch, e, navigate);
