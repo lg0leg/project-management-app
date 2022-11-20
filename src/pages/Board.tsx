@@ -1,15 +1,22 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
 import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { MdAdd } from 'react-icons/md';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import Popup from 'components/popup/popup';
 import { DeleteConformation } from 'components/DeleteConformation';
 import AddModalContent from 'components/AddModalContent';
 import { ModalTypes } from 'constants/modalTypes';
+import { fetchGetAllBoardStore } from 'app/actionCreators/boardActionCreator';
+import { isExpired } from 'react-jwt';
+import { logout } from 'app/actionCreators/authActionCreators';
+import Spinner from 'components/Spinner';
+import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
+import { RoutesPath } from 'constants/routes';
+import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
 
 export const usersListmocks: IUser[] = [
   {
@@ -158,6 +165,7 @@ export const Board: FC = () => {
 
   const onConfirm = () => {
     if (ModalTypes.ADD === modalType) {
+      console.log('create column');
       return;
     }
     if (ModalTypes.EDIT === modalType) {
@@ -176,9 +184,31 @@ export const Board: FC = () => {
     setModalOpen(false);
   };
 
-  const [board, setBoard] = useState(boardsListMocks);
-  const [columns, setColumns] = useState(columnListMocks);
-  const [tasks, setTasks] = useState(tasksListMocks);
+  const _id = id ?? '';
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
+  const { board, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
+  const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
+  const { tasks, isLoading: isLoadingTasks } = useAppSelector((state) => state.taskReducer);
+  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { token } = useAppSelector((state) => state.authReducer);
+  const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
+  const copyColumns = [...columns];
+  console.log(columns);
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    }
+  });
+
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    } else {
+      dispatch(fetchGetUsers(navigate));
+      dispatch(fetchGetAllBoardStore({ _id, navigate }));
+    }
+  }, []);
 
   const onDragEnd = (dropResult: DropResult) => {
     const { source, destination, type, draggableId } = dropResult;
@@ -214,12 +244,12 @@ export const Board: FC = () => {
           return { ...task, columnId: destination!.droppableId, order: destination!.index };
         }
       });
-      setTasks(newtasks);
+      dispatch(fetchGetAllBoardStore({ _id, navigate }));
     }
     if (type === 'COLUMN') {
       const draggedColumnId = draggableId.split('.')[1];
       if (source.droppableId === destination.droppableId) {
-        const newColumns: IColumn[] = columns.map((column) => {
+        const newColumns: IColumn[] = copyColumns.map((column) => {
           if (column._id !== draggedColumnId) {
             if (
               source.index > destination.index &&
@@ -238,7 +268,7 @@ export const Board: FC = () => {
             return { ...column, order: destination!.index };
           }
         });
-        setColumns(newColumns);
+        dispatch(fetchGetAllBoardStore({ _id, navigate }));
       }
     }
   };
@@ -248,7 +278,7 @@ export const Board: FC = () => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
           <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-            {board[0].title}
+            {board.title}
           </h1>
           <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
             {(provided) => (
@@ -257,7 +287,7 @@ export const Board: FC = () => {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
-                {columns
+                {copyColumns
                   .sort((col1, col2) => col1.order - col2.order)
                   .map((column, index) => {
                     return (
