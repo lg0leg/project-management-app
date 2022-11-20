@@ -29,13 +29,10 @@ export interface IToken {
   iat: number;
   exp: number;
 }
-
-// export interface IUser {
-//   _id: string;
-//   name: string;
-//   login: string;
-// }
-
+export interface ITitleJSON {
+  title: string;
+  description: string;
+}
 export interface IHandleErrorPayload {
   code: number;
 }
