@@ -4,6 +4,7 @@ import { taskSlice } from '../slices/taskSlice';
 import type { ITask, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
+import { fetchGetAllBoardStore } from './boardActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -94,13 +95,7 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(
-          fetchGetTasks({
-            boardId,
-            columnId,
-            navigate,
-          })
-        );
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);
@@ -119,13 +114,7 @@ export const fetchUpdateTask = ({ boardId, columnId, _id, task, navigate }: IUpd
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(
-          fetchGetTasks({
-            boardId,
-            columnId,
-            navigate,
-          })
-        );
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);
@@ -143,7 +132,7 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetTasks({ navigate, boardId, columnId }));
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);

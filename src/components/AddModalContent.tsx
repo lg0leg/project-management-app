@@ -6,8 +6,10 @@ import { HiXMark } from 'react-icons/hi2';
 import { Button } from './Button';
 import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
 import { useParams } from 'react-router-dom';
+import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
 
 interface IAddModalContentProps {
+  columnId?: string;
   type: string;
   onCancel: () => void;
   children?: ReactNode;
@@ -16,15 +18,17 @@ interface IAddModalContentProps {
 export interface ITmp {
   title: string;
 }
-useParams;
-export const AddModalContent: FC<IAddModalContentProps> = ({ type, onCancel }) => {
+
+export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onCancel }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { columns } = useAppSelector((state) => state.columnReducer);
+  const { tasks } = useAppSelector((state) => state.taskReducer);
+  const { user } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams();
-
   const _id = id ?? '';
+
   const {
     register,
     handleSubmit,
@@ -33,8 +37,24 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, onCancel }) =
 
   const onSubmit: SubmitHandler<ITmp> = (data) => {
     console.log('submited: ', data);
+    console.log('type: ', type);
     const { title } = data;
-    dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
+    if ((type = 'column')) {
+      dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
+    }
+    if ((type = 'task')) {
+      const initUsers: string[] = [];
+      const taskData = {
+        title,
+        description: 'some description',
+        order: tasks.filter((task) => task.columnId === columnId).length,
+        userId: +user._id,
+        users: initUsers,
+      };
+      const column_Id = columnId ?? '';
+      dispatch(fetchCreateTask({ boardId: _id, columnId: column_Id, task: taskData, navigate }));
+    }
+
     onCancel();
     // const { login, password } = data;
     // dispatch(fetchLogin({ login, password, navigate }));
