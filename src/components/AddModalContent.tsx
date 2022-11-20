@@ -1,9 +1,11 @@
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import { FC, ReactNode } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { HiXMark } from 'react-icons/hi2';
 import { Button } from './Button';
+import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
+import { useParams } from 'react-router-dom';
 
 interface IAddModalContentProps {
   type: string;
@@ -14,10 +16,15 @@ interface IAddModalContentProps {
 export interface ITmp {
   title: string;
 }
-
+useParams;
 export const AddModalContent: FC<IAddModalContentProps> = ({ type, onCancel }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const { columns } = useAppSelector((state) => state.columnReducer);
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
+  const { id } = useParams();
 
+  const _id = id ?? '';
   const {
     register,
     handleSubmit,
@@ -26,6 +33,8 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, onCancel }) =
 
   const onSubmit: SubmitHandler<ITmp> = (data) => {
     console.log('submited: ', data);
+    const { title } = data;
+    dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
     onCancel();
     // const { login, password } = data;
     // dispatch(fetchLogin({ login, password, navigate }));
