@@ -39,10 +39,10 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onC
     console.log('submited: ', data);
     console.log('type: ', type);
     const { title } = data;
-    if ((type = 'column')) {
+    if (type === 'column') {
       dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
     }
-    if ((type = 'task')) {
+    if (type === 'task') {
       const initUsers: string[] = [];
       const taskData = {
         title,
