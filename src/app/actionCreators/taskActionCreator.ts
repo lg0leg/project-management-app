@@ -14,7 +14,10 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
-
+interface ISetTasksProps {
+  newTasks: ITask[];
+  navigate: navigateType;
+}
 interface ITaskData {
   title: string;
   order: number;
@@ -164,6 +167,37 @@ export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksS
           })
         );
       });
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(
+        taskSlice.actions.getTasks({
+          tasks: newTasks,
+        })
+      );
+      const setTasksList = newTasks.map((item) => ({
+        order: item.order,
+        _id: item._id,
+        columnId: item.columnId,
+      }));
+
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.patch<ITask[]>(`/tasksSet`, setTasksList);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          taskSlice.actions.getTasks({
+            tasks: response.data,
+          })
+        );
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
