@@ -5,7 +5,6 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect, useState } from 'react';
 import { isExpired } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -13,6 +12,7 @@ import { BiTrash } from 'react-icons/bi';
 import DeleteConformation from 'components/DeleteConformation';
 import Popup from 'components/popup/popup';
 import { getBoardText } from 'utils/getBoardText';
+import SimpleSpinner from 'components/spinners/SimpleSpinner';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
@@ -96,10 +96,12 @@ export const Boards: FC = () => {
   return (
     <>
       <section className="min-h-[calc(100vh-100px-80px)] bg-gray-50 ">
-        {isLoading && <Spinner />}
         <div className="flex h-[50px] w-full items-center justify-between gap-[20px] px-[20px] sm:h-[70px] md:px-[100px] lg:px-[200px]">
-          <h2 className="text-2xl font-semibold text-gray-600 sm:text-3xl">
+          <h2 className="relative text-2xl font-semibold text-gray-600 sm:text-3xl">
             {lang == 'en' ? 'Boards' : 'Доски'}
+            <div className="absolute right-[-30px] bottom-[3px]">
+              <SimpleSpinner isLoading={isLoading} sizePx={25} color={'gray'} />
+            </div>
           </h2>
           <div className="flex gap-[20px]">
             <input
