@@ -5,7 +5,6 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect, useState } from 'react';
 import { isExpired } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -15,6 +14,8 @@ import Popup from 'components/popup/popup';
 import { getBoardText } from 'utils/getBoardText';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
+// import Spinner from 'components/Spinner';
+import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
@@ -96,7 +97,8 @@ export const Boards: FC = () => {
   return (
     <>
       <section className="min-h-[calc(100vh-100px-80px)] bg-gray-50 ">
-        {isLoading && <Spinner />}
+        {/* {isLoading && <Spinner />} */}
+        {isLoading && <SpinnerWithOverlay isLoading={isLoading} />}
         <div className="flex h-[50px] w-full items-center justify-between gap-[20px] px-[20px] sm:h-[70px] md:px-[100px] lg:px-[200px]">
           <h2 className="text-2xl font-semibold text-gray-600 sm:text-3xl">
             {lang == 'en' ? 'Boards' : 'Доски'}

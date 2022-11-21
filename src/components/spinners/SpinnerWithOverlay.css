@@ -1,0 +1,27 @@
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.spinner-animation-enter {
+  opacity: 0;
+}
+.spinner-animation-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+.spinner-animation-exit {
+  opacity: 1;
+}
+.spinner-animation-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
