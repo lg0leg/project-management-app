@@ -51,7 +51,7 @@ export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IUser>(`/users/${_id}`);
-      console.log(response.data);
+
       dispatch(
         userSlice.actions.getUser({
           user: response.data,

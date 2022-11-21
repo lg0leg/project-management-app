@@ -55,7 +55,6 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard[]>(`/boards`);
-      console.log(response.data);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
@@ -95,8 +94,6 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
-      console.log('title', title);
-      console.log('owner', owner);
 
       const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
       dispatch(

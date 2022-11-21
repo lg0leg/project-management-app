@@ -45,7 +45,6 @@ export const Boards: FC = () => {
 
   const getLogin = (users: IUser[], id: string) => {
     const res = users.find((user) => user._id === id);
-    console.log(res);
     return res ? res.login : '-';
   };
 
