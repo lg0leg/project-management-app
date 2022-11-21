@@ -5,7 +5,8 @@ import type { navigateType } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError401 } from 'utils/handleErrors';
-import { fetchGetColumnsStore } from './columnActionCreator';
+import { fetchGetColumns } from './columnActionCreator';
+import { fetchGetTasksInBoard } from './taskActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -98,7 +99,6 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
       console.log('owner', owner);
 
       const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
-      console.log('create', response.data);
       dispatch(
         boardSlice.actions.getBoard({
           board: response.data,
@@ -186,17 +186,9 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps
 export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      setLoadingStatus(dispatch);
-
-      const response = await apiToken<IBoard>(`/boards/${_id}`);
-
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
-      );
-
-      dispatch(fetchGetColumnsStore({ boardId: response.data._id, navigate }));
+      dispatch(fetchGetBoard({ _id, navigate }));
+      dispatch(fetchGetColumns({ boardId: _id, navigate }));
+      dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

@@ -4,7 +4,6 @@ import { columnSlice } from '../slices/columnSlice';
 import type { IColumn, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
-import { fetchGetTasksStore } from './taskActionCreator';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
@@ -123,25 +122,6 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
-    } catch (e) {
-      handleError401(dispatch, e, navigate);
-    }
-  };
-};
-
-export const fetchGetColumnsStore = ({ navigate, boardId }: IColumnsProps) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      setLoadingStatus(dispatch);
-      const response = await apiToken<IColumn[]>(`/boards/${boardId}/columns`);
-
-      dispatch(
-        columnSlice.actions.getColumns({
-          columns: response.data,
-        })
-      );
-      const columnsIdList = response.data.map((item) => item._id);
-      dispatch(fetchGetTasksStore({ boardId, columnsIdList, navigate }));
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

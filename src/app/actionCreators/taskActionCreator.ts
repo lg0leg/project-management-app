@@ -30,8 +30,7 @@ interface ITasksProps {
   boardId: string;
   navigate: navigateType;
 }
-interface ITasksStoreProps {
-  columnsIdList: string[];
+interface ITasksInBoardProps {
   boardId: string;
   navigate: navigateType;
 }
@@ -45,11 +44,6 @@ interface ICreateTaskProps extends ITasksProps {
 
 interface IUpdateColumnProps extends ICreateTaskProps {
   _id: string;
-}
-
-interface IBoardsByIdsListProps {
-  navigate: navigateType;
-  userId: string[];
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -143,30 +137,16 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
   };
 };
 
-export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksStoreProps) => {
+export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) => {
   return async (dispatch: AppDispatch) => {
     setLoadingStatus(dispatch);
     try {
-      Promise.allSettled(
-        columnsIdList.map((columnId) =>
-          apiToken<ITask[]>(`/boards/${boardId}/columns/${columnId}/tasks`)
-        )
-      ).then((response) => {
-        const isFulfilled = <T>(
-          input: PromiseSettledResult<T>
-        ): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
-
-        const allTasks: ITask[] = [];
-        const Allfulfilled = response.filter(isFulfilled).forEach((columnsTasks) => {
-          allTasks.push(...columnsTasks.value.data);
-        });
-
-        dispatch(
-          taskSlice.actions.getTasks({
-            tasks: allTasks,
-          })
-        );
-      });
+      const response = await apiToken<ITask[]>(`/tasksSet/${boardId}`);
+      dispatch(
+        taskSlice.actions.getTasks({
+          tasks: response.data,
+        })
+      );
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
