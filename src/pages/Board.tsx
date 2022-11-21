@@ -16,7 +16,7 @@ import { logout } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
 import { RoutesPath } from 'constants/routes';
-import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
+import { fetchCreateColumn, fetchColumnsSet } from 'app/actionCreators/columnActionCreator';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -144,7 +144,7 @@ export const Board: FC = () => {
             return { ...column, order: destination!.index };
           }
         });
-        // dispatch(fetchGetAllBoardStore({ _id, navigate }));
+        dispatch(fetchColumnsSet({ newColumns, navigate }));
       }
     }
   };

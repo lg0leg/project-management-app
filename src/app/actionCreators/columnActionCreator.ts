@@ -15,6 +15,11 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+interface ISetColumnsProps {
+  navigate: navigateType;
+  newColumns: IColumn[];
+}
 interface IColumnsProps {
   boardId: string;
   navigate: navigateType;
@@ -137,6 +142,33 @@ export const fetchGetColumnsStore = ({ navigate, boardId }: IColumnsProps) => {
       );
       const columnsIdList = response.data.map((item) => item._id);
       dispatch(fetchGetTasksStore({ boardId, columnsIdList, navigate }));
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(
+        columnSlice.actions.getColumns({
+          columns: newColumns,
+        })
+      );
+      const setColumnsList = newColumns.map((item) => ({ order: item.order, _id: item._id }));
+
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.patch<IColumn[]>(`/columnsSet`, setColumnsList);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          columnSlice.actions.getColumns({
+            columns: response.data,
+          })
+        );
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
