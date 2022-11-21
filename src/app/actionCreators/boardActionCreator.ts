@@ -43,9 +43,14 @@ interface IUpdateBoardProps {
   navigate: navigateType;
 }
 
+interface IBoardsByUserIdProps {
+  navigate: navigateType;
+  userId: string;
+}
+
 interface IBoardsByIdsListProps {
   navigate: navigateType;
-  userId: string[];
+  ids: string[];
 }
 
 // получение всех досок (path используется при удалении доски изнутри смотри fetchDeleteBoard)
@@ -162,12 +167,35 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
 };
 
 // получение списка досок по ид юзера
-export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
+export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByUserIdProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard[]>(`/boardsSet/${userId}`);
+
+      dispatch(
+        boardSlice.actions.getBoards({
+          boards: response.data,
+        })
+      );
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+// получение досок по массиву ид досок
+export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsListProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken<IBoard[]>(`/boardsSet`, {
+        params: {
+          ids,
+        },
+      });
 
       dispatch(
         boardSlice.actions.getBoards({
