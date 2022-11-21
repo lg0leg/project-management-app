@@ -43,10 +43,6 @@ export const Boards: FC = () => {
     }
   }, []);
 
-  const deleteBoard = (_id: string) => {
-    dispatch(fetchDeleteBoard({ _id, navigate }));
-  };
-
   const getLogin = (users: IUser[], id: string) => {
     const res = users.find((user) => user._id === id);
     console.log(res);
@@ -68,8 +64,7 @@ export const Boards: FC = () => {
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
 
   const onConfirm = () => {
-    // console.log('delete: ' + currentBoardId);
-    // delete currentBoardId
+    dispatch(fetchDeleteBoard({ _id: currentBoardId, navigate }));
     setPopupVisible(false);
   };
 
