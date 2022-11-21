@@ -5,6 +5,7 @@ import type { IColumn, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetTasksStore } from './taskActionCreator';
+import { fetchGetAllBoardStore } from './boardActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -79,12 +80,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
       });
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(
-          fetchGetColumns({
-            boardId,
-            navigate,
-          })
-        );
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);
@@ -104,12 +100,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
       });
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(
-          fetchGetColumns({
-            boardId,
-            navigate,
-          })
-        );
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);
@@ -125,7 +116,7 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
       const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetColumns({ navigate, boardId }));
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
       handleError401(dispatch, e, navigate);
