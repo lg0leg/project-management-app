@@ -37,6 +37,23 @@ interface IUpdateColumnProps {
   column: IColumn;
   navigate: navigateType;
 }
+interface IColumnsParams {
+  userId?: string;
+  ids?: string[];
+}
+interface IGetColumnsByParams extends IColumnsParams {
+  navigate: navigateType;
+}
+
+interface ICreateColumnSetParams {
+  order: number;
+  _id: string;
+  boardId: string;
+}
+interface ICreateColumnSetProps {
+  navigate: navigateType;
+  newColumns: ICreateColumnSetParams[];
+}
 
 export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
   return async (dispatch: AppDispatch) => {
@@ -141,6 +158,48 @@ export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.patch<IColumn[]>(`/columnsSet`, setColumnsList);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          columnSlice.actions.getColumns({
+            columns: response.data,
+          })
+        );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchCreateColumnsSet = ({ navigate, newColumns }: ICreateColumnSetProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.post<IColumn[]>(`/columnsSet`, newColumns);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          columnSlice.actions.getColumns({
+            columns: response.data,
+          })
+        );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsByParams) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+      const params: IColumnsParams = {};
+      if (userId) params.userId = userId;
+      if (ids) params.ids = ids;
+      const response = await apiToken<IColumn[]>(`/columnsSet`, { params });
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
