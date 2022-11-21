@@ -1,5 +1,5 @@
 import { CSSTransition } from 'react-transition-group';
-import './SpinnerWithOverlay.css';
+import './spinners.css';
 
 export default function SpinnerWithOverlay(props: { isLoading: boolean }) {
   return (
@@ -14,7 +14,7 @@ export default function SpinnerWithOverlay(props: { isLoading: boolean }) {
         <div role="status">
           <svg
             aria-hidden="true"
-            className="mr-2 h-[50px] w-[50px] animate-spin fill-blue-500 text-gray-200 dark:text-gray-600"
+            className="h-[150px] w-[150px] animate-spin fill-blue-500 text-gray-200 dark:text-gray-600"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
