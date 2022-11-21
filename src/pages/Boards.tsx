@@ -1,38 +1,53 @@
-import { useAppSelector } from 'app/hooks';
+import { fetchGetBoards, fetchDeleteBoard } from 'app/actionCreators/boardActionCreator';
+import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
+import { IBoard, IUser } from 'models/dbTypes';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect, useState } from 'react';
+import { isExpired } from 'react-jwt';
+import { logout } from 'app/actionCreators/authActionCreators';
+import Spinner from 'components/Spinner';
 import { useNavigate } from 'react-router-dom';
 import { CiGrid41, CiGrid2V } from 'react-icons/ci';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { BiTrash } from 'react-icons/bi';
 import DeleteConformation from 'components/DeleteConformation';
 import Popup from 'components/popup/popup';
+import { getBoardText } from 'utils/getBoardText';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
-const boardsDataArr = [
-  { title: 'Board 1', description: 'description1', id: 'dsghjsghj1' },
-  { title: 'Board 2', description: 'description2', id: 'jnkjlkcv2' },
-  { title: 'Board 3', description: 'description3', id: 'dsghghj3' },
-  { title: 'Board 4', description: 'description4', id: 'jnlkcv4' },
-  { title: 'Tasks for today', description: 'description5', id: 'dsghjhqda5' },
-  {
-    title:
-      'Cras dui nisl, dignissim nec tincidunt eget, varius non nisi. Aliquam libero nibh, condimentum ac erat sed, aliquam facilisis ex',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac viverra diam. Integer at mauris libero. Vestibulum elementum, velit a porttitor blandit, nisl lacus porttitor elit, eget placerat ante augue nec nulla. Cras dui nisl, dignissim nec tincidunt eget, varius non nisi. Aliquam libero nibh, condimentum ac erat sed, aliquam facilisis ex',
-    id: 'dsghjhkhksghj6',
-  },
-  { title: 'Board 7', description: 'description7', id: 'jnkjlkcv7' },
-];
-
 export const Boards: FC = () => {
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
+  const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
+  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { token } = useAppSelector((state) => state.authReducer);
+  const isLoading = isLoadingBoards || isLoadingUsers;
   const { lang } = useAppSelector((state) => state.langReducer);
-  const [boards, setBoards] = useState(boardsDataArr);
   const [grid, setGrid] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
-
   const [popupVisible, setPopupVisible] = useState(false);
   const [currentBoardId, setCurrentBoard] = useState('');
+
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    }
+  });
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    } else {
+      dispatch(fetchGetUsers(navigate));
+      dispatch(fetchGetBoards({ navigate }));
+    }
+  }, []);
+
+  const getLogin = (users: IUser[], id: string) => {
+    const res = users.find((user) => user._id === id);
+    console.log(res);
+    return res ? res.login : '-';
+  };
 
   useEffect(() => {
     const gridLS = localStorage.getItem('gridLS');
@@ -49,8 +64,7 @@ export const Boards: FC = () => {
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
 
   const onConfirm = () => {
-    // console.log('delete: ' + currentBoardId);
-    // delete currentBoardId
+    dispatch(fetchDeleteBoard({ _id: currentBoardId, navigate }));
     setPopupVisible(false);
   };
 
@@ -58,9 +72,31 @@ export const Boards: FC = () => {
     setPopupVisible(false);
   };
 
+  const filterBoards = (item: IBoard, searchStr: string) => {
+    const { title, description } = getBoardText(item.title);
+    return title.toLowerCase().includes(searchStr) || description.toLowerCase().includes(searchStr);
+  };
+
+  const returnFilteredBoards = (grid: string) =>
+    (searchQuery == '' ? boards : boards.filter((item) => filterBoards(item, searchQuery))).map(
+      (item) => {
+        const { title, description } = getBoardText(item.title);
+        const props = {
+          title: title,
+          description: description,
+          id: item._id,
+          setPopupVisible: setPopupVisible,
+          setCurrentBoard: setCurrentBoard,
+          key: item._id,
+        };
+        return grid === 'grid' ? <BoardsCardGrid {...props} /> : <BoardsCardList {...props} />;
+      }
+    );
+
   return (
     <>
       <section className="min-h-[calc(100vh-100px-80px)] bg-gray-50 ">
+        {isLoading && <Spinner />}
         <div className="flex h-[50px] w-full items-center justify-between gap-[20px] px-[20px] sm:h-[70px] md:px-[100px] lg:px-[200px]">
           <h2 className="text-2xl font-semibold text-gray-600 sm:text-3xl">
             {lang == 'en' ? 'Boards' : 'Доски'}
@@ -91,44 +127,10 @@ export const Boards: FC = () => {
         </div>
         {grid == 'grid' ? (
           <div className="flex flex-wrap justify-center gap-[30px] px-[20px] pb-[20px]">
-            {(searchQuery == ''
-              ? boards
-              : boards.filter(
-                  (item) =>
-                    item.title.toLowerCase().includes(searchQuery) ||
-                    item.description.toLowerCase().includes(searchQuery)
-                )
-            ).map((item) => (
-              <BoardsCardGrid
-                title={item.title}
-                description={item.description}
-                id={item.id}
-                setPopupVisible={setPopupVisible}
-                setCurrentBoard={setCurrentBoard}
-                key={item.id}
-              />
-            ))}
+            {returnFilteredBoards(grid)}
           </div>
         ) : (
-          <div className="grid gap-[20px] px-[30px] pb-[20px]">
-            {(searchQuery == ''
-              ? boards
-              : boards.filter(
-                  (item) =>
-                    item.title.toLowerCase().includes(searchQuery) ||
-                    item.description.toLowerCase().includes(searchQuery)
-                )
-            ).map((item) => (
-              <BoardsCardList
-                title={item.title}
-                description={item.description}
-                id={item.id}
-                setPopupVisible={setPopupVisible}
-                setCurrentBoard={setCurrentBoard}
-                key={item.id}
-              />
-            ))}
-          </div>
+          <div className="grid gap-[20px] px-[30px] pb-[20px]">{returnFilteredBoards(grid)}</div>
         )}
 
         <Popup popupVisible={popupVisible} setPopupVisible={setPopupVisible}>

@@ -2,10 +2,17 @@ import { configureStore, combineReducers, ThunkAction, Action } from '@reduxjs/t
 import authReducer from './slices/authSlice';
 import langReducer from './slices/langSlice';
 import userReducer from './slices/userSlice';
+import boardReducer from './slices/boardSlice';
+import columnReducer from './slices/columnSlice';
+import taskReducer from './slices/taskSlice';
+
 const rootReducer = combineReducers({
   authReducer,
   langReducer,
   userReducer,
+  boardReducer,
+  columnReducer,
+  taskReducer,
 });
 
 export const store = configureStore({

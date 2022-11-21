@@ -29,14 +29,16 @@ export interface IToken {
   iat: number;
   exp: number;
 }
-
-export interface IUser {
-  _id: string;
-  name: string;
-  login: string;
+export interface ITitleJSON {
+  title: string;
+  description: string;
 }
-
+export interface IHandleErrorPayload {
+  code: number;
+}
 export interface IStatusPayload {
   isLoading: boolean;
   isError: boolean;
 }
+
+export type navigateType = (path: string) => void;

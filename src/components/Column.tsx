@@ -6,6 +6,7 @@ import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { BiTrash } from 'react-icons/bi';
 import { LangKey } from 'constants/lang';
 import { useAppSelector } from 'app/hooks';
+import { ModalTypes } from 'constants/modalTypes';
 
 interface IColumnProps {
   index: number;
@@ -85,7 +86,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                     className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     data-modal="modal-delete-column"
                     onClick={(e) => {
-                      openModal(e, 'modal-delete', column._id, 'column');
+                      openModal(e, ModalTypes.DELETE, column._id, 'column');
                     }}
                   >
                     <BiTrash className="h-5 w-5" />
@@ -114,7 +115,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
             <button
               className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
               onClick={(e) => {
-                openModal(e, 'modal-add', '', 'task');
+                openModal(e, ModalTypes.ADD, column._id, 'task');
               }}
             >
               <MdAdd />

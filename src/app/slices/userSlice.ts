@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { IUser, IStatusPayload } from 'models/typescript';
+import type { IStatusPayload } from 'models/typescript';
+import { IUser } from 'models/dbTypes';
 
 interface IGetUsersPayload {
   users: IUser[];
