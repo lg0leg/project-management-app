@@ -144,16 +144,20 @@ export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksS
   return async (dispatch: AppDispatch) => {
     setLoadingStatus(dispatch);
     try {
-      Promise.all(
+      Promise.allSettled(
         columnsIdList.map((columnId) =>
           apiToken<ITask[]>(`/boards/${boardId}/columns/${columnId}/tasks`)
         )
       ).then((response) => {
+        const isFulfilled = <T>(
+          input: PromiseSettledResult<T>
+        ): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+
         const allTasks: ITask[] = [];
-        response.forEach((columnsTasks) => {
-          allTasks.push(...columnsTasks.data);
+        const Allfulfilled = response.filter(isFulfilled).forEach((columnsTasks) => {
+          allTasks.push(...columnsTasks.value.data);
         });
-        console.log(allTasks);
+
         dispatch(
           taskSlice.actions.getTasks({
             tasks: allTasks,
