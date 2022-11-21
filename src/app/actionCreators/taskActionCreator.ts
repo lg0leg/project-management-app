@@ -34,6 +34,14 @@ interface ITasksInBoardProps {
   boardId: string;
   navigate: navigateType;
 }
+interface ITasksParams {
+  ids?: string[];
+  search?: string;
+  userId?: string;
+}
+interface IGetTasksByParams extends ITasksParams {
+  navigate: navigateType;
+}
 
 interface ITaskProps extends ITasksProps {
   _id: string;
@@ -170,6 +178,31 @@ export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.patch<ITask[]>(`/tasksSet`, setTasksList);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          taskSlice.actions.getTasks({
+            tasks: response.data,
+          })
+        );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTasksByParams) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+      const params: ITasksParams = {};
+      if (userId) params.userId = userId;
+      if (search) params.search = search;
+      if (ids && ids.length) params.ids = ids;
+      const response = await apiToken<ITask[]>(`/tasksSet`, {
+        params,
+      });
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
