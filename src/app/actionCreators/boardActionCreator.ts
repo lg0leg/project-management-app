@@ -19,6 +19,7 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
 interface IBoardProps {
   _id: string;
   navigate: navigateType;
+  cb?: () => void;
 }
 interface ICreateBoardProps {
   owner: string;
@@ -77,18 +78,25 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
 };
 
 // получение доски по id
-export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
+export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard>(`/boards/${_id}`);
 
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
-      );
+      if (response.status === 204) {
+        console.log('the page has been deleted');
+        dispatch(fetchDeleteBoard({ _id, navigate }));
+        navigate(RoutesPath.NOT_FOUND);
+      } else {
+        dispatch(
+          boardSlice.actions.getBoard({
+            board: response.data,
+          })
+        );
+        if (cb) cb();
+      }
     } catch (e) {
       handleError(dispatch, e, navigate);
     }
