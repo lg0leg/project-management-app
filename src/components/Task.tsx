@@ -1,9 +1,10 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent } from 'react';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import { IFile, ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
+import { useAppSelector } from 'app/hooks';
 
 const filesListMocks: IFile[] = [
   {
@@ -27,7 +28,11 @@ interface ITaskProps {
 }
 
 export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
-  const [lang, setLang] = useState('en');
+  const { users } = useAppSelector((state) => state.userReducer);
+
+  const author = users.filter((user) => user._id === task.userId)[0];
+  const assigned = task.users.map((taskUser) => users.filter((user) => user._id === taskUser)[0]);
+
   return (
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
@@ -68,11 +73,39 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
               />
             </div>
           ) : null}
-          <div className="flex flex-col ">
-            <div className="pb-4 text-sm font-normal text-gray-700">{task.description}</div>
-            <div>
-              <div></div>
-              <div></div>
+          <div className="flex flex-row items-center ">
+            <p className="pb-4 text-sm font-normal text-gray-700">{task.description}</p>
+            <div className="flex flex-row items-center justify-between">
+              {author && (
+                <div>
+                  <p>Author: {author.login}</p>
+                  <div className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-100">
+                    <span className="text-sm font-medium text-gray-600">
+                      {author.login.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {assigned.length > 0 && (
+                <div>
+                  <p>Assigned: </p>
+                  <div className={assigned.length > 1 ? 'flex -space-x-4' : ''}>
+                    {/* #TODO - logic for lot assignee */}
+                    {assigned.map((user) => {
+                      return (
+                        <div
+                          key={user._id}
+                          className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-100"
+                        >
+                          <span className="text-sm font-medium text-gray-600">
+                            {user.login.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
