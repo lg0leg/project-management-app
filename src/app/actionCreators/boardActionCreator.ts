@@ -5,7 +5,8 @@ import type { navigateType } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError401 } from 'utils/handleErrors';
-import { fetchGetColumnsStore } from './columnActionCreator';
+import { fetchGetColumns } from './columnActionCreator';
+import { fetchGetTasksInBoard } from './taskActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -42,9 +43,14 @@ interface IUpdateBoardProps {
   navigate: navigateType;
 }
 
+interface IBoardsByUserIdProps {
+  navigate: navigateType;
+  userId: string;
+}
+
 interface IBoardsByIdsListProps {
   navigate: navigateType;
-  userId: string[];
+  ids: string[];
 }
 
 // получение всех досок (path используется при удалении доски изнутри смотри fetchDeleteBoard)
@@ -54,7 +60,6 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard[]>(`/boards`);
-      console.log(response.data);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
@@ -94,11 +99,8 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
-      console.log('title', title);
-      console.log('owner', owner);
 
       const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
-      console.log('create', response.data);
       dispatch(
         boardSlice.actions.getBoard({
           board: response.data,
@@ -165,7 +167,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
 };
 
 // получение списка досок по ид юзера
-export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps) => {
+export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByUserIdProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -183,20 +185,35 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByIdsListProps
   };
 };
 
-export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
+// получение досок по массиву ид досок
+export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsListProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken<IBoard>(`/boards/${_id}`);
+      const response = await apiToken<IBoard[]>(`/boardsSet`, {
+        params: {
+          ids,
+        },
+      });
 
       dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
+        boardSlice.actions.getBoards({
+          boards: response.data,
         })
       );
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
 
-      dispatch(fetchGetColumnsStore({ boardId: response.data._id, navigate }));
+export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(fetchGetBoard({ _id, navigate }));
+      dispatch(fetchGetColumns({ boardId: _id, navigate }));
+      dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

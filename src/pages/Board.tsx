@@ -17,6 +17,7 @@ import Spinner from 'components/Spinner';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
 import { RoutesPath } from 'constants/routes';
 import { fetchCreateColumn, fetchColumnsSet } from 'app/actionCreators/columnActionCreator';
+import { fetchTasksSet } from 'app/actionCreators/taskActionCreator';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -36,7 +37,7 @@ export const Board: FC = () => {
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
   const copyColumns = [...columns];
-  console.log(columns);
+
   useEffect(() => {
     if (isExpired(token)) {
       dispatch(logout(navigate));
@@ -95,7 +96,7 @@ export const Board: FC = () => {
       return;
 
     if (type === 'TASK') {
-      const newtasks: ITask[] = tasks.map((task) => {
+      const newTasks: ITask[] = tasks.map((task) => {
         if (task._id !== draggableId) {
           if (source.droppableId === destination.droppableId) {
             if (
@@ -120,7 +121,7 @@ export const Board: FC = () => {
           return { ...task, columnId: destination!.droppableId, order: destination!.index };
         }
       });
-      // dispatch(fetchGetAllBoardStore({ _id, navigate }));
+      dispatch(fetchTasksSet({ newTasks, navigate }));
     }
     if (type === 'COLUMN') {
       const draggedColumnId = draggableId.split('.')[1];
@@ -151,6 +152,7 @@ export const Board: FC = () => {
 
   return (
     <>
+      {isLoading && <Spinner />}
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
           <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">

@@ -14,7 +14,10 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
-
+interface ISetTasksProps {
+  newTasks: ITask[];
+  navigate: navigateType;
+}
 interface ITaskData {
   title: string;
   order: number;
@@ -27,9 +30,16 @@ interface ITasksProps {
   boardId: string;
   navigate: navigateType;
 }
-interface ITasksStoreProps {
-  columnsIdList: string[];
+interface ITasksInBoardProps {
   boardId: string;
+  navigate: navigateType;
+}
+interface ITasksParams {
+  ids?: string[];
+  search?: string;
+  userId?: string;
+}
+interface IGetTasksByParams extends ITasksParams {
   navigate: navigateType;
 }
 
@@ -42,11 +52,6 @@ interface ICreateTaskProps extends ITasksProps {
 
 interface IUpdateColumnProps extends ICreateTaskProps {
   _id: string;
-}
-
-interface IBoardsByIdsListProps {
-  navigate: navigateType;
-  userId: string[];
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -140,30 +145,72 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
   };
 };
 
-export const fetchGetTasksStore = ({ navigate, boardId, columnsIdList }: ITasksStoreProps) => {
+export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) => {
   return async (dispatch: AppDispatch) => {
     setLoadingStatus(dispatch);
     try {
-      Promise.allSettled(
-        columnsIdList.map((columnId) =>
-          apiToken<ITask[]>(`/boards/${boardId}/columns/${columnId}/tasks`)
-        )
-      ).then((response) => {
-        const isFulfilled = <T>(
-          input: PromiseSettledResult<T>
-        ): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+      const response = await apiToken<ITask[]>(`/tasksSet/${boardId}`);
+      dispatch(
+        taskSlice.actions.getTasks({
+          tasks: response.data,
+        })
+      );
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
 
-        const allTasks: ITask[] = [];
-        const Allfulfilled = response.filter(isFulfilled).forEach((columnsTasks) => {
-          allTasks.push(...columnsTasks.value.data);
-        });
+export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(
+        taskSlice.actions.getTasks({
+          tasks: newTasks,
+        })
+      );
+      const setTasksList = newTasks.map((item) => ({
+        order: item.order,
+        _id: item._id,
+        columnId: item.columnId,
+      }));
 
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.patch<ITask[]>(`/tasksSet`, setTasksList);
+
+      if (response.status >= 200 && response.status < 300) {
         dispatch(
           taskSlice.actions.getTasks({
-            tasks: allTasks,
+            tasks: response.data,
           })
         );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTasksByParams) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+      const params: ITasksParams = {};
+      if (userId) params.userId = userId;
+      if (search) params.search = search;
+      if (ids && ids.length) params.ids = ids;
+      const response = await apiToken<ITask[]>(`/tasksSet`, {
+        params,
       });
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          taskSlice.actions.getTasks({
+            tasks: response.data,
+          })
+        );
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }

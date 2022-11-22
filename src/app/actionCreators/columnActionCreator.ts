@@ -4,7 +4,6 @@ import { columnSlice } from '../slices/columnSlice';
 import type { IColumn, IUser } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
-import { fetchGetTasksStore } from './taskActionCreator';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
@@ -37,6 +36,23 @@ interface ICreateColumnProps extends IColumnsProps {
 interface IUpdateColumnProps {
   column: IColumn;
   navigate: navigateType;
+}
+interface IColumnsParams {
+  userId?: string;
+  ids?: string[];
+}
+interface IGetColumnsByParams extends IColumnsParams {
+  navigate: navigateType;
+}
+
+interface ICreateColumnSetParams {
+  order: number;
+  _id: string;
+  boardId: string;
+}
+interface ICreateColumnSetProps {
+  navigate: navigateType;
+  newColumns: ICreateColumnSetParams[];
 }
 
 export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
@@ -129,25 +145,6 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
   };
 };
 
-export const fetchGetColumnsStore = ({ navigate, boardId }: IColumnsProps) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      setLoadingStatus(dispatch);
-      const response = await apiToken<IColumn[]>(`/boards/${boardId}/columns`);
-
-      dispatch(
-        columnSlice.actions.getColumns({
-          columns: response.data,
-        })
-      );
-      const columnsIdList = response.data.map((item) => item._id);
-      dispatch(fetchGetTasksStore({ boardId, columnsIdList, navigate }));
-    } catch (e) {
-      handleError401(dispatch, e, navigate);
-    }
-  };
-};
-
 export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -161,6 +158,48 @@ export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.patch<IColumn[]>(`/columnsSet`, setColumnsList);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          columnSlice.actions.getColumns({
+            columns: response.data,
+          })
+        );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchCreateColumnsSet = ({ navigate, newColumns }: ICreateColumnSetProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.post<IColumn[]>(`/columnsSet`, newColumns);
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(
+          columnSlice.actions.getColumns({
+            columns: response.data,
+          })
+        );
+      }
+    } catch (e) {
+      handleError401(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsByParams) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+      const params: IColumnsParams = {};
+      if (userId) params.userId = userId;
+      if (ids) params.ids = ids;
+      const response = await apiToken<IColumn[]>(`/columnsSet`, { params });
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(
