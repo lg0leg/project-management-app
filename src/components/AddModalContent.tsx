@@ -37,6 +37,7 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, onConfirm, on
     console.log('submited: ', data);
     console.log('type: ', type);
     const { title } = data;
+    onConfirm();
     // if (type === 'column') {
     //   dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
     // }
@@ -109,13 +110,13 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, onConfirm, on
                         id="description"
                         className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Description..."
-                        {...register('description', { required: true, maxLength: 100 })}
+                        {...register('description', { maxLength: 100 })}
                         // required
                       />
                       {errors.description && (
                         <p className="mt-2 text-sm text-red-600">
-                          <span className="font-medium">Oh, snapp!</span> Type description beetwen 0
-                          and 100 characters.
+                          <span className="font-medium">Oh, snapp!</span> Max length is 100
+                          characters.
                         </p>
                       )}
                     </div>

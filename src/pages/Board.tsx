@@ -17,8 +17,13 @@ import Spinner from 'components/Spinner';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
 import { RoutesPath } from 'constants/routes';
 import { fetchCreateColumn, fetchColumnsSet } from 'app/actionCreators/columnActionCreator';
-import { fetchDeleteTask, fetchTasksSet } from 'app/actionCreators/taskActionCreator';
+import {
+  fetchCreateTask,
+  fetchDeleteTask,
+  fetchTasksSet,
+} from 'app/actionCreators/taskActionCreator';
 import SimpleSpinner from 'components/spinners/SimpleSpinner';
+import { getBoardText } from 'utils/getBoardText';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -38,6 +43,7 @@ export const Board: FC = () => {
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
   const copyColumns = [...columns];
+  // const { title } = getBoardText(board.title);
 
   useEffect(() => {
     if (isExpired(token)) {
@@ -73,7 +79,12 @@ export const Board: FC = () => {
       console.log('modalType: ', modalType);
       console.log('modalTargetId: ', modalTargetId);
       console.log('modalTargetType: ', modalTargetType);
-      return;
+
+      if (modalTargetType === 'task') {
+        // dispatch(fetchCreateTask({ boardId: _id, column }));
+      }
+      if (modalTargetType === 'column') {
+      }
     }
     if (ModalTypes.EDIT === modalType) {
       console.log('edit modal');
@@ -96,7 +107,10 @@ export const Board: FC = () => {
           })
         );
       }
+      if (modalTargetType === 'column') {
+      }
       setModalType('');
+      setModalTargetId('');
       setModalOpen(false);
     }
   };
@@ -179,8 +193,8 @@ export const Board: FC = () => {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
             <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-              {/* {JSON.parse(board.title).title} */}
-              {board.title}
+              {/* {title} */}
+              title
             </h1>
             <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
               {(provided) => (
