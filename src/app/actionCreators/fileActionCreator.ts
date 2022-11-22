@@ -4,6 +4,7 @@ import type { navigateType } from 'models/typescript';
 import { IFile } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
 import { fileSlice } from 'app/slices/fileSlice';
+import { fetchGetAllBoardStore } from './boardActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -82,13 +83,10 @@ export const fetchDeleteFile = ({ navigate, fileId }: IDeleteFilesProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
-      const response = await apiToken.delete<IFile[]>(`/file/${fileId}`);
-
-      dispatch(
-        fileSlice.actions.getFiles({
-          files: response.data,
-        })
-      );
+      const response = await apiToken.delete<IFile>(`/file/${fileId}`);
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
@@ -110,11 +108,9 @@ export const fetchAddFile = ({ navigate, file, boardId, taskId }: IAddFileProps)
         },
       });
 
-      dispatch(
-        fileSlice.actions.getFiles({
-          files: response.data,
-        })
-      );
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+      }
     } catch (e) {
       handleError401(dispatch, e, navigate);
     }
