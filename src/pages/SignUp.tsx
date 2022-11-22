@@ -7,6 +7,7 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
+import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 
 export const SignUp: FC = () => {
   const navigate = useAppNavigate();
@@ -33,6 +34,7 @@ export const SignUp: FC = () => {
 
   return (
     <div className="min-h-[100%] bg-gray-300">
+      <SpinnerWithOverlay isLoading={isLoading} />
       <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-registration bg-contain bg-no-repeat">
         <form
           className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
@@ -43,7 +45,7 @@ export const SignUp: FC = () => {
               {errorText}
             </div>
           )}
-          {isLoading && <Spinner />}
+
           <AuthInput
             label="name"
             title={name}
