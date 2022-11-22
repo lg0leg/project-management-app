@@ -4,7 +4,7 @@ import { boardSlice } from '../slices/boardSlice';
 import type { navigateType } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
 
@@ -71,7 +71,7 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
         if (path) navigate(path);
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -90,7 +90,7 @@ export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -111,7 +111,7 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
         cb();
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -144,7 +144,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
         }
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -161,7 +161,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
         dispatch(fetchGetBoards({ navigate, path }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -180,7 +180,7 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByUserIdProps)
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -203,7 +203,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -215,7 +215,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetColumns({ boardId: _id, navigate }));
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };

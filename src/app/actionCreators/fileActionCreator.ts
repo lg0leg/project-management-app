@@ -2,7 +2,7 @@ import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import type { navigateType } from 'models/typescript';
 import { IFile } from 'models/dbTypes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import { fileSlice } from 'app/slices/fileSlice';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 
@@ -57,7 +57,7 @@ export const fetchGetFilesByParams = ({ navigate, ids, taskId, userId }: IGetFil
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -74,7 +74,7 @@ export const fetchGetFilesByBoardId = ({ navigate, boardId }: IGetFilesByBoardId
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -88,7 +88,7 @@ export const fetchDeleteFile = ({ navigate, fileId }: IDeleteFilesProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -112,7 +112,7 @@ export const fetchAddFile = ({ navigate, file, boardId, taskId }: IAddFileProps)
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };

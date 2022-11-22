@@ -8,6 +8,7 @@ import type {
   navigateType,
 } from 'models/typescript';
 import { AxiosError } from 'axios';
+import { RoutesPath } from 'constants/routes';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -18,11 +19,15 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
   );
 };
 
-const handleAuthError = (dispatch: AppDispatch, e: unknown) => {
+const handleAuthError = (dispatch: AppDispatch, e: unknown, navigate: navigateType) => {
   if (e instanceof AxiosError) {
+    const httpCode = e.response?.status as number;
+    if (httpCode === 404) {
+      navigate(RoutesPath.NOT_FOUND);
+    }
     dispatch(
       authSlice.actions.handleError({
-        code: e.response?.status as number,
+        code: httpCode,
       })
     );
   }
@@ -52,7 +57,7 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
         })
       );
     } catch (e) {
-      handleAuthError(dispatch, e);
+      handleAuthError(dispatch, e, navigate);
     }
   };
 };
@@ -74,7 +79,7 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
         })
       );
     } catch (e) {
-      handleAuthError(dispatch, e);
+      handleAuthError(dispatch, e, navigate);
     }
   };
 };

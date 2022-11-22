@@ -2,7 +2,7 @@ import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import type { navigateType } from 'models/typescript';
 import { IPoint } from 'models/dbTypes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import { pointSlice } from 'app/slices/pointSlice';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 
@@ -81,7 +81,7 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -98,7 +98,7 @@ export const fetchGetPointsByTaskId = ({ navigate, taskId }: IGetPointsByTaskIdP
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -113,7 +113,7 @@ export const fetchDeletePoint = ({ navigate, pointId }: IDeletePointProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -129,7 +129,7 @@ export const fetchCreatePoint = ({ navigate, point }: ICreatePointProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -149,7 +149,7 @@ export const fetchChangeDoneInPointList = ({
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -165,7 +165,7 @@ export const fetchChangePoint = ({ navigate, pointData, pointId }: IChangePointP
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
