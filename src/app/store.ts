@@ -6,6 +6,7 @@ import boardReducer from './slices/boardSlice';
 import columnReducer from './slices/columnSlice';
 import taskReducer from './slices/taskSlice';
 import fileReducer from './slices/fileSlice';
+import pointReducer from './slices/pointSlice';
 
 const rootReducer = combineReducers({
   authReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   columnReducer,
   taskReducer,
   fileReducer,
+  pointReducer,
 });
 
 export const store = configureStore({
