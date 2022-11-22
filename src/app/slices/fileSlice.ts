@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { IStatusPayload, IHandleErrorPayload } from 'models/typescript';
-import type { IBoard, IFile } from 'models/dbTypes';
+import type { IFile } from 'models/dbTypes';
 
 const initFiles: IFile[] = [];
 

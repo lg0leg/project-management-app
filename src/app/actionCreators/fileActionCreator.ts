@@ -3,7 +3,6 @@ import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
 import type { navigateType } from 'models/typescript';
 import { IFile } from 'models/dbTypes';
-import { RoutesPath } from 'constants/routes';
 import { handleError401 } from 'utils/handleErrors';
 import { fileSlice } from 'app/slices/fileSlice';
 
