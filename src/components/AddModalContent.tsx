@@ -7,22 +7,20 @@ import { Button } from './Button';
 import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
 import { useParams } from 'react-router-dom';
 import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
+import { IColumn, ITask } from 'models/dbTypes';
 
 interface IAddModalContentProps {
-  columnId?: string;
   type: string;
+  onConfirm: () => void;
   onCancel: () => void;
   children?: ReactNode;
 }
 
-export interface ITmp {
-  title: string;
-}
-
-export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onCancel }) => {
+export const AddModalContent: FC<IAddModalContentProps> = ({ type, onConfirm, onCancel }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { columns } = useAppSelector((state) => state.columnReducer);
   const { tasks } = useAppSelector((state) => state.taskReducer);
+  const { users } = useAppSelector((state) => state.userReducer);
   const { user } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
@@ -33,27 +31,27 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onC
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ITmp>();
+  } = useForm<ITask, IColumn>();
 
-  const onSubmit: SubmitHandler<ITmp> = (data) => {
+  const onSubmit: SubmitHandler<ITask | IColumn> = (data) => {
     console.log('submited: ', data);
     console.log('type: ', type);
     const { title } = data;
-    if (type === 'column') {
-      dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
-    }
-    if (type === 'task') {
-      const initUsers: string[] = [];
-      const taskData = {
-        title,
-        description: 'some description',
-        order: tasks.filter((task) => task.columnId === columnId).length,
-        userId: +user._id,
-        users: initUsers,
-      };
-      const column_Id = columnId ?? '';
-      dispatch(fetchCreateTask({ boardId: _id, columnId: column_Id, task: taskData, navigate }));
-    }
+    // if (type === 'column') {
+    //   dispatch(fetchCreateColumn({ boardId: _id, title, order: columns.length, navigate }));
+    // }
+    // if (type === 'task') {
+    //   const initUsers: string[] = [];
+    //   const taskData = {
+    //     title,
+    //     description: 'some description',
+    //     order: tasks.filter((task) => task.columnId === columnId).length,
+    //     userId: +user._id,
+    //     users: initUsers,
+    //   };
+    //   const column_Id = columnId ?? '';
+    //   dispatch(fetchCreateTask({ boardId: _id, columnId: column_Id, task: taskData, navigate }));
+    // }
 
     onCancel();
     // const { login, password } = data;
@@ -87,15 +85,73 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onC
                     id="title"
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Title..."
-                    {...register('title', { minLength: 2, maxLength: 30 })}
-                    required
+                    {...register('title', { required: true, minLength: 2, maxLength: 30 })}
+                    // required
                   />
                   {errors.title && (
                     <p className="mt-2 text-sm text-red-600">
-                      <span className="font-medium">Oh, snapp!</span> Some error message.
+                      <span className="font-medium">Oh, snapp!</span> Type title beetwen 2 and 30
+                      characters.
                     </p>
                   )}
                 </div>
+                {type === 'task' && (
+                  <>
+                    <div>
+                      <label
+                        htmlFor="description"
+                        className="mb-2 block text-sm font-medium text-gray-900"
+                      >
+                        Description
+                      </label>
+                      <input
+                        type="text"
+                        id="description"
+                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Description..."
+                        {...register('description', { required: true, maxLength: 100 })}
+                        // required
+                      />
+                      {errors.description && (
+                        <p className="mt-2 text-sm text-red-600">
+                          <span className="font-medium">Oh, snapp!</span> Type description beetwen 0
+                          and 100 characters.
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="users"
+                        className="mb-2 block text-sm font-medium text-gray-900"
+                      >
+                        Assignee user
+                      </label>
+                      <select
+                        id="users"
+                        className="block h-48 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                        {...register('users')}
+                        multiple
+                      >
+                        {/* <option value="" hidden>
+                          Assign user...
+                        </option> */}
+                        <option value="">None</option>
+                        {users.map((user) => {
+                          return (
+                            <option key={user._id} value={user.login}>
+                              {user.login} {user.name ? '(' + user.name + ')' : null}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {errors.users && (
+                        <p className="mt-2 text-sm text-red-600">
+                          <span className="font-medium">Oh, snapp!</span> Some error happens.
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
                 <div className="flex items-center justify-center">
                   <Button type="submit">{lang === LangKey.EN ? 'Create' : 'Создать'}</Button>
                   <Button
