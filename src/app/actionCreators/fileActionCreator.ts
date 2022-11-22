@@ -1,6 +1,5 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
-import { boardSlice } from '../slices/boardSlice';
 import type { navigateType } from 'models/typescript';
 import { IFile } from 'models/dbTypes';
 import { handleError401 } from 'utils/handleErrors';
@@ -8,7 +7,7 @@ import { fileSlice } from 'app/slices/fileSlice';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
-    boardSlice.actions.setStatus({
+    fileSlice.actions.setStatus({
       isLoading: true,
       isError: false,
     })
