@@ -29,9 +29,8 @@ interface ITaskProps {
 
 export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
   const { users } = useAppSelector((state) => state.userReducer);
-
   const author = users.filter((user) => user._id === task.userId)[0];
-  const assigned = task.users.map((taskUser) => users.filter((user) => user._id === taskUser)[0]);
+  const assigned = task.users.map((taskUser) => users.filter((user) => user.login === taskUser)[0]);
 
   return (
     <Draggable draggableId={task._id} index={index}>
@@ -73,10 +72,10 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
               />
             </div>
           ) : null}
-          <div className="flex flex-row items-center ">
+          <div className="flex flex-col">
             <p className="pb-4 text-sm font-normal text-gray-700">{task.description}</p>
             <div className="flex flex-row items-center justify-between">
-              {author && (
+              {/* {author && (
                 <div>
                   <p>Author: {author.login}</p>
                   <div className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-100">
@@ -85,17 +84,18 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
                     </span>
                   </div>
                 </div>
-              )}
+              )} */}
+              <div></div>
               {assigned.length > 0 && (
                 <div>
-                  <p>Assigned: </p>
-                  <div className={assigned.length > 1 ? 'flex -space-x-4' : ''}>
-                    {/* #TODO - logic for lot assignee */}
-                    {assigned.map((user) => {
+                  {/* <p>Assigned: </p> */}
+                  <div className={assigned.length > 1 ? 'flex -space-x-3' : ''}>
+                    {assigned.map((user, index) => {
+                      if (index >= 3) return;
                       return (
                         <div
                           key={user._id}
-                          className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-100"
+                          className="inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
                         >
                           <span className="text-sm font-medium text-gray-600">
                             {user.login.charAt(0).toUpperCase()}
@@ -103,6 +103,11 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
                         </div>
                       );
                     })}
+                    {assigned.length > 3 && (
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white hover:bg-gray-600">
+                        <span>+{assigned.length - 3}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

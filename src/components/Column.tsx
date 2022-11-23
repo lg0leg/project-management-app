@@ -5,8 +5,9 @@ import { Task } from './Task';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { BiTrash } from 'react-icons/bi';
 import { LangKey } from 'constants/lang';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { ModalTypes } from 'constants/modalTypes';
+import { fetchUpdateColumn } from 'app/actionCreators/columnActionCreator';
 
 interface IColumnProps {
   index: number;
@@ -22,17 +23,30 @@ interface IColumnProps {
 
 export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IColumnProps) => {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const dispatch = useAppDispatch();
+  const navigate = useAppNavigate();
   const [isChanging, setIsChanging] = useState(false);
   const [title, setTitle] = useState(column.title);
 
   const onKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       console.log('do validate');
+      changeColumnTitle();
       setIsChanging((prev) => !prev);
     }
   };
   const onDoneButtonPressed = () => {
+    changeColumnTitle();
     setIsChanging((prev) => !prev);
+  };
+  const changeColumnTitle = () => {
+    const newCol = {
+      _id: column._id,
+      boardId: column.boardId,
+      order: column.order,
+      title,
+    };
+    dispatch(fetchUpdateColumn({ column: newCol, navigate }));
   };
 
   return (

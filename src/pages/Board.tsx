@@ -1,29 +1,25 @@
 import { FC, MouseEvent, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
-import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
+import { IColumn, ITask } from 'models/dbTypes';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { MdAdd } from 'react-icons/md';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import Popup from 'components/popup/popup';
 import { DeleteConformation } from 'components/DeleteConformation';
-import AddModalContent from 'components/AddModalContent';
 import { ModalTypes } from 'constants/modalTypes';
 import { fetchGetAllBoardStore } from 'app/actionCreators/boardActionCreator';
 import { isExpired } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
-import { RoutesPath } from 'constants/routes';
-import { fetchCreateColumn, fetchColumnsSet } from 'app/actionCreators/columnActionCreator';
-import {
-  fetchCreateTask,
-  fetchDeleteTask,
-  fetchTasksSet,
-} from 'app/actionCreators/taskActionCreator';
-import SimpleSpinner from 'components/spinners/SimpleSpinner';
+import { fetchColumnsSet, fetchDeleteColumn } from 'app/actionCreators/columnActionCreator';
+import { fetchDeleteTask, fetchTasksSet } from 'app/actionCreators/taskActionCreator';
 import { getBoardText } from 'utils/getBoardText';
+import AddColumnModalContent from 'components/modals/AddColumnModalContent';
+import AddTaskModalContent from 'components/modals/AddTaskModalContent';
+import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
+import EditTaskModalContent from 'components/modals/EditTaskModalContent';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -36,14 +32,16 @@ export const Board: FC = () => {
   const _id = id ?? '';
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { board, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
+  const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
   const { tasks, isLoading: isLoadingTasks } = useAppSelector((state) => state.taskReducer);
-  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
   const copyColumns = [...columns];
-  // const { title } = getBoardText(board.title);
+  const currentBoard = boards.filter((b) => b._id === _id)[0];
+  const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
+  const { title } = getBoardText(currentBoard.title);
 
   useEffect(() => {
     if (isExpired(token)) {
@@ -74,21 +72,8 @@ export const Board: FC = () => {
   };
 
   const onConfirm = () => {
-    if (ModalTypes.ADD === modalType) {
-      console.log('create modal');
-      console.log('modalType: ', modalType);
-      console.log('modalTargetId: ', modalTargetId);
-      console.log('modalTargetType: ', modalTargetType);
-
-      if (modalTargetType === 'task') {
-        // dispatch(fetchCreateTask({ boardId: _id, column }));
-      }
-      if (modalTargetType === 'column') {
-      }
-    }
     if (ModalTypes.EDIT === modalType) {
       console.log('edit modal');
-      return;
     }
     if (ModalTypes.DELETE === modalType) {
       console.log('delete modal');
@@ -108,15 +93,16 @@ export const Board: FC = () => {
         );
       }
       if (modalTargetType === 'column') {
+        dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
       }
-      setModalType('');
-      setModalTargetId('');
-      setModalOpen(false);
     }
+    onCancel();
   };
 
   const onCancel = () => {
     setModalType('');
+    setModalTargetId('');
+    setModalTargetType('');
     setModalOpen(false);
   };
 
@@ -187,14 +173,15 @@ export const Board: FC = () => {
     <>
       {isLoading ? (
         <div className="flex h-[calc(100vh-100px-80px)] w-full items-center justify-center">
-          <SimpleSpinner isLoading={isLoading} sizePx={180} color="blue" />
+          {/* <SimpleSpinner isLoading={isLoading} sizePx={180} color="blue" /> */}
+          <SpinnerWithOverlay isLoading={isLoading} />
         </div>
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
             <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-              {/* {title} */}
-              title
+              {title}
+              {/* title */}
             </h1>
             <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
               {(provided) => (
@@ -235,10 +222,15 @@ export const Board: FC = () => {
         </DragDropContext>
       )}
       <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
-        {modalType === ModalTypes.ADD && (
-          <AddModalContent type={modalTargetType} onConfirm={onConfirm} onCancel={onCancel} />
+        {modalType === ModalTypes.ADD &&
+          (modalTargetType === 'column' ? (
+            <AddColumnModalContent onCancel={onCancel} />
+          ) : (
+            <AddTaskModalContent columnId={modalTargetId} onCancel={onCancel} />
+          ))}
+        {modalType === ModalTypes.EDIT && (
+          <EditTaskModalContent task={currentTask} onCancel={onCancel} />
         )}
-        {modalType === ModalTypes.EDIT}
         {modalType === ModalTypes.DELETE && (
           <DeleteConformation type={modalTargetType} onConfirm={onConfirm} onCancel={onCancel} />
         )}
