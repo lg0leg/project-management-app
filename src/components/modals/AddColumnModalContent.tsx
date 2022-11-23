@@ -20,7 +20,7 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const _id = id ?? '';
-
+  const { id: userId } = decodeToken(token) as IToken;
   const {
     register,
     handleSubmit,

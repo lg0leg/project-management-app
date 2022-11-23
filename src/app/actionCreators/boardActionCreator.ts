@@ -4,9 +4,10 @@ import { boardSlice } from '../slices/boardSlice';
 import type { navigateType } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
+import { fetchGetFilesByBoardId } from './fileActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -19,6 +20,7 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
 interface IBoardProps {
   _id: string;
   navigate: navigateType;
+  cb?: () => void;
 }
 interface ICreateBoardProps {
   owner: string;
@@ -71,26 +73,33 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
         if (path) navigate(path);
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
 
 // получение доски по id
-export const fetchGetBoard = ({ _id, navigate }: IBoardProps) => {
+export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken<IBoard>(`/boards/${_id}`);
 
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
-      );
+      if (response.status === 204) {
+        console.log('the page has been deleted');
+        dispatch(fetchDeleteBoard({ _id, navigate }));
+        navigate(RoutesPath.NOT_FOUND);
+      } else {
+        dispatch(
+          boardSlice.actions.getBoard({
+            board: response.data,
+          })
+        );
+        if (cb) cb();
+      }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -111,7 +120,7 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
         cb();
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -144,7 +153,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
         }
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -161,7 +170,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
         dispatch(fetchGetBoards({ navigate, path }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -180,7 +189,7 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByUserIdProps)
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -203,7 +212,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -214,8 +223,9 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetBoard({ _id, navigate }));
       dispatch(fetchGetColumns({ boardId: _id, navigate }));
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
+      dispatch(fetchGetFilesByBoardId({ boardId: _id, navigate }));
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };

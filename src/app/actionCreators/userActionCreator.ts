@@ -5,8 +5,8 @@ import type { navigateType } from 'models/typescript';
 import { IUser } from 'models/dbTypes';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
-import { handleError401 } from 'utils/handleErrors';
-handleError401;
+import { handleError } from 'utils/handleErrors';
+handleError;
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
     userSlice.actions.setStatus({
@@ -40,7 +40,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -62,7 +62,7 @@ export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
         cb();
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -107,7 +107,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
         dispatch(logout(navigate));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
