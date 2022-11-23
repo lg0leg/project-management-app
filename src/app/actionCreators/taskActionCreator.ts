@@ -5,6 +5,7 @@ import type { ITask, IUser } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetAllBoardStore } from './boardActionCreator';
+import { fetchAddFile } from './fileActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -52,6 +53,10 @@ interface ICreateTaskProps extends ITasksProps {
 
 interface IUpdateColumnProps extends ICreateTaskProps {
   _id: string;
+}
+
+interface ICreateTaskWithImgProps extends ICreateTaskProps {
+  file: File;
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -210,6 +215,31 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
             tasks: response.data,
           })
         );
+      }
+    } catch (e) {
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchCreateTaskWithImg = ({
+  boardId,
+  columnId,
+  task,
+  file,
+  navigate,
+}: ICreateTaskWithImgProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.post<ITask>(
+        `/boards/${boardId}/columns/${columnId}/tasks/`,
+        task
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
       }
     } catch (e) {
       handleError(dispatch, e, navigate);
