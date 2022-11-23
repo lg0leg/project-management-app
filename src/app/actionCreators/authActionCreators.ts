@@ -21,8 +21,8 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     authSlice.actions.setStatus({
-      isLoading: true,
-      isError: false,
+      isLoading: false,
+      isError: true,
     })
   );
 };
