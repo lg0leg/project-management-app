@@ -15,6 +15,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    taskSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 interface ISetTasksProps {
   newTasks: ITask[];
   navigate: navigateType;
@@ -83,6 +91,7 @@ export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -101,6 +110,7 @@ export const fetchGetTask = ({ boardId, columnId, _id, navigate }: ITaskProps) =
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -120,6 +130,7 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -145,6 +156,7 @@ export const fetchUpdateTask = ({
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -163,6 +175,7 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -179,6 +192,7 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -210,6 +224,7 @@ export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -235,6 +250,7 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -260,6 +276,7 @@ export const fetchCreateTaskWithImg = ({
         dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };

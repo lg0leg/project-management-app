@@ -14,6 +14,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    fileSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 interface IFileParams {
   ids?: string[];
   taskId?: string;
@@ -57,6 +65,7 @@ export const fetchGetFilesByParams = ({ navigate, ids, taskId, userId }: IGetFil
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -74,6 +83,7 @@ export const fetchGetFilesByBoardId = ({ navigate, boardId }: IGetFilesByBoardId
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -88,6 +98,7 @@ export const fetchDeleteFile = ({ navigate, fileId }: IDeleteFilesProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -112,6 +123,7 @@ export const fetchAddFile = ({ navigate, file, boardId, taskId }: IAddFileProps)
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };

@@ -14,6 +14,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    pointSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 interface IPointParams {
   ids?: string[];
   userId?: string;
@@ -81,6 +89,7 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -98,6 +107,7 @@ export const fetchGetPointsByTaskId = ({ navigate, taskId }: IGetPointsByTaskIdP
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -113,6 +123,7 @@ export const fetchDeletePoint = ({ navigate, pointId }: IDeletePointProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -129,6 +140,7 @@ export const fetchCreatePoint = ({ navigate, point }: ICreatePointProps) => {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -149,6 +161,7 @@ export const fetchChangeDoneInPointList = ({
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -165,6 +178,7 @@ export const fetchChangePoint = ({ navigate, pointData, pointId }: IChangePointP
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
