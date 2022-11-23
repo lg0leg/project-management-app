@@ -134,7 +134,7 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns${columnId}`);
+      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
