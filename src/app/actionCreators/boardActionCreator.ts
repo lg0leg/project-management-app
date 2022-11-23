@@ -17,6 +17,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    boardSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 interface IBoardProps {
   _id: string;
   navigate: navigateType;
@@ -73,6 +81,7 @@ export const fetchGetBoards = ({ navigate, cb, path }: IBoardsProps) => {
         if (path) navigate(path);
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -99,6 +108,7 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
         if (cb) cb();
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -120,6 +130,7 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
         cb();
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -153,6 +164,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
         }
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -170,6 +182,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
         dispatch(fetchGetBoards({ navigate, path }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -189,6 +202,7 @@ export const fetchGetBoardsByUser = ({ navigate, userId }: IBoardsByUserIdProps)
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -212,6 +226,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -225,6 +240,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
       dispatch(fetchGetFilesByBoardId({ boardId: _id, navigate }));
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };

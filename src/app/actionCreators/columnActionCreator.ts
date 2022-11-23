@@ -14,6 +14,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    columnSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 
 interface ISetColumnsProps {
   navigate: navigateType;
@@ -67,6 +75,7 @@ export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -85,6 +94,7 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -104,6 +114,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -124,6 +135,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -140,6 +152,7 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -167,6 +180,7 @@ export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -187,6 +201,7 @@ export const fetchCreateColumnsSet = ({ navigate, newColumns }: ICreateColumnSet
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -209,6 +224,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };

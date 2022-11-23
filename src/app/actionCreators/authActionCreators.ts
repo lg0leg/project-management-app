@@ -18,8 +18,17 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    authSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 
 const handleAuthError = (dispatch: AppDispatch, e: unknown, navigate: navigateType) => {
+  setErrorStatus(dispatch);
   if (e instanceof AxiosError) {
     const httpCode = e.response?.status as number;
     if (httpCode === 404) {
