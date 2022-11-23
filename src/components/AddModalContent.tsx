@@ -7,7 +7,8 @@ import { Button } from './Button';
 import { fetchCreateColumn } from 'app/actionCreators/columnActionCreator';
 import { useParams } from 'react-router-dom';
 import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
-
+import { decodeToken } from 'react-jwt';
+import type { IToken } from 'models/typescript';
 interface IAddModalContentProps {
   columnId?: string;
   type: string;
@@ -24,11 +25,12 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onC
   const { columns } = useAppSelector((state) => state.columnReducer);
   const { tasks } = useAppSelector((state) => state.taskReducer);
   const { user } = useAppSelector((state) => state.userReducer);
+  const { token } = useAppSelector((state) => state.authReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const _id = id ?? '';
-
+  const { id: userId } = decodeToken(token) as IToken;
   const {
     register,
     handleSubmit,
@@ -48,7 +50,7 @@ export const AddModalContent: FC<IAddModalContentProps> = ({ type, columnId, onC
         title,
         description: 'some description',
         order: tasks.filter((task) => task.columnId === columnId).length,
-        userId: +user._id,
+        userId: userId,
         users: initUsers,
       };
       const column_Id = columnId ?? '';
