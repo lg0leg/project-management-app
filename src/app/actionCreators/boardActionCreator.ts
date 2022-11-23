@@ -7,6 +7,7 @@ import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
+import { fetchGetFilesByBoardId } from './fileActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -222,6 +223,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetBoard({ _id, navigate }));
       dispatch(fetchGetColumns({ boardId: _id, navigate }));
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
+      dispatch(fetchGetFilesByBoardId({ boardId: _id, navigate }));
     } catch (e) {
       handleError(dispatch, e, navigate);
     }
