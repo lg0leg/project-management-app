@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RoutesPath } from 'constants/routes';
 import { StorageKey } from 'constants/storageKey';
-import type { IStatusPayload, navigateType } from 'models/typescript';
+import type { IStatusPayload, navigateType, IHandleErrorPayload } from 'models/typescript';
 import { isExpired } from 'react-jwt';
 interface ILogoutPayload {
   navigate: navigateType;
@@ -9,9 +9,6 @@ interface ILogoutPayload {
 interface ILoginSuccessPayload {
   token: string;
   navigate: navigateType;
-}
-interface IHandleErrorPayload {
-  code: number;
 }
 
 const initialState = {

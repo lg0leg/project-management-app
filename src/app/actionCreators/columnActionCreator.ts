@@ -2,7 +2,7 @@ import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { columnSlice } from '../slices/columnSlice';
 import type { IColumn, IUser } from 'models/dbTypes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 
@@ -67,7 +67,7 @@ export const fetchGetColumns = ({ navigate, boardId }: IColumnsProps) => {
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -85,7 +85,7 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -104,7 +104,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -124,7 +124,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -134,13 +134,13 @@ export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps)
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns${columnId}`);
+      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -167,7 +167,7 @@ export const fetchColumnsSet = ({ navigate, newColumns }: ISetColumnsProps) => {
         );
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -187,7 +187,7 @@ export const fetchCreateColumnsSet = ({ navigate, newColumns }: ICreateColumnSet
         );
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -209,7 +209,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
         );
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };

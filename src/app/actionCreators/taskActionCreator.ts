@@ -2,9 +2,10 @@ import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { taskSlice } from '../slices/taskSlice';
 import type { ITask, IUser } from 'models/dbTypes';
-import { handleError401 } from 'utils/handleErrors';
+import { handleError } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetAllBoardStore } from './boardActionCreator';
+import { fetchAddFile } from './fileActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -22,7 +23,7 @@ interface ITaskData {
   title: string;
   order: number;
   description: string;
-  userId: number;
+  userId: string;
   users: string[];
 }
 interface ITasksProps {
@@ -54,6 +55,10 @@ interface IUpdateColumnProps extends ICreateTaskProps {
   _id: string;
 }
 
+interface ICreateTaskWithImgProps extends ICreateTaskProps {
+  file: File;
+}
+
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -66,7 +71,7 @@ export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -84,7 +89,7 @@ export const fetchGetTask = ({ boardId, columnId, _id, navigate }: ITaskProps) =
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -103,7 +108,7 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -122,7 +127,7 @@ export const fetchUpdateTask = ({ boardId, columnId, _id, task, navigate }: IUpd
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -140,7 +145,7 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -156,7 +161,7 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
         })
       );
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -187,7 +192,7 @@ export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
         );
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
     }
   };
 };
@@ -212,7 +217,32 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
         );
       }
     } catch (e) {
-      handleError401(dispatch, e, navigate);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchCreateTaskWithImg = ({
+  boardId,
+  columnId,
+  task,
+  file,
+  navigate,
+}: ICreateTaskWithImgProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await apiToken.post<ITask>(
+        `/boards/${boardId}/columns/${columnId}/tasks/`,
+        task
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
+      }
+    } catch (e) {
+      handleError(dispatch, e, navigate);
     }
   };
 };

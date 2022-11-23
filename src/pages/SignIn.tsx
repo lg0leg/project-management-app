@@ -9,6 +9,7 @@ import { fetchLogin } from 'app/actionCreators/authActionCreators';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
 import { RoutesPath } from 'constants/routes';
+import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
@@ -31,6 +32,7 @@ export const SignIn: FC = () => {
   }
   return (
     <div className="min-h-[100%] bg-gray-300">
+      <SpinnerWithOverlay isLoading={isLoading} />
       <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
         <form
           className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
@@ -42,7 +44,6 @@ export const SignIn: FC = () => {
                 {errorText}
               </div>
             )}
-            {isLoading && <Spinner />}
           </div>
           <AuthInput
             label="login"
