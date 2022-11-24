@@ -32,16 +32,18 @@ export const Board: FC = () => {
   const _id = id ?? '';
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
+  const { board, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
   const { tasks, isLoading: isLoadingTasks } = useAppSelector((state) => state.taskReducer);
   const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
   const copyColumns = [...columns];
-  const currentBoard = boards.filter((b) => b._id === _id)[0];
   const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
-  const { title } = getBoardText(currentBoard.title);
+  let boardTitle = '';
+  if (board && board.title) {
+    boardTitle = getBoardText(board.title).title;
+  }
 
   useEffect(() => {
     if (isExpired(token)) {
@@ -180,8 +182,7 @@ export const Board: FC = () => {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
             <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-              {title}
-              {/* title */}
+              {boardTitle}
             </h1>
             <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
               {(provided) => (

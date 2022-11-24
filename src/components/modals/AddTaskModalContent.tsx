@@ -99,25 +99,11 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 </label>
                 <textarea
                   id="message"
-                  rows={4}
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                  // placeholder="Write description here..."
+                  rows={3}
+                  className="block max-h-60 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
                   {...register('description', { required: true, minLength: 2, maxLength: 100 })}
                 ></textarea>
-                {/* <label
-                  htmlFor="description"
-                  className="mb-2 block text-sm font-medium text-gray-900"
-                >
-                  {lang === LangKey.EN ? 'Description' : 'Описание'}
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder={`${lang === LangKey.EN ? 'Description' : 'Описание'}...`}
-                  {...register('description', { required: true, minLength: 2, maxLength: 100 })}
-                /> */}
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     <span className="font-medium">Oh, snapp!</span> Max length is 100 characters.

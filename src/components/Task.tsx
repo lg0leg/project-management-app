@@ -5,6 +5,7 @@ import { IFile, ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
+import { LangKey } from 'constants/lang';
 
 const filesListMocks: IFile[] = [
   {
@@ -28,6 +29,7 @@ interface ITaskProps {
 }
 
 export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
+  const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
   const author = users.filter((user) => user._id === task.userId)[0];
   const assigned = task.users.map((taskUser) => users.filter((user) => user.login === taskUser)[0]);
@@ -55,7 +57,12 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                 onClick={(e) => {
-                  openModal(e, ModalTypes.DELETE, task._id, 'task');
+                  openModal(
+                    e,
+                    ModalTypes.DELETE,
+                    task._id,
+                    lang === LangKey.EN ? 'task' : 'задачу'
+                  );
                 }}
               >
                 <BiTrash className="h-5 w-5" />

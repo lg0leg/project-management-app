@@ -100,7 +100,12 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                     className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     data-modal="modal-delete-column"
                     onClick={(e) => {
-                      openModal(e, ModalTypes.DELETE, column._id, 'column');
+                      openModal(
+                        e,
+                        ModalTypes.DELETE,
+                        column._id,
+                        lang === LangKey.EN ? 'column' : 'колонку'
+                      );
                     }}
                   >
                     <BiTrash className="h-5 w-5" />

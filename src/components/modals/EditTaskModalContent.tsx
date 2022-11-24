@@ -100,18 +100,18 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
               </div>
               <div>
                 <label
-                  htmlFor="description"
-                  className="mb-2 block text-sm font-medium text-gray-900"
+                  htmlFor="message"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
                   {lang === LangKey.EN ? 'Description' : 'Описание'}
                 </label>
-                <input
-                  type="text"
-                  id="description"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder={`${lang === LangKey.EN ? 'Description' : 'Описание'}...`}
+                <textarea
+                  id="message"
+                  rows={3}
+                  className="block max-h-52 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
                   {...register('description', { required: true, minLength: 2, maxLength: 100 })}
-                />
+                ></textarea>
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     <span className="font-medium">Oh, snapp!</span> Max length is 100 characters.
