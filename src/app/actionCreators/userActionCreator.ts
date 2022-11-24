@@ -6,12 +6,20 @@ import { IUser } from 'models/dbTypes';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 import { handleError } from 'utils/handleErrors';
-handleError;
+
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
     userSlice.actions.setStatus({
       isLoading: true,
       isError: false,
+    })
+  );
+};
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    userSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
     })
   );
 };
@@ -40,6 +48,7 @@ export const fetchGetUsers = (navigate: (path: string) => void) => {
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -62,6 +71,7 @@ export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
         cb();
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -80,6 +90,7 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       if (e instanceof AxiosError) {
         const code = e.response?.status as number;
         if (code === 401) {
@@ -107,6 +118,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
         dispatch(logout(navigate));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };

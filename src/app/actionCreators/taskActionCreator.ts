@@ -15,6 +15,14 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+const setErrorStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    taskSlice.actions.setStatus({
+      isLoading: false,
+      isError: true,
+    })
+  );
+};
 interface ISetTasksProps {
   newTasks: ITask[];
   navigate: navigateType;
@@ -25,6 +33,14 @@ interface ITaskData {
   description: string;
   userId: string;
   users: string[];
+}
+interface IUpdateTaskData {
+  title: string;
+  order: number;
+  description: string;
+  userId: string;
+  users: string[];
+  columnId: string;
 }
 interface ITasksProps {
   columnId: string;
@@ -51,8 +67,12 @@ interface ICreateTaskProps extends ITasksProps {
   task: ITaskData;
 }
 
-interface IUpdateColumnProps extends ICreateTaskProps {
+interface IUpdateTaskProps {
   _id: string;
+  updateTask: IUpdateTaskData;
+  columnId: string;
+  boardId: string;
+  navigate: navigateType;
 }
 
 interface ICreateTaskWithImgProps extends ICreateTaskProps {
@@ -71,6 +91,7 @@ export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -89,6 +110,7 @@ export const fetchGetTask = ({ boardId, columnId, _id, navigate }: ITaskProps) =
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -108,25 +130,33 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
 };
 
-export const fetchUpdateTask = ({ boardId, columnId, _id, task, navigate }: IUpdateColumnProps) => {
+export const fetchUpdateTask = ({
+  boardId,
+  columnId,
+  _id,
+  updateTask,
+  navigate,
+}: IUpdateTaskProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.put<ITask>(
         `/boards/${boardId}/columns/${columnId}/tasks/${_id}`,
-        task
+        updateTask
       );
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -145,6 +175,7 @@ export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -161,6 +192,7 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
         })
       );
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -192,6 +224,7 @@ export const fetchTasksSet = ({ navigate, newTasks }: ISetTasksProps) => {
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -217,6 +250,7 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
         );
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
@@ -242,6 +276,7 @@ export const fetchCreateTaskWithImg = ({
         dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
       }
     } catch (e) {
+      setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
     }
   };
