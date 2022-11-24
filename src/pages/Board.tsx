@@ -20,6 +20,8 @@ import AddColumnModalContent from 'components/modals/AddColumnModalContent';
 import AddTaskModalContent from 'components/modals/AddTaskModalContent';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 import EditTaskModalContent from 'components/modals/EditTaskModalContent';
+import { Button } from 'components/Button';
+import { RoutesPath } from 'constants/routes';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -181,9 +183,12 @@ export const Board: FC = () => {
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-            <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-              {boardTitle}
-            </h1>
+            <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
+              <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+                {lang === LangKey.EN ? 'Back' : 'Назад'}
+              </Button>
+              <h1>{boardTitle}</h1>
+            </div>
             <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
               {(provided) => (
                 <div
