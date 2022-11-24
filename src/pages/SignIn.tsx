@@ -54,6 +54,7 @@ export const SignIn: FC = () => {
             minLength={2}
             maxLength={20}
             errors={errors}
+            required
           />
           <AuthInput
             label="password"
@@ -64,6 +65,7 @@ export const SignIn: FC = () => {
             minLength={6}
             maxLength={20}
             errors={errors}
+            required
           />
           <AuthSubmit text="Sign in" />
           <p className="pt-3 text-sm font-light text-gray-600">

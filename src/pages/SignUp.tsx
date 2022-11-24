@@ -55,6 +55,7 @@ export const SignUp: FC = () => {
             minLength={2}
             maxLength={20}
             errors={errors}
+            required
           />
           <AuthInput
             label="login"
@@ -65,6 +66,7 @@ export const SignUp: FC = () => {
             minLength={2}
             maxLength={20}
             errors={errors}
+            required
           />
           <AuthInput
             label="password"
@@ -75,6 +77,7 @@ export const SignUp: FC = () => {
             minLength={6}
             maxLength={20}
             errors={errors}
+            required
           />
           <AuthSubmit text="Sign up" />
         </form>

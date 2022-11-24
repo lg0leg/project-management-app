@@ -11,6 +11,7 @@ export interface IAuthRequest {
   name?: string;
   login: string;
   password: string;
+  passwordRepeat?: string;
 }
 
 export interface IRegisterResponse {
