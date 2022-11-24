@@ -54,8 +54,8 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   };
 
   return (
-    <div className="w-[400px] overflow-y-auto overflow-x-hidden p-4">
-      <div className="relative h-full w-full max-w-md md:h-auto">
+    <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+      <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button
             type="button"
@@ -92,6 +92,20 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
               </div>
               <div>
                 <label
+                  htmlFor="message"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  {lang === LangKey.EN ? 'Description' : 'Описание'}
+                </label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  // placeholder="Write description here..."
+                  placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
+                  {...register('description', { required: true, minLength: 2, maxLength: 100 })}
+                ></textarea>
+                {/* <label
                   htmlFor="description"
                   className="mb-2 block text-sm font-medium text-gray-900"
                 >
@@ -103,7 +117,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Description' : 'Описание'}...`}
                   {...register('description', { required: true, minLength: 2, maxLength: 100 })}
-                />
+                /> */}
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     <span className="font-medium">Oh, snapp!</span> Max length is 100 characters.

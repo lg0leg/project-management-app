@@ -39,8 +39,8 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
 
   return (
     <>
-      <div className="w-[400px] overflow-y-auto overflow-x-hidden p-4">
-        <div className="relative h-full w-full max-w-md md:h-auto">
+      <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+        <div className="h-full w-full">
           <div className="relative rounded-lg bg-white shadow">
             <button
               type="button"

@@ -6,6 +6,7 @@ import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import { ITask } from 'models/dbTypes';
 import { fetchUpdateTask } from 'app/actionCreators/taskActionCreator';
+import { fetchAddFile } from 'app/actionCreators/fileActionCreator';
 
 interface IEditTaskModalContentProps {
   task: ITask;
@@ -33,29 +34,36 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
     console.log('submited: ', data);
     console.log('type: task');
     console.log('task: ', task);
-    const { title, description, order, userId, users } = data;
+    const { title, description, order, userId, users, attachment } = data;
     const taskData = {
       title,
-      description,
       order,
+      description,
       userId,
       users,
+      columnId: task.columnId,
     };
     dispatch(
       fetchUpdateTask({
         _id: task._id,
         boardId: task.boardId,
         columnId: task.columnId,
-        task: taskData,
+        updateTask: taskData,
         navigate,
       })
     );
+    if (attachment.length) {
+      Array.from(attachment).map((file) =>
+        dispatch(fetchAddFile({ boardId: task.boardId, file, navigate, taskId: task._id }))
+      );
+      console.log('attachment');
+    }
     onCancel();
   };
 
   return (
-    <div className="w-[400px] overflow-y-auto overflow-x-hidden p-4">
-      <div className="relative h-full w-full max-w-md md:h-auto">
+    <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+      <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button
             type="button"
@@ -135,7 +143,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
               </div>
               <div>
                 <label htmlFor="users" className="mb-2 block text-sm font-medium text-gray-900">
-                  {lang === LangKey.EN ? 'Assignee user' : 'Назначте ответственных'}
+                  {lang === LangKey.EN ? 'Assignee user' : 'Назначить ответственных'}
                 </label>
                 <select
                   id="users"
@@ -158,7 +166,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                 )}
               </div>
               <div className="flex items-center justify-center">
-                <Button type="submit">{lang === LangKey.EN ? 'Create' : 'Создать'}</Button>
+                <Button type="submit">{lang === LangKey.EN ? 'Edit' : 'Изменить '}</Button>
                 <Button
                   color="alternative"
                   onClick={() => {
