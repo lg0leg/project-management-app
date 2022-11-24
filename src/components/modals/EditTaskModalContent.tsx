@@ -168,7 +168,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
               <div className="flex items-center justify-center">
                 <Button type="submit">{lang === LangKey.EN ? 'Edit' : 'Изменить '}</Button>
                 <Button
-                  color="alternative"
+                  color="light"
                   onClick={() => {
                     onCancel();
                   }}
