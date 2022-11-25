@@ -75,16 +75,8 @@ export const Board: FC = () => {
     if (modalTargetType) setModalTargetType(modalTargetType);
   };
 
-  const onConfirm = () => {
-    if (ModalTypes.EDIT === modalType) {
-      console.log('edit modal');
-    }
+  const onConfirmDelete = () => {
     if (ModalTypes.DELETE === modalType) {
-      console.log('delete modal');
-      console.log('modalType: ', modalType);
-      console.log('modalTargetId: ', modalTargetId);
-      console.log('modalTargetType: ', modalTargetType);
-
       if (modalTargetType === 'task') {
         const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
         dispatch(
@@ -175,58 +167,52 @@ export const Board: FC = () => {
 
   return (
     <>
-      {isLoading ? (
-        <div className="flex h-[calc(100vh-100px-80px)] w-full items-center justify-center">
-          {/* <SimpleSpinner isLoading={isLoading} sizePx={180} color="blue" /> */}
-          <SpinnerWithOverlay isLoading={isLoading} />
-        </div>
-      ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-            <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
-              <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
-                {lang === LangKey.EN ? 'Back' : 'Назад'}
-              </Button>
-              <h1>{boardTitle}</h1>
-            </div>
-            <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
-              {(provided) => (
-                <div
-                  className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {copyColumns
-                    .sort((col1, col2) => col1.order - col2.order)
-                    .map((column, index) => {
-                      return (
-                        <Column
-                          key={column._id}
-                          index={index}
-                          column={column}
-                          tasks={tasks.filter((task) => task.columnId === column._id)}
-                          openModal={openModal}
-                        />
-                      );
-                    })}
-                  {provided.placeholder}
-                  <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
-                    <button
-                      className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
-                      onClick={(e) => {
-                        openModal(e, ModalTypes.ADD, '', 'column');
-                      }}
-                    >
-                      <MdAdd />
-                      {lang === LangKey.EN ? 'Add new column' : 'Добавить колонку'}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </Droppable>
+      <SpinnerWithOverlay isLoading={isLoading} />
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
+          <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
+            <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+              {lang === LangKey.EN ? 'Back' : 'Назад'}
+            </Button>
+            <h1>{boardTitle}</h1>
           </div>
-        </DragDropContext>
-      )}
+          <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
+            {(provided) => (
+              <div
+                className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {copyColumns
+                  .sort((col1, col2) => col1.order - col2.order)
+                  .map((column, index) => {
+                    return (
+                      <Column
+                        key={column._id}
+                        index={index}
+                        column={column}
+                        tasks={tasks.filter((task) => task.columnId === column._id)}
+                        openModal={openModal}
+                      />
+                    );
+                  })}
+                {provided.placeholder}
+                <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
+                  <button
+                    className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
+                    onClick={(e) => {
+                      openModal(e, ModalTypes.ADD, '', 'column');
+                    }}
+                  >
+                    <MdAdd />
+                    {lang === LangKey.EN ? 'Add new column' : 'Добавить колонку'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </Droppable>
+        </div>
+      </DragDropContext>
       <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
         {modalType === ModalTypes.ADD &&
           (modalTargetType === 'column' ? (
@@ -238,7 +224,11 @@ export const Board: FC = () => {
           <EditTaskModalContent task={currentTask} onCancel={onCancel} />
         )}
         {modalType === ModalTypes.DELETE && (
-          <DeleteConformation type={modalTargetType} onConfirm={onConfirm} onCancel={onCancel} />
+          <DeleteConformation
+            type={modalTargetType}
+            onConfirm={onConfirmDelete}
+            onCancel={onCancel}
+          />
         )}
       </Popup>
     </>
