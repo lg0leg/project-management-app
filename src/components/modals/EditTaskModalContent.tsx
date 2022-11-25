@@ -118,7 +118,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                   </p>
                 )}
               </div>
-              <div>
+              {/* <div>
                 <label
                   className="mb-2 block text-sm font-medium text-gray-900"
                   htmlFor="attachment"
@@ -133,14 +133,14 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                   {...register('attachment', {})}
                 />
                 <p className="text-sm text-gray-500" id="attachment_help">
-                  {lang === LangKey.EN ? 'SVG, PNG, JPG or GIF' : 'SVG, PNG, JPG или GIF'}
+                  {lang === LangKey.EN ? 'PNG or JPG' : 'PNG или JPG'}
                 </p>
                 {errors.attachment && (
                   <p className="mt-2 text-sm text-red-600">
                     <span className="font-medium">Oh, snapp!</span> Attachment.
                   </p>
                 )}
-              </div>
+              </div> */}
               <div>
                 <label htmlFor="users" className="mb-2 block text-sm font-medium text-gray-900">
                   {lang === LangKey.EN ? 'Assignee user' : 'Назначить ответственных'}
