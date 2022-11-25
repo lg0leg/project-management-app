@@ -8,6 +8,7 @@ import { LangKey } from 'constants/lang';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { ModalTypes } from 'constants/modalTypes';
 import { fetchUpdateColumn } from 'app/actionCreators/columnActionCreator';
+import { HiXMark } from 'react-icons/hi2';
 
 interface IColumnProps {
   index: number;
@@ -76,12 +77,23 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                       onKeyDownHandler(e);
                     }}
                   />
-                  <div
+                  <button
+                    type="button"
                     className=" rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     onClick={onDoneButtonPressed}
                   >
                     <MdDone className="h-5 w-5" />
-                  </div>
+                  </button>
+                  <button
+                    type="button"
+                    className=" rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
+                    onClick={() => setIsChanging((prev) => !prev)}
+                  >
+                    <div className="h-5 w-5">
+                      <HiXMark size={20} />
+                    </div>
+                    <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
+                  </button>
                 </div>
               </>
             ) : (
