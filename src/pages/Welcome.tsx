@@ -23,7 +23,7 @@ export const Welcome: FC = () => {
         </section>
 
         <section className="flex flex-col items-center justify-center px-[40px] pt-[100px]">
-          <h4 className={h4Styles}>{lang == 'en' ? 'How is it done?' : 'Как это сделано? '}</h4>
+          <h4 className={h4Styles}>{lang == 'en' ? 'How is it done?' : 'Как это сделано?'}</h4>
           <div className="flex flex-wrap justify-center gap-[10px] py-[10px] sm:gap-[30px] sm:py-[30px]">
             <SiTailwindcss size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiReact size={50} color={'rgb(59, 130, 246, 1)'} />
@@ -31,6 +31,26 @@ export const Welcome: FC = () => {
             <SiTypescript size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiReactrouter size={50} color={'rgb(59, 130, 246, 1)'} />
           </div>
+        </section>
+
+        <section className="flex flex-col items-center justify-center gap-[10px] px-[25px] pt-[100px] sm:gap-[30px] sm:px-[50px]">
+          <h4 className={h4Styles}>
+            {lang == 'en'
+              ? 'How can I learn to make apps that are as cool as they are?'
+              : 'Как я могу научится делать такие же крутые приложения?'}
+          </h4>
+          <p className="text-md font-semibold text-gray-500 sm:text-lg lg:text-3xl">
+            {lang == 'en' ? 'In a free course from ' : 'На бесплатных курсах от '}
+            <a
+              className="font-bold"
+              href="https://rs.school/index.html"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Rolling Scopes School
+            </a>
+            {lang == 'en' ? ', of course!' : ', конечно!'}
+          </p>
         </section>
 
         <section className="flex flex-col items-center gap-[20px] px-[30px] pt-[100px] text-center">
