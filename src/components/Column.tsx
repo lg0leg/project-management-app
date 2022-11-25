@@ -51,7 +51,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
   };
 
   return (
-    <Draggable draggableId={'drag.' + column._id} index={index}>
+    <Draggable draggableId={'drag.' + column._id} index={index} isDragDisabled={isChanging}>
       {(provided) => (
         <div
           className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"

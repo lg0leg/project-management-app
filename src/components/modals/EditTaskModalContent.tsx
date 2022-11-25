@@ -52,12 +52,12 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
         navigate,
       })
     );
-    if (attachment.length) {
-      Array.from(attachment).map((file) =>
-        dispatch(fetchAddFile({ boardId: task.boardId, file, navigate, taskId: task._id }))
-      );
-      console.log('attachment');
-    }
+    // if (attachment.length) {
+    //   Array.from(attachment).map((file) =>
+    //     dispatch(fetchAddFile({ boardId: task.boardId, file, navigate, taskId: task._id }))
+    //   );
+    //   console.log('attachment');
+    // }
     onCancel();
   };
 

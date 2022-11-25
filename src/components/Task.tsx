@@ -1,21 +1,10 @@
 import { FC, MouseEvent } from 'react';
-import NotFoundImage from '../assets/images/NotFound.jpg';
 import { BiEdit, BiTrash } from 'react-icons/bi';
-import { IFile, ITask } from 'models/dbTypes';
+import { ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
-
-const filesListMocks: IFile[] = [
-  {
-    _id: 'File id',
-    name: 'example.img',
-    taskId: 'E6D624FD-0159-0C1E-AC4A-4A54438634CB',
-    boardId: 'id of board',
-    path: NotFoundImage,
-  },
-];
 
 interface ITaskProps {
   task: ITask;
@@ -69,16 +58,15 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
               </button>
             </div>
           </div>
-          {filesListMocks[0].taskId === task._id ? (
+          {/* {filesListMocks[0].taskId === task._id ? (
             <div className="flex items-center justify-center pb-4">
-              {/* <img className="rounded-lg bg-contain" src={NotFoundImage} alt="img" /> */}
               <img
                 className="rounded-lg bg-contain"
                 src={filesListMocks[0].path}
                 alt={filesListMocks[0].name}
               />
             </div>
-          ) : null}
+          ) : null} */}
           <div className="flex flex-col">
             <p className="pb-4 text-sm font-normal text-gray-700">{task.description}</p>
             <div className="flex flex-row items-center justify-between">

@@ -110,7 +110,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   </p>
                 )}
               </div>
-              <div>
+              {/* <div>
                 <label
                   className="mb-2 block text-sm font-medium text-gray-900"
                   htmlFor="attachment"
@@ -127,25 +127,12 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 <p className="text-sm text-gray-500" id="attachment_help">
                   {lang === LangKey.EN ? 'SVG, PNG, JPG or GIF' : 'SVG, PNG, JPG или GIF'}
                 </p>
-                {/* <label
-                  htmlFor="attachment"
-                  className="mb-2 block text-sm font-medium text-gray-900"
-                >
-                  {lang === LangKey.EN ? 'Attachment' : 'Вложения'}
-                </label>
-                <input
-                  type="file"
-                  id="attachment"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Attachment..."
-                  {...register('attachment', { minLength: 2, maxLength: 100 })}
-                /> */}
                 {errors.attachment && (
                   <p className="mt-2 text-sm text-red-600">
                     <span className="font-medium">Oh, snapp!</span> Max length is 100 characters.
                   </p>
                 )}
-              </div>
+              </div> */}
               <div>
                 <label htmlFor="users" className="mb-2 block text-sm font-medium text-gray-900">
                   {lang === LangKey.EN ? 'Assignee user' : 'Назначте ответственных'}

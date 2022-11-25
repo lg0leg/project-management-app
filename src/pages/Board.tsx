@@ -16,10 +16,10 @@ import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
 import { fetchColumnsSet, fetchDeleteColumn } from 'app/actionCreators/columnActionCreator';
 import { fetchDeleteTask, fetchTasksSet } from 'app/actionCreators/taskActionCreator';
 import { getBoardText } from 'utils/getBoardText';
-import AddColumnModalContent from 'components/modals/AddColumnModalContent';
-import AddTaskModalContent from 'components/modals/AddTaskModalContent';
+import { AddColumnModalContent } from 'components/modals/AddColumnModalContent';
+import { AddTaskModalContent } from 'components/modals/AddTaskModalContent';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
-import EditTaskModalContent from 'components/modals/EditTaskModalContent';
+import { EditTaskModalContent } from 'components/modals/EditTaskModalContent';
 import { Button } from 'components/Button';
 import { RoutesPath } from 'constants/routes';
 
@@ -31,8 +31,8 @@ export const Board: FC = () => {
   const [modalTargetId, setModalTargetId] = useState('');
   const [modalTargetType, setModalTargetType] = useState('');
 
-  const _id = id ?? '';
   const navigate = useAppNavigate();
+  const _id = id ?? '';
   const dispatch = useAppDispatch();
   const { board, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
@@ -76,22 +76,25 @@ export const Board: FC = () => {
   };
 
   const onConfirmDelete = () => {
-    if (ModalTypes.DELETE === modalType) {
-      if (modalTargetType === 'task') {
-        const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
-        dispatch(
-          fetchDeleteTask({
-            _id: modalTargetId,
-            columnId: targetTask.columnId,
-            boardId: targetTask.boardId,
-            navigate,
-          })
-        );
-      }
-      if (modalTargetType === 'column') {
-        dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
-      }
+    console.log(modalType);
+    console.log(modalTargetId);
+    console.log(modalTargetType);
+    // if (ModalTypes.DELETE === modalType) {
+    if (modalTargetType === 'task' || modalTargetType === 'задачу') {
+      const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
+      dispatch(
+        fetchDeleteTask({
+          _id: modalTargetId,
+          columnId: targetTask.columnId,
+          boardId: targetTask.boardId,
+          navigate,
+        })
+      );
     }
+    if (modalTargetType === 'column' || modalTargetType === 'колонку') {
+      dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
+    }
+    // }
     onCancel();
   };
 
