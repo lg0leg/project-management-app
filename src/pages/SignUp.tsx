@@ -13,7 +13,7 @@ import {
   getValidatePassword,
   getValidateName,
 } from 'utils/getAuthValidation';
-import { InputLength } from 'constants/authValidation';
+import { InputLength, ValidateKey } from 'constants/authValidation';
 
 export const SignUp: FC = () => {
   const navigate = useAppNavigate();
@@ -21,15 +21,15 @@ export const SignUp: FC = () => {
   const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
 
-  const name = lang === 'en' ? 'Your name:' : 'Ваше имя';
-
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
-    const data = res as IRegisterRequest;
+    const { name, login, password } = res as IRegisterRequest;
+    const data = { name, login, password };
     dispatch(fetchRegister({ data, navigate }));
   };
 
@@ -86,6 +86,19 @@ export const SignUp: FC = () => {
             pattern={getValidatePassword()}
             errors={errors}
             required
+          />
+          <AuthInput
+            label="passwordRepeat"
+            title={lang === LangKey.EN ? 'Repeat password' : 'Повторите пароль'}
+            placeholder={lang === LangKey.EN ? 'Repeat password' : 'Повторите пароль'}
+            register={register}
+            type="password"
+            minLength={getValidateMinLength(InputLength.PASS_MIN)}
+            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+            errors={errors}
+            validate={{
+              matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
+            }}
           />
           <AuthSubmit text={lang === LangKey.EN ? 'Sign up' : 'Зарегистрироваться'} />
         </form>
