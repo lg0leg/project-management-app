@@ -4,11 +4,19 @@ import Rocket from '../assets/images/rocket.png';
 import { CiYoutube } from 'react-icons/ci';
 import { SiTailwindcss, SiReact, SiRedux, SiTypescript, SiReactrouter } from 'react-icons/si';
 
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Carousel } from 'react-responsive-carousel';
+import Screen1 from '../assets/screenshots/screen1.png';
+
 export const Welcome: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const [showVideo, setShowVideo] = useState(false);
 
   const h4Styles = 'text-lg font-bold text-blue-500 sm:text-xl lg:text-4xl';
+  // const carouselDescriptionStyles =
+  //   'legend color !bottom-[10px] !ml-[-40%] !w-[80%] !bg-white !p-[5px] !text-sm !text-blue-500 !opacity-100 shadow-xl sm:!p-[15px] sm:!text-xl';
+  const carouselDescriptionStyles =
+    'legend color !bottom-[0px] !ml-[-50%] !w-[100%] !bg-white !p-[4px] !text-xs !text-blue-500 !opacity-100  sm:!p-[15px] sm:!text-xl';
 
   return (
     <>
@@ -20,6 +28,45 @@ export const Welcome: FC = () => {
             {lang == 'en' ? 'with Rocket Task Sheduler!' : 'вместе с Rocket Task Sheduler!'}
           </h2>
           <img className="h-[100px] sm:h-[200px] lg:h-[360px]" src={Rocket} alt="rocket" />
+        </section>
+
+        <section className="flex flex-col items-center justify-center gap-[30px] pt-[100px]">
+          <h4 className={h4Styles}>{lang == 'en' ? 'How does it work?' : 'Как это работает?'}</h4>
+          <div className="w-[80%] sm:w-[50%]">
+            <Carousel
+              dynamicHeight={true}
+              emulateTouch={true}
+              infiniteLoop={true}
+              showStatus={false}
+              showIndicators={false}
+              showThumbs={false}
+            >
+              <div>
+                <img src={Screen1} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>
+                  {lang == 'en'
+                    ? 'Step 1 -  Create an account. Just a username and password, nothing else!'
+                    : 'Шаг 1. Создай аккаунт. Только логин и пароль, ничего лишнего!'}
+                </p>
+              </div>
+              <div>
+                <img src={Screen1} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 2' : 'Шаг 2'}</p>
+              </div>
+              <div>
+                <img src={Screen1} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 3' : 'Шаг 3'}</p>
+              </div>
+              <div>
+                <img src={Screen1} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 4' : 'Шаг 4'}</p>
+              </div>
+              <div>
+                <img src={Screen1} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 5' : 'Шаг 5'}</p>
+              </div>
+            </Carousel>
+          </div>
         </section>
 
         <section className="flex flex-col items-center justify-center px-[40px] pt-[100px]">
@@ -49,7 +96,7 @@ export const Welcome: FC = () => {
             >
               Rolling Scopes School
             </a>
-            {lang == 'en' ? ', of course!' : ', конечно!'}
+            {lang == 'en' ? ', of course!' : ', конечно же!'}
           </p>
         </section>
 
