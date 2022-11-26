@@ -6,11 +6,15 @@ import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchLogin } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
 import { RoutesPath } from 'constants/routes';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
-
+import {
+  getValidateMaxLength,
+  getValidateMinLength,
+  getValidatePassword,
+} from 'utils/getAuthValidation';
+import { InputLength } from 'constants/authValidation';
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
@@ -51,8 +55,8 @@ export const SignIn: FC = () => {
             placeholder="Login"
             register={register}
             type="text"
-            minLength={2}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
+            maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
             errors={errors}
             required
           />
@@ -62,8 +66,9 @@ export const SignIn: FC = () => {
             placeholder="Password"
             register={register}
             type="password"
-            minLength={6}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.PASS_MIN)}
+            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+            pattern={getValidatePassword()}
             errors={errors}
             required
           />

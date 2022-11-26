@@ -7,6 +7,13 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators/authActionCreators';
 import { LangKey } from 'constants/lang';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
+import {
+  getValidateMaxLength,
+  getValidateMinLength,
+  getValidatePassword,
+  getValidateName,
+} from 'utils/getAuthValidation';
+import { InputLength, ValidateKey } from 'constants/authValidation';
 
 export const Profile: FC = () => {
   const navigate = useAppNavigate();
@@ -18,7 +25,12 @@ export const Profile: FC = () => {
   const login = lang === 'en' ? 'Enter new login:' : 'Введите новый логин:';
   const pass = lang === 'en' ? 'Enter new password:' : 'Введите новый пароль:';
   const passRepeat = lang === 'en' ? 'Repeat new password:' : 'повторите новый пароль:';
-  const { register, handleSubmit, errors, watch } = useForm<IAuthRequest>();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
     console.log(res);
     // dispatch(fetchRegister({ data, navigate }));
@@ -49,8 +61,9 @@ export const Profile: FC = () => {
             placeholder="New name"
             register={register}
             type="text"
-            minLength={2}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.NAME_MIN)}
+            maxLength={getValidateMaxLength(InputLength.NAME_MAX)}
+            pattern={getValidateName()}
             errors={errors}
           />
           <AuthInput
@@ -59,8 +72,8 @@ export const Profile: FC = () => {
             placeholder="New login"
             register={register}
             type="text"
-            minLength={2}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
+            maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
             errors={errors}
           />
           <AuthInput
@@ -69,8 +82,9 @@ export const Profile: FC = () => {
             placeholder="New password"
             register={register}
             type="password"
-            minLength={6}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.PASS_MIN)}
+            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+            pattern={getValidatePassword()}
             errors={errors}
           />
           <AuthInput
@@ -79,11 +93,11 @@ export const Profile: FC = () => {
             placeholder="Repeat new password"
             register={register}
             type="password"
-            minLength={6}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.PASS_MIN)}
+            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
             errors={errors}
             validate={{
-              matchPassword: (value) => watch('password') === value || "passwords don't match",
+              matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
             }}
           />
           <AuthSubmit text="Edit" />

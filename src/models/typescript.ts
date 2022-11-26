@@ -43,3 +43,10 @@ export interface IStatusPayload {
 }
 
 export type navigateType = (path: string) => void;
+
+export interface IAuthValidate {
+  value: number;
+  message: string;
+}
+
+export type ValueOf<T> = T[keyof T];

@@ -5,9 +5,15 @@ import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { fetchRegister } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
+import {
+  getValidateMaxLength,
+  getValidateMinLength,
+  getValidatePassword,
+  getValidateName,
+} from 'utils/getAuthValidation';
+import { InputLength } from 'constants/authValidation';
 
 export const SignUp: FC = () => {
   const navigate = useAppNavigate();
@@ -52,8 +58,9 @@ export const SignUp: FC = () => {
             placeholder="Name"
             register={register}
             type="text"
-            minLength={2}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.NAME_MIN)}
+            maxLength={getValidateMaxLength(InputLength.NAME_MAX)}
+            pattern={getValidateName()}
             errors={errors}
             required
           />
@@ -63,8 +70,8 @@ export const SignUp: FC = () => {
             placeholder="Login"
             register={register}
             type="text"
-            minLength={2}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
+            maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
             errors={errors}
             required
           />
@@ -74,8 +81,9 @@ export const SignUp: FC = () => {
             placeholder="Password"
             register={register}
             type="password"
-            minLength={6}
-            maxLength={20}
+            minLength={getValidateMinLength(InputLength.PASS_MIN)}
+            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+            pattern={getValidatePassword()}
             errors={errors}
             required
           />
