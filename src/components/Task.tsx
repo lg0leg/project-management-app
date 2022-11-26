@@ -1,6 +1,6 @@
 import { FC, MouseEvent } from 'react';
 import { BiEdit, BiTrash } from 'react-icons/bi';
-import { ITask } from 'models/dbTypes';
+import type { ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
@@ -22,6 +22,7 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
   const { users } = useAppSelector((state) => state.userReducer);
   const author = users.filter((user) => user._id === task.userId)[0];
   const assigned = task.users.map((taskUser) => users.filter((user) => user.login === taskUser)[0]);
+  // console.log(assigned);
 
   return (
     <Draggable draggableId={task._id} index={index}>
@@ -87,16 +88,17 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
                   <div className={assigned.length > 1 ? 'flex -space-x-3' : ''}>
                     {assigned.map((user, index) => {
                       if (index >= 3) return;
-                      return (
-                        <div
-                          key={user._id}
-                          className="inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
-                        >
-                          <span className="text-sm font-medium text-gray-600">
-                            {user.login.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      );
+                      if (user && user.login)
+                        return (
+                          <div
+                            key={user._id}
+                            className="inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
+                          >
+                            <span className="text-sm font-medium text-gray-600">
+                              {user.login.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        );
                     })}
                     {assigned.length > 3 && (
                       <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white hover:bg-gray-600">

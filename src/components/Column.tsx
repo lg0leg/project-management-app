@@ -1,5 +1,5 @@
 import { FC, KeyboardEvent, MouseEvent, useState } from 'react';
-import { IColumn, ITask } from 'models/dbTypes';
+import type { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd, MdDone } from 'react-icons/md';
 import { Task } from './Task';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
@@ -102,7 +102,8 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                   className="cursor-pointer truncate px-2 text-lg font-semibold text-gray-900"
                   onClick={() => setIsChanging((prev) => !prev)}
                 >
-                  {column.title}{' '}
+                  {column.title}
+                  {' ' + column.order}{' '}
                   <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800">
                     {tasks.length}
                   </span>

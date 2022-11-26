@@ -1,7 +1,7 @@
 import { FC, MouseEvent, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
-import { IColumn, ITask } from 'models/dbTypes';
+import type { IColumn, ITask } from 'models/dbTypes';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { MdAdd } from 'react-icons/md';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
@@ -40,6 +40,7 @@ export const Board: FC = () => {
   const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
+  const [copiedColumns, setCopiedColumns] = useState(columns);
   const copyColumns = [...columns];
   const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
   let boardTitle = '';
@@ -79,9 +80,16 @@ export const Board: FC = () => {
     console.log(modalType);
     console.log(modalTargetId);
     console.log(modalTargetType);
-    // if (ModalTypes.DELETE === modalType) {
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
       const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
+      const newTasks = tasks
+        .filter((task) => task._id !== modalTargetId)
+        .map((task) => {
+          if (task.order > targetTask.order) {
+            return { ...task, order: task.order - 1 };
+          }
+          return { ...task };
+        });
       dispatch(
         fetchDeleteTask({
           _id: modalTargetId,
@@ -90,11 +98,21 @@ export const Board: FC = () => {
           navigate,
         })
       );
+      dispatch(fetchTasksSet({ navigate, newTasks }));
     }
     if (modalTargetType === 'column' || modalTargetType === 'колонку') {
+      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
+      const newColumns = copyColumns
+        .filter((col) => col._id !== modalTargetId)
+        .map((col) => {
+          if (col.order > targetCol!.order) {
+            return { ...col, order: col.order - 1 };
+          }
+          return { ...col };
+        }) as IColumn[];
       dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
+      dispatch(fetchColumnsSet({ navigate, newColumns }));
     }
-    // }
     onCancel();
   };
 
