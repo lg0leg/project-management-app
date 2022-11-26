@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import type { IAuthRequest } from 'models/typescript';
+import type { IAuthRequest, IToken } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
 import AuthSubmit from 'components/AuthSubmit';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
-import { fetchRegister } from 'app/actionCreators/authActionCreators';
 import { LangKey } from 'constants/lang';
 import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
+import DeleteUserBtn from 'components/DeleteUserBtn';
 import {
   getValidateMaxLength,
   getValidateMinLength,
@@ -14,12 +14,38 @@ import {
   getValidateName,
 } from 'utils/getAuthValidation';
 import { InputLength, ValidateKey } from 'constants/authValidation';
+import { fetchGetUser, fetchUpdateUser } from 'app/actionCreators/userActionCreator';
+import { isExpired, decodeToken } from 'react-jwt';
+import { logout } from 'app/actionCreators/authActionCreators';
 
 export const Profile: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { isLoading: isLoadingAuth, token } = useAppSelector((state) => state.authReducer);
+  const {
+    user,
+    httpCode,
+    isError,
+    isLoading: isLoadingUser,
+  } = useAppSelector((state) => state.userReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
+  const isLoading = isLoadingUser || isLoadingAuth;
+  const [userId, setUserId] = useState('');
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    }
+  });
+
+  useEffect(() => {
+    if (isExpired(token)) {
+      dispatch(logout(navigate));
+    } else {
+      const { id: _id } = decodeToken(token) as IToken;
+      setUserId(_id);
+      dispatch(fetchGetUser({ _id, navigate }));
+    }
+  }, [token]);
 
   const {
     register,
@@ -28,8 +54,17 @@ export const Profile: FC = () => {
     formState: { errors },
   } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
-    console.log(res);
-    // dispatch(fetchRegister({ data, navigate }));
+    const newLogin = res.login || user.name;
+    const newName = res.name || user.login;
+    dispatch(
+      fetchUpdateUser({
+        _id: userId,
+        login: newLogin,
+        name: newName,
+        password: res.password,
+        navigate,
+      })
+    );
   };
 
   let errorText = '';
@@ -45,6 +80,7 @@ export const Profile: FC = () => {
           className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <h2>{`${user.name}(${user.login})`}</h2>
           {isError && (
             <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
               {errorText}
@@ -62,6 +98,7 @@ export const Profile: FC = () => {
             pattern={getValidateName()}
             errors={errors}
           />
+
           <AuthInput
             label="login"
             title={lang === LangKey.EN ? 'New login' : 'Новый логин'}
@@ -72,7 +109,8 @@ export const Profile: FC = () => {
             maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
             errors={errors}
           />
-          <AuthInput
+
+          {/* <AuthInput
             label="password"
             title={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
             placeholder={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
@@ -83,6 +121,7 @@ export const Profile: FC = () => {
             pattern={getValidatePassword()}
             errors={errors}
           />
+
           <AuthInput
             label="passwordRepeat"
             title={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
@@ -95,8 +134,13 @@ export const Profile: FC = () => {
             validate={{
               matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
             }}
-          />
+          /> */}
+
           <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
+          <DeleteUserBtn
+            text={lang === LangKey.EN ? 'Delete User' : 'Удалить Пользователя'}
+            _id={userId}
+          />
         </form>
       </div>
       <i>

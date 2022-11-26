@@ -22,6 +22,7 @@ interface IProps {
   maxLength: ValidationValueMessage<number>;
   required?: boolean;
   pattern?: ValidationRule<RegExp>;
+  defaultValue?: string;
   validate?:
     | Validate<string | undefined>
     | Record<string, Validate<string | undefined>>
@@ -48,6 +49,7 @@ export default function AuthInput({
   required,
   validate,
   pattern,
+  defaultValue,
 }: IProps) {
   const [showPassword, setShowPassword] = useState(false);
   const { lang } = useAppSelector((state) => state.langReducer);
@@ -68,9 +70,12 @@ export default function AuthInput({
       break;
   }
 
-  const togglePasswordVisability = () => {
+  const togglePasswordVisibility = () => {
     setShowPassword((state) => !state);
   };
+
+  console.log(defaultValue);
+
   return (
     <div>
       <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>
@@ -79,6 +84,7 @@ export default function AuthInput({
           type={type}
           className={`${borderColor}  block w-full rounded-lg  border-2 p-2 text-black hover:border-gray-600`}
           placeholder={placeholder}
+          defaultValue={defaultValue}
           {...register(label, {
             minLength,
             maxLength,
@@ -103,7 +109,7 @@ export default function AuthInput({
           />
           <i
             className="absolute top-4 right-3 cursor-pointer duration-300 hover:scale-125"
-            onClick={togglePasswordVisability}
+            onClick={togglePasswordVisibility}
           >
             {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
           </i>
