@@ -51,8 +51,8 @@ export const SignIn: FC = () => {
           </div>
           <AuthInput
             label="login"
-            title="Your login:"
-            placeholder="Login"
+            title={lang === LangKey.EN ? 'Your login:' : 'Ваш логин:'}
+            placeholder={lang === LangKey.EN ? 'login' : 'логин'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
@@ -62,8 +62,8 @@ export const SignIn: FC = () => {
           />
           <AuthInput
             label="password"
-            title="Password:"
-            placeholder="Password"
+            title={lang === LangKey.EN ? 'Password:' : 'Пароль:'}
+            placeholder={lang === LangKey.EN ? 'password' : 'пароль'}
             register={register}
             type="password"
             minLength={getValidateMinLength(InputLength.PASS_MIN)}
@@ -72,14 +72,14 @@ export const SignIn: FC = () => {
             errors={errors}
             required
           />
-          <AuthSubmit text="Sign in" />
+          <AuthSubmit text={lang === LangKey.EN ? 'Sign in' : 'Войти'} />
           <p className="pt-3 text-sm font-light text-gray-600">
-            Don’t have an account yet?
+            {lang === LangKey.EN ? 'Don’t have an account yet?' : 'Нет аккаунта?'}
             <Link
               to={RoutesPath.SIGN_UP}
               className="pl-2 font-bold text-gray-600 hover:text-blue-600"
             >
-              Sign up
+              {lang === LangKey.EN ? 'Sign up' : 'Зарегистрироваться'}
             </Link>
           </p>
         </form>

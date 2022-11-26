@@ -21,10 +21,6 @@ export const Profile: FC = () => {
   const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
 
-  const name = lang === 'en' ? 'Enter new name:' : 'Введите новое имя:';
-  const login = lang === 'en' ? 'Enter new login:' : 'Введите новый логин:';
-  const pass = lang === 'en' ? 'Enter new password:' : 'Введите новый пароль:';
-  const passRepeat = lang === 'en' ? 'Repeat new password:' : 'повторите новый пароль:';
   const {
     register,
     handleSubmit,
@@ -57,8 +53,8 @@ export const Profile: FC = () => {
 
           <AuthInput
             label="name"
-            title={name}
-            placeholder="New name"
+            title={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
+            placeholder={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.NAME_MIN)}
@@ -68,8 +64,8 @@ export const Profile: FC = () => {
           />
           <AuthInput
             label="login"
-            title={login}
-            placeholder="New login"
+            title={lang === LangKey.EN ? 'New login' : 'Новый логин'}
+            placeholder={lang === LangKey.EN ? 'New login' : 'Новый логин'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
@@ -78,8 +74,8 @@ export const Profile: FC = () => {
           />
           <AuthInput
             label="password"
-            title={pass}
-            placeholder="New password"
+            title={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
+            placeholder={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
             register={register}
             type="password"
             minLength={getValidateMinLength(InputLength.PASS_MIN)}
@@ -89,8 +85,8 @@ export const Profile: FC = () => {
           />
           <AuthInput
             label="passwordRepeat"
-            title={passRepeat}
-            placeholder="Repeat new password"
+            title={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
+            placeholder={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
             register={register}
             type="password"
             minLength={getValidateMinLength(InputLength.PASS_MIN)}
@@ -100,7 +96,7 @@ export const Profile: FC = () => {
               matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
             }}
           />
-          <AuthSubmit text="Edit" />
+          <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
         </form>
       </div>
       <i>
@@ -118,23 +114,3 @@ export const Profile: FC = () => {
 };
 
 export default Profile;
-
-{
-  /* <input
-  {...register("test", {
-    validate: value => value === '1' || 'error message'  // JS only: <p>error message</p> TS only support string
-  })}
-/>
-// object of callback functions
-<input
-  {...register("test1", {
-    validate: {
-      positive: v => parseInt(v) > 0 || 'should be greater than 0',
-      lessThanTen: v => parseInt(v) < 10 || 'should be lower than 10',
-      // you can do asynchronous validation as well
-      checkUrl: async () => await fetch() || 'error message',  // JS only: <p>error message</p> TS only support string
-      messages: v => !v && ['test', 'test2']
-    }
-  })}
-/> */
-}

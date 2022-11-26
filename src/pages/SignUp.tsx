@@ -54,8 +54,8 @@ export const SignUp: FC = () => {
 
           <AuthInput
             label="name"
-            title={name}
-            placeholder="Name"
+            title={lang === LangKey.EN ? 'Your password:' : 'Ваш пароль:'}
+            placeholder={lang === LangKey.EN ? 'name' : 'имя'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.NAME_MIN)}
@@ -66,8 +66,8 @@ export const SignUp: FC = () => {
           />
           <AuthInput
             label="login"
-            title="Your login:"
-            placeholder="Login"
+            title={lang === LangKey.EN ? 'Your login:' : 'Ваш логин:'}
+            placeholder={lang === LangKey.EN ? 'login' : 'логин'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
@@ -77,8 +77,8 @@ export const SignUp: FC = () => {
           />
           <AuthInput
             label="password"
-            title="Password:"
-            placeholder="Password"
+            title={lang === LangKey.EN ? 'Your password:' : 'Ваш пароль:'}
+            placeholder={lang === LangKey.EN ? 'password' : 'пароль'}
             register={register}
             type="password"
             minLength={getValidateMinLength(InputLength.PASS_MIN)}
@@ -87,7 +87,7 @@ export const SignUp: FC = () => {
             errors={errors}
             required
           />
-          <AuthSubmit text="Sign up" />
+          <AuthSubmit text={lang === LangKey.EN ? 'Sign up' : 'Зарегистрироваться'} />
         </form>
       </div>
       <i>
