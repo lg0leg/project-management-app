@@ -16,10 +16,7 @@ export default function DeleteUserBtn({ text, _id }: IProps) {
   const type = lang === LangKey.EN ? 'user' : 'пользователя';
   const [modalOpen, setModalOpen] = useState(false);
   const onConfirm = () => {
-    console.log('user', _id);
     if (!_id) return;
-    console.log('delete user', _id);
-
     OnCancel();
     dispatch(fetchDeleteUser({ _id, navigate }));
   };

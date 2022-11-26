@@ -17,6 +17,7 @@ import { InputLength, ValidateKey } from 'constants/authValidation';
 import { fetchGetUser, fetchUpdateUser } from 'app/actionCreators/userActionCreator';
 import { isExpired, decodeToken } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
+import Popup from 'components/popup/popup';
 
 export const Profile: FC = () => {
   const navigate = useAppNavigate();
@@ -31,6 +32,12 @@ export const Profile: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const isLoading = isLoadingUser || isLoadingAuth;
   const [userId, setUserId] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const onConfirm = () => {
+    OnCancel();
+  };
+  const OnCancel = () => setModalOpen(false);
+
   useEffect(() => {
     if (isExpired(token)) {
       dispatch(logout(navigate));
@@ -54,17 +61,19 @@ export const Profile: FC = () => {
     formState: { errors },
   } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
-    const newLogin = res.login || user.name;
-    const newName = res.name || user.login;
-    dispatch(
-      fetchUpdateUser({
-        _id: userId,
-        login: newLogin,
-        name: newName,
-        password: res.password,
-        navigate,
-      })
-    );
+    setModalOpen(true);
+
+    // const newLogin = res.login || user.name;
+    // const newName = res.name || user.login;
+    // dispatch(
+    //   fetchUpdateUser({
+    //     _id: userId,
+    //     login: newLogin,
+    //     name: newName,
+    //     password: res.password,
+    //     navigate,
+    //   })
+    // );
   };
 
   let errorText = '';
@@ -80,7 +89,7 @@ export const Profile: FC = () => {
           className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h2>{`${user.name}(${user.login})`}</h2>
+          <h2 className="text-center text-lg font-medium">{`${user.name}(${user.login})`}</h2>
           {isError && (
             <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
               {errorText}
@@ -110,7 +119,7 @@ export const Profile: FC = () => {
             errors={errors}
           />
 
-          {/* <AuthInput
+          <AuthInput
             label="password"
             title={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
             placeholder={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
@@ -134,7 +143,7 @@ export const Profile: FC = () => {
             validate={{
               matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
             }}
-          /> */}
+          />
 
           <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
           <DeleteUserBtn
@@ -153,6 +162,9 @@ export const Profile: FC = () => {
           Designed by slidesgo / Freepik
         </a>
       </i>
+      <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
+        <h2>dsads</h2>
+      </Popup>
     </div>
   );
 };
