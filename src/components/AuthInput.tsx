@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Path,
   UseFormRegister,
@@ -10,6 +10,7 @@ import type { IAuthRequest } from 'models/typescript';
 import type { FieldErrorsImpl } from 'react-hook-form';
 import { useAppSelector } from 'app/hooks';
 import { getErrorMessage } from 'utils/getAuthValidation';
+import { BsEyeFill, BsEyeSlashFill } from 'react-icons/bs';
 
 interface IProps {
   type: string;
@@ -48,6 +49,7 @@ export default function AuthInput({
   validate,
   pattern,
 }: IProps) {
+  const [showPassword, setShowPassword] = useState(false);
   const { lang } = useAppSelector((state) => state.langReducer);
   const borderColor = errors[label]
     ? 'border-red-500 focus:outline-red-500'
@@ -66,21 +68,48 @@ export default function AuthInput({
       break;
   }
 
+  const togglePasswordVisability = () => {
+    setShowPassword((state) => !state);
+  };
   return (
     <div>
       <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>
-      <input
-        type={type}
-        className={`${borderColor}  block w-full rounded-lg  border-2 p-2 text-black hover:border-gray-600`}
-        placeholder={placeholder}
-        {...register(label, {
-          minLength,
-          maxLength,
-          required,
-          pattern,
-          validate,
-        })}
-      />
+      {type === 'text' ? (
+        <input
+          type={type}
+          className={`${borderColor}  block w-full rounded-lg  border-2 p-2 text-black hover:border-gray-600`}
+          placeholder={placeholder}
+          {...register(label, {
+            minLength,
+            maxLength,
+            required,
+            pattern,
+            validate,
+          })}
+        />
+      ) : (
+        <div className="relative ">
+          <input
+            type={showPassword ? 'text' : type}
+            className={`${borderColor}  block w-full rounded-lg  border-2 p-2 pr-[30px] text-black hover:border-gray-600`}
+            placeholder={placeholder}
+            {...register(label, {
+              minLength,
+              maxLength,
+              required,
+              pattern,
+              validate,
+            })}
+          />
+          <i
+            className="absolute top-4 right-3 cursor-pointer duration-300 hover:scale-125"
+            onClick={togglePasswordVisability}
+          >
+            {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
+          </i>
+        </div>
+      )}
+
       {errors[label] && (
         <p className="max-w-[250px] text-center text-sm font-medium text-red-500">{errorText}</p>
       )}
