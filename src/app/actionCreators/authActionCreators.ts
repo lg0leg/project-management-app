@@ -51,6 +51,10 @@ interface IPropsLogin {
   navigate: navigateType;
 }
 
+interface IPropsConfirmEditUser extends IPropsLogin {
+  cb: () => void;
+}
+
 export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -96,5 +100,38 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
 export const logout = (navigate: (path: string) => void) => {
   return (dispatch: AppDispatch) => {
     dispatch(authSlice.actions.logout({ navigate }));
+  };
+};
+
+export const fetchConfirmUpdateUser = ({
+  login,
+  password,
+  navigate,
+  cb,
+}: IPropsConfirmEditUser) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+
+      const response = await api.post<ILoginResponse>(`auth/signin`, {
+        login,
+        password,
+      });
+
+      console.log(response.data.token);
+      dispatch(
+        authSlice.actions.loginSuccess({
+          token: response.data.token,
+          navigate,
+          notRedirect: true,
+        })
+      );
+      if (response.status >= 200 && response.status < 300) {
+        console.log('cb work');
+        cb();
+      }
+    } catch (e) {
+      handleAuthError(dispatch, e, navigate);
+    }
   };
 };

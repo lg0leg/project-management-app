@@ -50,3 +50,14 @@ export interface IAuthValidate {
 }
 
 export type ValueOf<T> = T[keyof T];
+
+export interface IProfileConfirm {
+  oldPassword: string;
+}
+export interface IProfileConfirmData {
+  name: string;
+  login: string;
+  newPassword: string;
+  oldLogin: string;
+  userId: string;
+}

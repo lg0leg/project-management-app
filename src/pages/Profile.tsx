@@ -14,10 +14,11 @@ import {
   getValidateName,
 } from 'utils/getAuthValidation';
 import { InputLength, ValidateKey } from 'constants/authValidation';
-import { fetchGetUser, fetchUpdateUser } from 'app/actionCreators/userActionCreator';
+import { fetchGetUser } from 'app/actionCreators/userActionCreator';
 import { isExpired, decodeToken } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
 import Popup from 'components/popup/popup';
+import { EditUserConformation } from 'components/EditUserConformation';
 
 export const Profile: FC = () => {
   const navigate = useAppNavigate();
@@ -33,10 +34,15 @@ export const Profile: FC = () => {
   const isLoading = isLoadingUser || isLoadingAuth;
   const [userId, setUserId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const onConfirm = () => {
-    OnCancel();
-  };
-  const OnCancel = () => setModalOpen(false);
+  const [isShowError, setShowError] = useState(false);
+  const [formData, setFormData] = useState({
+    newPassword: '',
+    name: '',
+    login: '',
+    oldLogin: '',
+    userId,
+  });
+  const onCancel = () => setModalOpen(false);
 
   useEffect(() => {
     if (isExpired(token)) {
@@ -54,26 +60,31 @@ export const Profile: FC = () => {
     }
   }, [token]);
 
+  useEffect(() => {
+    let timeout;
+    if (isError) setShowError(true);
+    if (!isError) timeout = setTimeout(() => setShowError(false), 10000);
+  }, [isError]);
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<IAuthRequest>();
-  const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
+  const onSubmit: SubmitHandler<IAuthRequest> = (data) => {
+    const { password, name, login } = data;
+    const newLogin = data.login || user.login;
+    const newName = data.name || user.name;
+    if (!password && !name && !login) return;
+    setFormData({
+      newPassword: password,
+      name: newName,
+      login: newLogin,
+      oldLogin: user.login,
+      userId,
+    });
     setModalOpen(true);
-
-    // const newLogin = res.login || user.name;
-    // const newName = res.name || user.login;
-    // dispatch(
-    //   fetchUpdateUser({
-    //     _id: userId,
-    //     login: newLogin,
-    //     name: newName,
-    //     password: res.password,
-    //     navigate,
-    //   })
-    // );
   };
 
   let errorText = '';
@@ -84,13 +95,13 @@ export const Profile: FC = () => {
   return (
     <div className="min-h-[100%] bg-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
-      <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-registration bg-contain bg-no-repeat">
+      <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-profile bg-contain bg-no-repeat">
         <form
           className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
           <h2 className="text-center text-lg font-medium">{`${user.name}(${user.login})`}</h2>
-          {isError && (
+          {isShowError && (
             <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
               {errorText}
             </div>
@@ -159,11 +170,11 @@ export const Profile: FC = () => {
           target="blank"
           rel="noreferrer noopener"
         >
-          Designed by slidesgo / Freepik
+          Designed by stories / Freepik
         </a>
       </i>
       <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
-        <h2>dsads</h2>
+        <EditUserConformation formData={formData} onCancel={onCancel} />
       </Popup>
     </div>
   );

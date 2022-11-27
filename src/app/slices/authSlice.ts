@@ -9,6 +9,7 @@ interface ILogoutPayload {
 interface ILoginSuccessPayload {
   token: string;
   navigate: navigateType;
+  notRedirect?: boolean;
 }
 
 const initialState = {
@@ -44,7 +45,9 @@ export const authSlice = createSlice({
       state.httpCode = 200;
 
       localStorage.setItem(StorageKey.TOKEN, action.payload.token);
-      action.payload.navigate(RoutesPath.BOARDS);
+      if (!action.payload.notRedirect) {
+        action.payload.navigate(RoutesPath.BOARDS);
+      }
     },
 
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {
