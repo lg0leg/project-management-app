@@ -92,7 +92,7 @@ export const Welcome: FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col items-center justify-center gap-[30px] px-[30px] pt-[100px] sm:px-[50px] md:px-[100px] lg:px-[10vw]">
+        <section className="flex flex-col items-center justify-center gap-[30px] px-[30px] pt-[80px] sm:px-[50px] md:px-[100px] lg:px-[10vw]">
           <h4 className={h4Styles}>{lang == 'en' ? "Who's on the team?" : 'Кто в команде?'}</h4>
           {/* <ol className="items-center sm:flex"> */}
           <ol className=" lg:grid lg:grid-cols-[1fr_1fr_1fr]">
@@ -174,7 +174,7 @@ export const Welcome: FC = () => {
           <h4 className={h4Styles}>
             {lang == 'en'
               ? 'How can I learn to make apps that are as cool as they are?'
-              : 'Как я могу научится делать такие же крутые приложения?'}
+              : 'Как мне научится делать такие же крутые приложения?'}
           </h4>
           <p className="text-md font-semibold text-gray-500 sm:text-lg lg:text-3xl">
             {lang == 'en' ? 'In a free course from ' : 'На бесплатных курсах от '}
