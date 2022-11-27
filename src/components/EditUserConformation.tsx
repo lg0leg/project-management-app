@@ -80,7 +80,7 @@ export const EditUserConformation: FC<IEditUserConformation> = ({ formData, onCa
             </div>
             <ProfileConfirmInput
               label="oldPassword"
-              title={lang === LangKey.EN ? 'enter old password' : 'введите старый пароль'}
+              title={lang === LangKey.EN ? 'Enter old password' : 'Введите старый пароль'}
               placeholder={lang === LangKey.EN ? 'old password' : 'старый пароль'}
               register={register}
               type="password"

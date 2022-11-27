@@ -54,7 +54,7 @@ export const SignUp: FC = () => {
 
           <AuthInput
             label="name"
-            title={lang === LangKey.EN ? 'Your password:' : 'Ваш пароль:'}
+            title={lang === LangKey.EN ? 'Your name:' : 'Ваш имя:'}
             placeholder={lang === LangKey.EN ? 'name' : 'имя'}
             register={register}
             type="text"
