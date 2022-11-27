@@ -2,7 +2,14 @@ import { useAppSelector } from 'app/hooks';
 import React, { FC, useState } from 'react';
 import Rocket from '../assets/images/rocket.png';
 import { CiYoutube } from 'react-icons/ci';
-import { SiTailwindcss, SiReact, SiRedux, SiTypescript, SiReactrouter } from 'react-icons/si';
+import {
+  SiTailwindcss,
+  SiReact,
+  SiRedux,
+  SiTypescript,
+  SiReactrouter,
+  SiGithub,
+} from 'react-icons/si';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 import Screen1 from '../assets/screenshots/screen1.png';
@@ -83,6 +90,84 @@ export const Welcome: FC = () => {
             <SiReactrouter size={50} color={'rgb(59, 130, 246, 1)'} />
             <Flowbite size={50} />
           </div>
+        </section>
+
+        <section className="flex flex-col items-center justify-center gap-[30px] px-[30px] pt-[100px] sm:px-[50px] md:px-[100px] lg:px-[10vw]">
+          <h4 className={h4Styles}>{lang == 'en' ? "Who's on the team?" : 'Кто в команде?'}</h4>
+          {/* <ol className="items-center sm:flex"> */}
+          <ol className=" lg:grid lg:grid-cols-[1fr_1fr_1fr]">
+            <li className="relative mb-6 lg:mb-0">
+              <div className="flex items-center">
+                <div className="z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 ring-0 ring-blue-50 sm:ring-8">
+                  <a href="https://github.com/NikitaKakurin" target="_blank" rel="noreferrer">
+                    <SiGithub color={'rgb(59, 130, 246, 1)'} />
+                  </a>
+                </div>
+                <div className="flex h-0.5 w-full bg-gray-200"></div>
+              </div>
+              <div className="mt-3 sm:pr-8">
+                <h3 className="text-lg font-semibold text-gray-900 ">
+                  {lang == 'en' ? 'Nikita' : 'Никита'}
+                </h3>
+                <p className="mb-2 block text-sm font-normal leading-none text-gray-400 ">
+                  {lang == 'en' ? 'Team Leader' : 'Тимлид'}
+                </p>
+                <p className="text-base font-normal text-gray-500 ">
+                  {lang == 'en'
+                    ? 'Created the project, set up the server side and interaction with it, added forms and authorization, organized the work of the team.'
+                    : 'Создал проект, настроил серверную часть и взаимодействие с ней, добавил формы и авторизацию, организовал работу команды.'}
+                </p>
+              </div>
+            </li>
+
+            <li className="relative mb-6 lg:mb-0">
+              <div className="flex items-center">
+                <div className="z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-50 ring-0 ring-blue-100 sm:ring-8">
+                  <a href="https://github.com/bycolour2" target="_blank" rel="noreferrer">
+                    <SiGithub color={'rgb(59, 130, 246, 1)'} />
+                  </a>
+                </div>
+                <div className="flex h-0.5 w-full bg-gray-200"></div>
+              </div>
+              <div className="mt-3 sm:pr-8">
+                <h3 className="text-lg font-semibold text-gray-900 ">
+                  {lang == 'en' ? 'Rustam' : 'Рустам'}
+                </h3>
+                <p className="mb-2 block text-sm font-normal leading-none text-gray-400 ">
+                  {lang == 'en' ? 'Developer' : 'Разработчик'}
+                </p>
+                <p className="text-base font-normal text-gray-500 ">
+                  {lang == 'en'
+                    ? 'Everything about the kanban board is his work: dragging columns and cards, adding/deleting/editing them, modal windows. Added routing and a 404 page.'
+                    : 'Все что связано с канбан-доской, это его работа: перетаскивание колонок и карточек, их добавление/удаление/редактирование, модальные окна. Добавил роутинг и страницу 404.'}
+                </p>
+              </div>
+            </li>
+
+            <li className="relative mb-6 lg:mb-0">
+              <div className="flex items-center">
+                <div className="z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 ring-0 ring-blue-50 sm:ring-8">
+                  <a href="https://github.com/lg0leg" target="_blank" rel="noreferrer">
+                    <SiGithub color={'rgb(59, 130, 246, 1)'} />
+                  </a>
+                </div>
+                <div className=" flex h-0.5 w-full bg-gray-200"></div>
+              </div>
+              <div className="mt-3 sm:pr-8">
+                <h3 className="text-lg font-semibold text-gray-900 ">
+                  {lang == 'en' ? 'Oleg' : 'Олег'}
+                </h3>
+                <p className="mb-2 block text-sm font-normal leading-none text-gray-400 ">
+                  {lang == 'en' ? 'Developer' : 'Разработчик'}
+                </p>
+                <p className="text-base font-normal text-gray-500 ">
+                  {lang == 'en'
+                    ? 'Made a welcome page, a list of boards and their addition, a footer with a header, and various small useful components for the whole team.'
+                    : 'Сделал страницу приветствия, список досок и их добавление, подвал с шапкой, и разные мелкие полезные компоненты для всей команды.'}
+                </p>
+              </div>
+            </li>
+          </ol>
         </section>
 
         <section className="flex flex-col items-center justify-center gap-[10px] px-[25px] pt-[100px] sm:gap-[30px] sm:px-[50px]">
