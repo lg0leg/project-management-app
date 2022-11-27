@@ -3,10 +3,12 @@ import React, { FC, useState } from 'react';
 import Rocket from '../assets/images/rocket.png';
 import { CiYoutube } from 'react-icons/ci';
 import { SiTailwindcss, SiReact, SiRedux, SiTypescript, SiReactrouter } from 'react-icons/si';
-
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 import Screen1 from '../assets/screenshots/screen1.png';
+import { Flowbite } from '../components/icons/Flowbite';
+import { HelloPangea } from 'components/icons/HelloPangea';
+// import { ReactHookForm } from 'components/icons/ReactHookForm';
 
 export const Welcome: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
@@ -71,12 +73,15 @@ export const Welcome: FC = () => {
 
         <section className="flex flex-col items-center justify-center px-[40px] pt-[100px]">
           <h4 className={h4Styles}>{lang == 'en' ? 'How is it done?' : 'Как это сделано?'}</h4>
-          <div className="flex flex-wrap justify-center gap-[10px] py-[10px] sm:gap-[30px] sm:py-[30px]">
+          <div className="flex flex-wrap items-center justify-center gap-[10px] py-[10px] sm:gap-[30px] sm:py-[30px]">
+            <HelloPangea size={60} color={'rgb(59, 130, 246, 1)'} />
             <SiTailwindcss size={50} color={'rgb(59, 130, 246, 1)'} />
+            {/* <ReactHookForm size={60} /> */}
             <SiReact size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiRedux size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiTypescript size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiReactrouter size={50} color={'rgb(59, 130, 246, 1)'} />
+            <Flowbite size={50} />
           </div>
         </section>
 
