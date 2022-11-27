@@ -93,7 +93,9 @@ export const Welcome: FC = () => {
         </section>
 
         <section className="flex flex-col items-center justify-center gap-[30px] px-[30px] pt-[80px] sm:px-[50px] md:px-[100px] lg:px-[10vw]">
-          <h4 className={h4Styles}>{lang == 'en' ? "Who's on the team?" : 'Кто в команде?'}</h4>
+          <h4 className={h4Styles}>
+            {lang == 'en' ? "Who's on our team?" : 'Кто в нашей команде?'}
+          </h4>
           {/* <ol className="items-center sm:flex"> */}
           <ol className=" lg:grid lg:grid-cols-[1fr_1fr_1fr]">
             <li className="relative mb-6 lg:mb-0">
