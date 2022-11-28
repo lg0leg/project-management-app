@@ -37,63 +37,65 @@ export const SignIn: FC = () => {
   return (
     <div className="min-h-[100%] bg-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
-      <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
-        <form
-          className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div>
-            {isError && (
-              <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
-                {errorText}
-              </div>
-            )}
-          </div>
-          <AuthInput
-            label="login"
-            title={lang === LangKey.EN ? 'Your login:' : 'Ваш логин:'}
-            placeholder={lang === LangKey.EN ? 'Login' : 'Логин'}
-            register={register}
-            type="text"
-            minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
-            maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
-            errors={errors}
-            required
-          />
-          <AuthInput
-            label="password"
-            title={lang === LangKey.EN ? 'Password:' : 'Пароль:'}
-            placeholder={lang === LangKey.EN ? 'Password' : 'Пароль'}
-            register={register}
-            type="password"
-            minLength={getValidateMinLength(InputLength.PASS_MIN)}
-            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
-            pattern={getValidatePassword()}
-            errors={errors}
-            required
-          />
-          <AuthSubmit text={lang === LangKey.EN ? 'Sign in' : 'Войти'} />
-          <p className="pt-3 text-sm font-light text-gray-600">
-            {lang === LangKey.EN ? 'Don’t have an account yet?' : 'Нет аккаунта?'}
-            <Link
-              to={RoutesPath.SIGN_UP}
-              className="pl-2 font-bold text-gray-600 hover:text-blue-600"
-            >
-              {lang === LangKey.EN ? 'Sign up' : 'Зарегистрироваться'}
-            </Link>
-          </p>
-        </form>
+      <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
+        <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
+          <form
+            className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div>
+              {isError && (
+                <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
+                  {errorText}
+                </div>
+              )}
+            </div>
+            <AuthInput
+              label="login"
+              title={lang === LangKey.EN ? 'Your login:' : 'Ваш логин:'}
+              placeholder={lang === LangKey.EN ? 'Login' : 'Логин'}
+              register={register}
+              type="text"
+              minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
+              maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
+              errors={errors}
+              required
+            />
+            <AuthInput
+              label="password"
+              title={lang === LangKey.EN ? 'Password:' : 'Пароль:'}
+              placeholder={lang === LangKey.EN ? 'Password' : 'Пароль'}
+              register={register}
+              type="password"
+              minLength={getValidateMinLength(InputLength.PASS_MIN)}
+              maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+              pattern={getValidatePassword()}
+              errors={errors}
+              required
+            />
+            <AuthSubmit text={lang === LangKey.EN ? 'Sign in' : 'Войти'} />
+            <p className="pt-3 text-sm font-light text-gray-600">
+              {lang === LangKey.EN ? 'Don’t have an account yet?' : 'Нет аккаунта?'}
+              <Link
+                to={RoutesPath.SIGN_UP}
+                className="pl-2 font-bold text-gray-600 hover:text-blue-600"
+              >
+                {lang === LangKey.EN ? 'Sign up' : 'Зарегистрироваться'}
+              </Link>
+            </p>
+          </form>
+        </div>
+        <i>
+          <a
+            className="ml-1 text-blue-900 hover:underline"
+            href="https://www.freepik.com/"
+            target="blank"
+            rel="noreferrer noopener"
+          >
+            Designed by vectorjuice / Freepik
+          </a>
+        </i>
       </div>
-      <i>
-        <a
-          className="ml-1 text-blue-900 hover:underline"
-          href="https://www.freepik.com/"
-          target="blank"
-          rel="noreferrer noopener"
-        >
-          Designed by vectorjuice / Freepik
-        </a>
-      </i>
     </div>
   );
 };

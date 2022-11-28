@@ -95,84 +95,86 @@ export const Profile: FC = () => {
   return (
     <div className="min-h-[100%] bg-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
-      <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center  bg-profile bg-contain bg-no-repeat">
-        <form
-          className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <h2 className="text-center text-lg font-medium">{`${user.name}(${user.login})`}</h2>
-          {isShowError && (
-            <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
-              {errorText}
-            </div>
-          )}
+      <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
+        <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-profile bg-contain bg-no-repeat">
+          <form
+            className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <h2 className="text-center text-lg font-medium">{`${user.name}(${user.login})`}</h2>
+            {isShowError && (
+              <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
+                {errorText}
+              </div>
+            )}
 
-          <AuthInput
-            label="name"
-            title={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
-            placeholder={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
-            register={register}
-            type="text"
-            minLength={getValidateMinLength(InputLength.NAME_MIN)}
-            maxLength={getValidateMaxLength(InputLength.NAME_MAX)}
-            pattern={getValidateName()}
-            errors={errors}
-          />
+            <AuthInput
+              label="name"
+              title={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
+              placeholder={lang === LangKey.EN ? 'New name' : 'Новое Имя'}
+              register={register}
+              type="text"
+              minLength={getValidateMinLength(InputLength.NAME_MIN)}
+              maxLength={getValidateMaxLength(InputLength.NAME_MAX)}
+              pattern={getValidateName()}
+              errors={errors}
+            />
 
-          <AuthInput
-            label="login"
-            title={lang === LangKey.EN ? 'New login' : 'Новый логин'}
-            placeholder={lang === LangKey.EN ? 'New login' : 'Новый логин'}
-            register={register}
-            type="text"
-            minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
-            maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
-            errors={errors}
-          />
+            <AuthInput
+              label="login"
+              title={lang === LangKey.EN ? 'New login' : 'Новый логин'}
+              placeholder={lang === LangKey.EN ? 'New login' : 'Новый логин'}
+              register={register}
+              type="text"
+              minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
+              maxLength={getValidateMaxLength(InputLength.LOGIN_MAX)}
+              errors={errors}
+            />
 
-          <AuthInput
-            label="password"
-            title={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
-            placeholder={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
-            register={register}
-            type="password"
-            minLength={getValidateMinLength(InputLength.PASS_MIN)}
-            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
-            pattern={getValidatePassword()}
-            errors={errors}
-          />
+            <AuthInput
+              label="password"
+              title={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
+              placeholder={lang === LangKey.EN ? 'New password' : 'Новый пароль'}
+              register={register}
+              type="password"
+              minLength={getValidateMinLength(InputLength.PASS_MIN)}
+              maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+              pattern={getValidatePassword()}
+              errors={errors}
+            />
 
-          <AuthInput
-            label="passwordRepeat"
-            title={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
-            placeholder={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
-            register={register}
-            type="password"
-            minLength={getValidateMinLength(InputLength.PASS_MIN)}
-            maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
-            errors={errors}
-            validate={{
-              matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
-            }}
-          />
+            <AuthInput
+              label="passwordRepeat"
+              title={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
+              placeholder={lang === LangKey.EN ? 'Repeat new password' : 'Повторите новый пароль'}
+              register={register}
+              type="password"
+              minLength={getValidateMinLength(InputLength.PASS_MIN)}
+              maxLength={getValidateMaxLength(InputLength.PASS_MAX)}
+              errors={errors}
+              validate={{
+                matchPassword: (value) => watch('password') === value || ValidateKey.REPEAT_PASS,
+              }}
+            />
 
-          <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
-          <DeleteUserBtn
-            text={lang === LangKey.EN ? 'Delete user' : 'Удалить пользователя'}
-            _id={userId}
-          />
-        </form>
+            <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
+            <DeleteUserBtn
+              text={lang === LangKey.EN ? 'Delete user' : 'Удалить пользователя'}
+              _id={userId}
+            />
+          </form>
+        </div>
+        <i>
+          <a
+            className="ml-1 text-blue-900 hover:underline"
+            href="https://www.freepik.com/"
+            target="blank"
+            rel="noreferrer noopener"
+          >
+            Designed by stories / Freepik
+          </a>
+        </i>
       </div>
-      <i>
-        <a
-          className="ml-1 text-blue-900 hover:underline"
-          href="https://www.freepik.com/"
-          target="blank"
-          rel="noreferrer noopener"
-        >
-          Designed by stories / Freepik
-        </a>
-      </i>
       <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
         <EditUserConformation formData={formData} onCancel={onCancel} />
       </Popup>
