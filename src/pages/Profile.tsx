@@ -158,7 +158,7 @@ export const Profile: FC = () => {
 
           <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
           <DeleteUserBtn
-            text={lang === LangKey.EN ? 'Delete User' : 'Удалить Пользователя'}
+            text={lang === LangKey.EN ? 'Delete user' : 'Удалить пользователя'}
             _id={userId}
           />
         </form>

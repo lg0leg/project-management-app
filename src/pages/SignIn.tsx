@@ -52,7 +52,7 @@ export const SignIn: FC = () => {
           <AuthInput
             label="login"
             title={lang === LangKey.EN ? 'Your login:' : 'Ваш логин:'}
-            placeholder={lang === LangKey.EN ? 'login' : 'логин'}
+            placeholder={lang === LangKey.EN ? 'Login' : 'Логин'}
             register={register}
             type="text"
             minLength={getValidateMinLength(InputLength.LOGIN_MIN)}
@@ -63,7 +63,7 @@ export const SignIn: FC = () => {
           <AuthInput
             label="password"
             title={lang === LangKey.EN ? 'Password:' : 'Пароль:'}
-            placeholder={lang === LangKey.EN ? 'password' : 'пароль'}
+            placeholder={lang === LangKey.EN ? 'Password' : 'Пароль'}
             register={register}
             type="password"
             minLength={getValidateMinLength(InputLength.PASS_MIN)}
