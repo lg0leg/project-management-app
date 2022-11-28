@@ -1,23 +1,27 @@
 import { FC, MouseEvent, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Column } from 'components/Column';
-import { IBoard, IColumn, ITask, IUser } from 'models/dbTypes';
+import type { IColumn, ITask } from 'models/dbTypes';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { MdAdd } from 'react-icons/md';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import Popup from 'components/popup/popup';
 import { DeleteConformation } from 'components/DeleteConformation';
-import AddModalContent from 'components/AddModalContent';
 import { ModalTypes } from 'constants/modalTypes';
 import { fetchGetAllBoardStore } from 'app/actionCreators/boardActionCreator';
 import { isExpired } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
-import Spinner from 'components/Spinner';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
+import { fetchColumnsSet, fetchDeleteColumn } from 'app/actionCreators/columnActionCreator';
+import { fetchDeleteTask, fetchTasksSet } from 'app/actionCreators/taskActionCreator';
+import { getBoardText } from 'utils/getBoardText';
+import { AddColumnModalContent } from 'components/modals/AddColumnModalContent';
+import { AddTaskModalContent } from 'components/modals/AddTaskModalContent';
+import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
+import { EditTaskModalContent } from 'components/modals/EditTaskModalContent';
+import { Button } from 'components/Button';
 import { RoutesPath } from 'constants/routes';
-import { fetchCreateColumn, fetchColumnsSet } from 'app/actionCreators/columnActionCreator';
-import { fetchTasksSet } from 'app/actionCreators/taskActionCreator';
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -27,16 +31,21 @@ export const Board: FC = () => {
   const [modalTargetId, setModalTargetId] = useState('');
   const [modalTargetType, setModalTargetType] = useState('');
 
-  const _id = id ?? '';
   const navigate = useAppNavigate();
+  const _id = id ?? '';
   const dispatch = useAppDispatch();
   const { board, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
   const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
   const { tasks, isLoading: isLoadingTasks } = useAppSelector((state) => state.taskReducer);
-  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
   const copyColumns = [...columns];
+  const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
+  let boardTitle = '';
+  if (board && board.title) {
+    boardTitle = getBoardText(board.title).title;
+  }
 
   useEffect(() => {
     if (isExpired(token)) {
@@ -66,24 +75,47 @@ export const Board: FC = () => {
     if (modalTargetType) setModalTargetType(modalTargetType);
   };
 
-  const onConfirm = () => {
-    if (ModalTypes.ADD === modalType) {
-      console.log('create column');
-      return;
+  const onConfirmDelete = () => {
+    if (modalTargetType === 'task' || modalTargetType === 'задачу') {
+      const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
+      const newTasks = tasks
+        .filter((task) => task._id !== modalTargetId)
+        .map((task) => {
+          if (task.order > targetTask.order) {
+            return { ...task, order: task.order - 1 };
+          }
+          return { ...task };
+        });
+      dispatch(
+        fetchDeleteTask({
+          _id: modalTargetId,
+          columnId: targetTask.columnId,
+          boardId: targetTask.boardId,
+          navigate,
+        })
+      );
+      dispatch(fetchTasksSet({ navigate, newTasks }));
     }
-    if (ModalTypes.EDIT === modalType) {
-      console.log(2);
-      return;
+    if (modalTargetType === 'column' || modalTargetType === 'колонку') {
+      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
+      const newColumns = copyColumns
+        .filter((col) => col._id !== modalTargetId)
+        .map((col) => {
+          if (col.order > targetCol!.order) {
+            return { ...col, order: col.order - 1 };
+          }
+          return { ...col };
+        });
+      dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
+      dispatch(fetchColumnsSet({ navigate, newColumns }));
     }
-    if (ModalTypes.DELETE === modalType) {
-      console.log('deleted');
-      setModalType('');
-      setModalOpen(false);
-    }
+    onCancel();
   };
 
   const onCancel = () => {
     setModalType('');
+    setModalTargetId('');
+    setModalTargetType('');
     setModalOpen(false);
   };
 
@@ -152,12 +184,15 @@ export const Board: FC = () => {
 
   return (
     <>
-      {isLoading && <Spinner />}
+      <SpinnerWithOverlay isLoading={isLoading} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-          <h1 className="h-[60px] w-full px-5 pt-4 text-3xl font-semibold text-gray-900">
-            {board.title}
-          </h1>
+          <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
+            <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+              {lang === LangKey.EN ? 'Back' : 'Назад'}
+            </Button>
+            <h1>{boardTitle}</h1>
+          </div>
           <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
             {(provided) => (
               <div
@@ -196,12 +231,21 @@ export const Board: FC = () => {
         </div>
       </DragDropContext>
       <Popup popupVisible={modalOpen} setPopupVisible={setModalOpen}>
-        {modalType === ModalTypes.ADD && (
-          <AddModalContent type={modalTargetType} columnId={modalTargetId} onCancel={onCancel} />
+        {modalType === ModalTypes.ADD &&
+          (modalTargetType === 'column' ? (
+            <AddColumnModalContent onCancel={onCancel} />
+          ) : (
+            <AddTaskModalContent columnId={modalTargetId} onCancel={onCancel} />
+          ))}
+        {modalType === ModalTypes.EDIT && (
+          <EditTaskModalContent task={currentTask} onCancel={onCancel} />
         )}
-        {modalType === ModalTypes.EDIT}
         {modalType === ModalTypes.DELETE && (
-          <DeleteConformation type={modalTargetType} onConfirm={onConfirm} onCancel={onCancel} />
+          <DeleteConformation
+            type={modalTargetType}
+            onConfirm={onConfirmDelete}
+            onCancel={onCancel}
+          />
         )}
       </Popup>
     </>
