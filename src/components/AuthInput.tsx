@@ -74,8 +74,6 @@ export default function AuthInput({
     setShowPassword((state) => !state);
   };
 
-  console.log(defaultValue);
-
   return (
     <div>
       <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>

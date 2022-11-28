@@ -71,8 +71,6 @@ export default function ProfileConfirmInput({
     setShowPassword((state) => !state);
   };
 
-  console.log(defaultValue);
-
   return (
     <div className="mb-5">
       <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>

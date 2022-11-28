@@ -118,7 +118,6 @@ export const fetchConfirmUpdateUser = ({
         password,
       });
 
-      console.log(response.data.token);
       dispatch(
         authSlice.actions.loginSuccess({
           token: response.data.token,
@@ -127,7 +126,6 @@ export const fetchConfirmUpdateUser = ({
         })
       );
       if (response.status >= 200 && response.status < 300) {
-        console.log('cb work');
         cb();
       }
     } catch (e) {
