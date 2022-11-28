@@ -38,8 +38,6 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   } = useForm<IFormData>();
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    console.log('submited: ', data);
-    console.log('type: task');
     const { title, description, users } = data;
     const checkedUsers = users.includes('') ? users.filter((user) => user !== '') : users;
     const taskData = {
@@ -85,8 +83,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 />
                 {errors.title && (
                   <p className="mt-2 text-sm text-red-600">
-                    <span className="font-medium">Oh, snapp!</span> Type title beetwen 2 and 50
-                    characters.
+                    {lang === LangKey.EN
+                      ? 'Type title beetwen 2 and 50 characters'
+                      : 'Длинна названия от 2 до 50 символов'}
                   </p>
                 )}
               </div>
@@ -106,7 +105,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 ></textarea>
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
-                    <span className="font-medium">Oh, snapp!</span> Max length is 100 characters.
+                    {lang === LangKey.EN
+                      ? 'Max length is 100 characters'
+                      : 'Максимальная длинна 100 символов'}
                   </p>
                 )}
               </div>
@@ -153,7 +154,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 </select>
                 {errors.users && (
                   <p className="mt-2 text-sm text-red-600">
-                    <span className="font-medium">Oh, snapp!</span> Some error happens.
+                    {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
                   </p>
                 )}
               </div>

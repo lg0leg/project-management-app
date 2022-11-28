@@ -28,10 +28,7 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
   } = useForm<IColumn>();
 
   const onSubmit: SubmitHandler<IColumn> = (data) => {
-    console.log('submited: ', data);
-    console.log('type: column');
     const { title } = data;
-    // onConfirm();
     const columnOrder = columns.filter((col) => col.boardId === _id).length;
     dispatch(fetchCreateColumn({ title: title, boardId: _id, order: columnOrder, navigate }));
     onCancel();
@@ -65,14 +62,15 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
                     type="text"
                     id="title"
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Title..."
+                    placeholder={`${lang === LangKey.EN ? 'Title' : 'Название'}...`}
                     {...register('title', { required: true, minLength: 2, maxLength: 50 })}
                     // required
                   />
                   {errors.title && (
                     <p className="mt-2 text-sm text-red-600">
-                      <span className="font-medium">Oh, snapp!</span> Type title beetwen 2 and 50
-                      characters.
+                      {lang === LangKey.EN
+                        ? 'Type title beetwen 2 and 50 characters'
+                        : 'Длинна названия от 2 до 50 символов'}
                     </p>
                   )}
                 </div>
