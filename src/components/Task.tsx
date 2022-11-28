@@ -1,10 +1,11 @@
-import { FC, MouseEvent } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import type { ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
+import { ArrowContainer, Popover } from 'react-tiny-popover';
 
 interface ITaskProps {
   task: ITask;
@@ -18,6 +19,9 @@ interface ITaskProps {
 }
 
 export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
+
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
   const author = users.filter((user) => user._id === task.userId)[0];
@@ -71,33 +75,76 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
           <div className="flex flex-col">
             <p className="pb-4 text-sm font-normal text-gray-700">{task.description}</p>
             <div className="flex flex-row items-center justify-between">
-              {/* {author && (
-                <div>
-                  <p>Author: {author.login}</p>
-                  <div className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gray-100">
-                    <span className="text-sm font-medium text-gray-600">
-                      {author.login.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
+              {author && author.login && (
+                <div className="inline-flex items-center text-sm">
+                  <p>Author:</p>
+                  <Popover
+                    isOpen={isPopoverOpen && author._id === selectedUser}
+                    positions={['top', 'bottom', 'right', 'left']}
+                    content={
+                      <div className="min-w-16 mb-2 rounded-lg bg-gray-900 text-white shadow-sm">
+                        <div className="flex flex-col items-center justify-center p-2">
+                          <p className="text-sm font-semibold leading-none">{author.name}</p>
+                          <p className="text-sm font-normal">{author.login}</p>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <div
+                      className="relative ml-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-100"
+                      onMouseEnter={() => {
+                        setIsPopoverOpen((prev) => !prev);
+                        setSelectedUser(author._id);
+                      }}
+                      onMouseLeave={() => {
+                        setIsPopoverOpen((prev) => !prev);
+                        setSelectedUser('');
+                      }}
+                    >
+                      <span className="text-sm font-medium text-gray-600">
+                        {author.login.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </Popover>
                 </div>
-              )} */}
+              )}
               <div></div>
               {assigned.length > 0 && (
                 <div>
-                  {/* <p>Assigned: </p> */}
                   <div className={assigned.length > 1 ? 'flex -space-x-3' : ''}>
                     {assigned.map((user, index) => {
                       if (index >= 3) return;
                       if (user && user.login)
                         return (
-                          <div
+                          <Popover
                             key={user._id}
-                            className="inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
+                            isOpen={isPopoverOpen && user._id === selectedUser}
+                            positions={['top', 'bottom', 'left', 'right']}
+                            content={
+                              <div className="min-w-16 mb-2 rounded-lg bg-gray-900 text-white shadow-sm">
+                                <div className="flex flex-col items-center justify-center p-2">
+                                  <p className="text-sm font-semibold leading-none">{user.name}</p>
+                                  <p className="text-sm font-normal">{user.login}</p>
+                                </div>
+                              </div>
+                            }
                           >
-                            <span className="text-sm font-medium text-gray-600">
-                              {user.login.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
+                            <div
+                              className="inline-flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
+                              onMouseEnter={() => {
+                                setIsPopoverOpen((prev) => !prev);
+                                setSelectedUser(user._id);
+                              }}
+                              onMouseLeave={() => {
+                                setIsPopoverOpen((prev) => !prev);
+                                setSelectedUser('');
+                              }}
+                            >
+                              <span className="text-sm font-medium text-gray-600">
+                                {user.login.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          </Popover>
                         );
                     })}
                     {assigned.length > 3 && (
