@@ -116,7 +116,7 @@ export const Welcome: FC = () => {
                 </p>
                 <p className="text-base font-normal text-gray-500 ">
                   {lang == 'en'
-                    ? 'Created the project, set up the server side and interaction with it, added forms and authorization, organized the work of the team.'
+                    ? 'Created the project, set up the server side and interaction with it, added forms and authorization, organized work of the team.'
                     : 'Создал проект, настроил серверную часть и взаимодействие с ней, добавил формы и авторизацию, организовал работу команды.'}
                 </p>
               </div>
@@ -175,11 +175,11 @@ export const Welcome: FC = () => {
         <section className="flex flex-col items-center justify-center gap-[10px] px-[25px] pt-[100px] sm:gap-[30px] sm:px-[50px]">
           <h4 className={h4Styles}>
             {lang == 'en'
-              ? 'How can I learn to make apps that are as cool as they are?'
+              ? 'How to learn how to create the same cool sites?'
               : 'Как мне научится делать такие же крутые приложения?'}
           </h4>
           <p className="text-md font-semibold text-gray-500 sm:text-lg lg:text-3xl">
-            {lang == 'en' ? 'In a free course from ' : 'На бесплатных курсах от '}
+            {lang == 'en' ? 'On free courses from ' : 'На бесплатных курсах от '}
             <a
               className="font-bold"
               href="https://rs.school/index.html"
