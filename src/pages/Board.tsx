@@ -40,7 +40,6 @@ export const Board: FC = () => {
   const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
-  const [copiedColumns, setCopiedColumns] = useState(columns);
   const copyColumns = [...columns];
   const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
   let boardTitle = '';
@@ -77,9 +76,6 @@ export const Board: FC = () => {
   };
 
   const onConfirmDelete = () => {
-    console.log(modalType);
-    console.log(modalTargetId);
-    console.log(modalTargetType);
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
       const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
       const newTasks = tasks
@@ -109,7 +105,7 @@ export const Board: FC = () => {
             return { ...col, order: col.order - 1 };
           }
           return { ...col };
-        }) as IColumn[];
+        });
       dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
       dispatch(fetchColumnsSet({ navigate, newColumns }));
     }

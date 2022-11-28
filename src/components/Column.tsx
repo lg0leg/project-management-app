@@ -31,7 +31,6 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
 
   const onKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log('do validate');
       changeColumnTitle();
       setIsChanging((prev) => !prev);
     }
@@ -102,8 +101,7 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                   className="cursor-pointer truncate px-2 text-lg font-semibold text-gray-900"
                   onClick={() => setIsChanging((prev) => !prev)}
                 >
-                  {column.title}
-                  {' ' + column.order}{' '}
+                  {column.title}{' '}
                   <span className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800">
                     {tasks.length}
                   </span>

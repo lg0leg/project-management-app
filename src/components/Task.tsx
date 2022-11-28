@@ -5,7 +5,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
-import { ArrowContainer, Popover } from 'react-tiny-popover';
+import { Popover } from 'react-tiny-popover';
 
 interface ITaskProps {
   task: ITask;
@@ -26,7 +26,6 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
   const { users } = useAppSelector((state) => state.userReducer);
   const author = users.filter((user) => user._id === task.userId)[0];
   const assigned = task.users.map((taskUser) => users.filter((user) => user.login === taskUser)[0]);
-  // console.log(assigned);
 
   return (
     <Draggable draggableId={task._id} index={index}>
@@ -148,7 +147,7 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
                         );
                     })}
                     {assigned.length > 3 && (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white hover:bg-gray-600">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white">
                         <span>+{assigned.length - 3}</span>
                       </div>
                     )}
