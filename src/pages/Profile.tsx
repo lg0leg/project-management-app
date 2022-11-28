@@ -35,6 +35,7 @@ export const Profile: FC = () => {
   const [userId, setUserId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [isShowError, setShowError] = useState(false);
+  const [isEmptyError, setEmptyError] = useState(false);
   const [formData, setFormData] = useState({
     newPassword: '',
     name: '',
@@ -66,6 +67,10 @@ export const Profile: FC = () => {
     if (!isError) timeout = setTimeout(() => setShowError(false), 10000);
   }, [isError]);
 
+  useEffect(() => {
+    if (isEmptyError) setTimeout(() => setEmptyError(false), 10000);
+  }, [isEmptyError]);
+
   const {
     register,
     handleSubmit,
@@ -76,7 +81,10 @@ export const Profile: FC = () => {
     const { password, name, login } = data;
     const newLogin = data.login || user.login;
     const newName = data.name || user.name;
-    if (!password && !name && !login) return;
+    if (!password && !name && !login) {
+      setEmptyError(true);
+      return;
+    }
     setFormData({
       newPassword: password,
       name: newName,
@@ -158,6 +166,11 @@ export const Profile: FC = () => {
             />
 
             <AuthSubmit text={lang === LangKey.EN ? 'Edit' : 'Редактировать'} />
+            {isEmptyError && (
+              <p className="max-w-[250px] text-center text-sm font-medium text-red-500">
+                {lang === LangKey.EN ? 'all fields are empty' : 'все поля пустые'}
+              </p>
+            )}
             <DeleteUserBtn
               text={lang === LangKey.EN ? 'Delete user' : 'Удалить пользователя'}
               _id={userId}

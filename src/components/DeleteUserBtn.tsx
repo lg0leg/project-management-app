@@ -25,7 +25,7 @@ export default function DeleteUserBtn({ text, _id }: IProps) {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        type="submit"
+        type="button"
         className="mt-5 w-full rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none "
       >
         {text}
