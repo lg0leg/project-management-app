@@ -1,12 +1,14 @@
 import { FC, KeyboardEvent, MouseEvent, useState } from 'react';
-import { IColumn, ITask } from 'models/dbTypes';
+import type { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd, MdDone } from 'react-icons/md';
 import { Task } from './Task';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { BiTrash } from 'react-icons/bi';
 import { LangKey } from 'constants/lang';
-import { useAppSelector } from 'app/hooks';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { ModalTypes } from 'constants/modalTypes';
+import { fetchUpdateColumn } from 'app/actionCreators/columnActionCreator';
+import { HiXMark } from 'react-icons/hi2';
 
 interface IColumnProps {
   index: number;
@@ -22,21 +24,33 @@ interface IColumnProps {
 
 export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IColumnProps) => {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const dispatch = useAppDispatch();
+  const navigate = useAppNavigate();
   const [isChanging, setIsChanging] = useState(false);
   const [title, setTitle] = useState(column.title);
 
   const onKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log('do validate');
+      changeColumnTitle();
       setIsChanging((prev) => !prev);
     }
   };
   const onDoneButtonPressed = () => {
+    changeColumnTitle();
     setIsChanging((prev) => !prev);
+  };
+  const changeColumnTitle = () => {
+    const newCol = {
+      _id: column._id,
+      boardId: column.boardId,
+      order: column.order,
+      title,
+    };
+    dispatch(fetchUpdateColumn({ column: newCol, navigate }));
   };
 
   return (
-    <Draggable draggableId={'drag.' + column._id} index={index}>
+    <Draggable draggableId={'drag.' + column._id} index={index} isDragDisabled={isChanging}>
       {(provided) => (
         <div
           className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
@@ -62,12 +76,23 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                       onKeyDownHandler(e);
                     }}
                   />
-                  <div
+                  <button
+                    type="button"
                     className=" rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     onClick={onDoneButtonPressed}
                   >
                     <MdDone className="h-5 w-5" />
-                  </div>
+                  </button>
+                  <button
+                    type="button"
+                    className=" rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
+                    onClick={() => setIsChanging((prev) => !prev)}
+                  >
+                    <div className="h-5 w-5">
+                      <HiXMark size={20} />
+                    </div>
+                    <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
+                  </button>
                 </div>
               </>
             ) : (
@@ -86,7 +111,12 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                     className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     data-modal="modal-delete-column"
                     onClick={(e) => {
-                      openModal(e, ModalTypes.DELETE, column._id, 'column');
+                      openModal(
+                        e,
+                        ModalTypes.DELETE,
+                        column._id,
+                        lang === LangKey.EN ? 'column' : 'колонку'
+                      );
                     }}
                   >
                     <BiTrash className="h-5 w-5" />
