@@ -40,7 +40,7 @@ export const SignIn: FC = () => {
       <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
         <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
           <form
-            className="rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
+            className="max-w-[280px] rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
             onSubmit={handleSubmit(onSubmit)}
           >
             <div>
