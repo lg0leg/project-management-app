@@ -6,6 +6,7 @@ module.exports = {
       backgroundImage: {
         login: "url('assets/images/login.png')",
         registration: "url('assets/images/registration.png')",
+        profile: "url('assets/images/profile.png')",
       },
       keyframes: {
         wiggle: {

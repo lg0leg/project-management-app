@@ -11,6 +11,7 @@ export interface IAuthRequest {
   name?: string;
   login: string;
   password: string;
+  passwordRepeat?: string;
 }
 
 export interface IRegisterResponse {
@@ -42,3 +43,21 @@ export interface IStatusPayload {
 }
 
 export type navigateType = (path: string) => void;
+
+export interface IAuthValidate {
+  value: number;
+  message: string;
+}
+
+export type ValueOf<T> = T[keyof T];
+
+export interface IProfileConfirm {
+  oldPassword: string;
+}
+export interface IProfileConfirmData {
+  name: string;
+  login: string;
+  newPassword: string;
+  oldLogin: string;
+  userId: string;
+}
