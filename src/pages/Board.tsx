@@ -22,6 +22,14 @@ import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 import { EditTaskModalContent } from 'components/modals/EditTaskModalContent';
 import { Button } from 'components/Button';
 import { RoutesPath } from 'constants/routes';
+import { fetchGetPointsByParams } from 'app/actionCreators/pointActionCreator';
+
+export interface IOpenModalProps {
+  event: MouseEvent<HTMLButtonElement>;
+  modalType: string;
+  modalTargetId?: string;
+  modalTargetType?: string;
+}
 
 export const Board: FC = () => {
   const { id } = useParams();
@@ -38,8 +46,10 @@ export const Board: FC = () => {
   const { columns, isLoading: isLoadingColumns } = useAppSelector((state) => state.columnReducer);
   const { tasks, isLoading: isLoadingTasks } = useAppSelector((state) => state.taskReducer);
   const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { points, isLoading: isLoadingPoints } = useAppSelector((state) => state.pointReducer);
   const { token } = useAppSelector((state) => state.authReducer);
-  const isLoading = isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers;
+  const isLoading =
+    isLoadingBoards || isLoadingColumns || isLoadingTasks || isLoadingUsers || isLoadingPoints;
   const copyColumns = [...columns];
   const currentTask = tasks.filter((t) => t._id === modalTargetId)[0];
   let boardTitle = '';
@@ -58,16 +68,12 @@ export const Board: FC = () => {
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
-      dispatch(fetchGetAllBoardStore({ _id, navigate }));
+      dispatch(fetchGetAllBoardStore({ _id, ownerId: board.owner, navigate }));
+      dispatch(fetchGetPointsByParams({ navigate, userId: board.owner }));
     }
   }, []);
 
-  const openModal = (
-    event: MouseEvent<HTMLButtonElement>,
-    modalType: string,
-    modalTargetId?: string,
-    modalTargetType?: string
-  ) => {
+  const openModal = ({ event, modalType, modalTargetId, modalTargetType }: IOpenModalProps) => {
     event.preventDefault();
     setModalType(modalType);
     setModalOpen(true);
@@ -217,8 +223,8 @@ export const Board: FC = () => {
                 <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
                   <button
                     className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
-                    onClick={(e) => {
-                      openModal(e, ModalTypes.ADD, '', 'column');
+                    onClick={(event) => {
+                      openModal({ event, modalType: ModalTypes.ADD, modalTargetType: 'column' });
                     }}
                   >
                     <MdAdd />
@@ -238,7 +244,7 @@ export const Board: FC = () => {
             <AddTaskModalContent columnId={modalTargetId} onCancel={onCancel} />
           ))}
         {modalType === ModalTypes.EDIT && (
-          <EditTaskModalContent task={currentTask} onCancel={onCancel} />
+          <EditTaskModalContent task={currentTask} priority={points} onCancel={onCancel} />
         )}
         {modalType === ModalTypes.DELETE && (
           <DeleteConformation

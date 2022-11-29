@@ -81,7 +81,7 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
       const params: IPointParams = {};
       if (userId) params.userId = userId;
       if (ids && ids.length) params.ids = ids;
-      const response = await apiToken<IPoint[]>(`/point`, { params });
+      const response = await apiToken<IPoint[]>(`/points`, { params });
 
       dispatch(
         pointSlice.actions.getPoints({
@@ -117,7 +117,7 @@ export const fetchDeletePoint = ({ navigate, pointId }: IDeletePointProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
-      const response = await apiToken.delete<IPoint>(`/point/${pointId}`);
+      const response = await apiToken.delete<IPoint>(`/points/${pointId}`);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
@@ -134,7 +134,7 @@ export const fetchCreatePoint = ({ navigate, point }: ICreatePointProps) => {
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken.post<IPoint>(`/point`, point);
+      const response = await apiToken.post<IPoint>(`/points`, point);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
