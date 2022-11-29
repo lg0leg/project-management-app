@@ -39,7 +39,7 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
             <Button color="red" onClick={onConfirm}>
               {lang === LangKey.EN ? 'Delete' : 'Удалить'}
             </Button>
-            <Button color="alternative" onClick={onCancel}>
+            <Button color="light" onClick={onCancel}>
               {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
             </Button>
           </div>
