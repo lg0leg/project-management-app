@@ -96,7 +96,6 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
       const response = await apiToken<IBoard>(`/boards/${_id}`);
 
       if (response.status === 204) {
-        console.log('the page has been deleted');
         dispatch(fetchDeleteBoard({ _id, navigate }));
         navigate(RoutesPath.NOT_FOUND);
       } else {
