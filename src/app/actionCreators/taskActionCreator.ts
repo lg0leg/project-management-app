@@ -6,6 +6,7 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 import { fetchAddFile } from './fileActionCreator';
+import { fetchCreatePoint } from './pointActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -23,6 +24,11 @@ const setErrorStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+interface IPointData {
+  title: string;
+  done: boolean;
+}
 interface ISetTasksProps {
   newTasks: ITask[];
   navigate: navigateType;
@@ -52,7 +58,7 @@ interface ITasksInBoardProps {
   navigate: navigateType;
 }
 interface ITasksParams {
-  ids?: string[];
+  ids?: string;
   search?: string;
   userId?: string;
 }
@@ -77,6 +83,9 @@ interface IUpdateTaskProps {
 
 interface ICreateTaskWithImgProps extends ICreateTaskProps {
   file: File;
+}
+interface ICreateTaskWithPointProps extends ICreateTaskProps {
+  pointData: IPointData;
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -237,7 +246,7 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
       const params: ITasksParams = {};
       if (userId) params.userId = userId;
       if (search) params.search = search;
-      if (ids && ids.length) params.ids = ids;
+      if (ids && ids.length) params.ids = JSON.stringify(ids);
       const response = await apiToken<ITask[]>(`/tasksSet`, {
         params,
       });
@@ -256,13 +265,13 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
   };
 };
 
-export const fetchCreateTaskWithImg = ({
+export const fetchCreateTaskWithPoint = ({
   boardId,
   columnId,
   task,
-  file,
+  pointData,
   navigate,
-}: ICreateTaskWithImgProps) => {
+}: ICreateTaskWithPointProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -273,7 +282,9 @@ export const fetchCreateTaskWithImg = ({
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
+        const { title, done } = pointData;
+        const point = { boardId, taskId: response.data._id, title, done };
+        dispatch(fetchCreatePoint({ point, navigate }));
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -281,3 +292,29 @@ export const fetchCreateTaskWithImg = ({
     }
   };
 };
+
+// export const fetchCreateTaskWithImg = ({
+//   boardId,
+//   columnId,
+//   task,
+//   file,
+//   navigate,
+// }: ICreateTaskWithImgProps) => {
+//   return async (dispatch: AppDispatch) => {
+//     try {
+//       setLoadingStatus(dispatch);
+
+//       const response = await apiToken.post<ITask>(
+//         `/boards/${boardId}/columns/${columnId}/tasks/`,
+//         task
+//       );
+
+//       if (response.status >= 200 && response.status < 300) {
+//         dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
+//       }
+//     } catch (e) {
+//       setErrorStatus(dispatch);
+//       handleError(dispatch, e, navigate);
+//     }
+//   };
+// };

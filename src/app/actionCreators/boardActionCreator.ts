@@ -8,6 +8,7 @@ import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
 import { fetchGetFilesByBoardId } from './fileActionCreator';
+import { fetchGetPointsByParams } from './pointActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -216,7 +217,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
 
       const response = await apiToken<IBoard[]>(`/boardsSet`, {
         params: {
-          ids,
+          ids: JSON.stringify(ids),
         },
       });
 
@@ -238,7 +239,6 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetBoard({ _id, navigate }));
       dispatch(fetchGetColumns({ boardId: _id, navigate }));
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
-      dispatch(fetchGetFilesByBoardId({ boardId: _id, navigate }));
     } catch (e) {
       setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
