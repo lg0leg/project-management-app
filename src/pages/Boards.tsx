@@ -16,6 +16,8 @@ import SimpleSpinner from 'components/spinners/SimpleSpinner';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
+import { Slide, toast } from 'react-toastify';
+
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
@@ -28,6 +30,34 @@ export const Boards: FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [popupVisible, setPopupVisible] = useState(false);
   const [currentBoardId, setCurrentBoard] = useState('');
+
+  /*start*/
+  const testNotify = () =>
+    toast(
+      <div className="flex gap-[10px]">
+        <BiTrash size={20} color="rgb(107, 114, 128, 1)" /> <span>Tu-du-du-du ty-ty!</span>
+      </div>
+    );
+  const sucsNotify = () =>
+    toast.success('Uspeh!', {
+      autoClose: 2000,
+      hideProgressBar: false,
+      transition: Slide,
+    });
+  const warnNotify = () => toast.warn('Uuu');
+  const errorNotify = () => toast.error('Oppa..');
+  const infoNotify = () =>
+    toast.info('toooooooooooooooooooooooo looooooooooooooooooooooong string');
+
+  useEffect(() => {
+    testNotify();
+    sucsNotify();
+    warnNotify();
+    errorNotify();
+    infoNotify();
+  }, []);
+
+  /*end*/
 
   useEffect(() => {
     if (isExpired(token)) {
