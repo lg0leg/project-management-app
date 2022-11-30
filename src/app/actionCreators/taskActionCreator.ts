@@ -200,8 +200,9 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
           tasks: response.data,
         })
       );
-      const taskIdList = response.data.map((task) => task._id);
+
       if (response.status >= 200 && response.status < 300) {
+        const taskIdList = response.data.map((task) => task._id);
         dispatch(fetchGetPointsByTaskIdList({ taskIdList, navigate }));
       }
     } catch (e) {
