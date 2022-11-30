@@ -23,6 +23,9 @@ const initialState = {
 interface IPointsPayload {
   points: IPoint[];
 }
+interface IPointPayload {
+  point: IPoint;
+}
 
 export const pointSlice = createSlice({
   name: 'point',
@@ -30,6 +33,11 @@ export const pointSlice = createSlice({
   reducers: {
     getPoints(state, action: PayloadAction<IPointsPayload>) {
       state.points = action.payload.points;
+      state.isLoading = false;
+      state.isError = false;
+    },
+    addPoint(state, action: PayloadAction<IPointPayload>) {
+      state.points = [...state.points, action.payload.point];
       state.isLoading = false;
       state.isError = false;
     },
