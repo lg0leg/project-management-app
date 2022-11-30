@@ -34,8 +34,8 @@ export interface IFile {
 }
 export interface IPoint {
   _id: string;
-  title: string;
-  taskId: number;
+  title: '' | 'low' | 'medium' | 'high' | 'critical';
+  taskId: string;
   boardId: string;
   done: boolean;
 }
