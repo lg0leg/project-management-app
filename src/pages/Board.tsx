@@ -69,7 +69,7 @@ export const Board: FC = () => {
     } else {
       dispatch(fetchGetUsers(navigate));
       dispatch(fetchGetAllBoardStore({ _id, ownerId: board.owner, navigate }));
-      dispatch(fetchGetPointsByParams({ navigate, userId: board.owner }));
+      // dispatch(fetchGetPointsByParams({ navigate, userId: board.owner }));
     }
   }, []);
 
