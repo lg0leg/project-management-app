@@ -4,34 +4,43 @@ import { FC, ReactNode } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
-import { ITask } from 'models/dbTypes';
+import type { IPoint, ITask } from 'models/dbTypes';
 import { fetchUpdateTask } from 'app/actionCreators/taskActionCreator';
 import { fetchAddFile } from 'app/actionCreators/fileActionCreator';
+import { fetchChangePoint, fetchCreatePoint } from 'app/actionCreators/pointActionCreator';
 
 interface IEditTaskModalContentProps {
   task: ITask;
+  priority: IPoint[];
   onCancel: () => void;
   children?: ReactNode;
 }
 
 interface IFormData extends ITask {
   attachment: FileList;
+  priority: '' | 'low' | 'medium' | 'high' | 'critical';
 }
 
-export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onCancel }) => {
+export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
+  task,
+  priority: points,
+  onCancel,
+}) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-
+  const tasksPoint = points.filter((point) => point.taskId === task._id);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormData>({ defaultValues: task });
+  } = useForm<IFormData>({
+    defaultValues: { ...task, priority: tasksPoint[0].title ? tasksPoint[0].title : '' },
+  });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    const { title, description, order, userId, users, attachment } = data;
+    const { title, description, order, userId, users, attachment, priority } = data;
     const taskData = {
       title,
       order,
@@ -40,6 +49,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
       users,
       columnId: task.columnId,
     };
+
     dispatch(
       fetchUpdateTask({
         _id: task._id,
@@ -55,6 +65,24 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
     //   );
     //   console.log('attachment');
     // }
+
+    if (!tasksPoint.length) {
+      console.log('point 1');
+      const newPoint = {
+        taskId: task._id,
+        boardId: task.boardId,
+        title: priority,
+        done: false,
+      };
+      console.log('point 2');
+      //#TODO - заменить на patch по taskid фильтрованную
+      dispatch(fetchCreatePoint({ navigate, point: newPoint }));
+      console.log('point 3');
+    }
+    if (points.length) {
+      const changePoint = { done: false, title: priority };
+      dispatch(fetchChangePoint({ navigate, pointId: tasksPoint[0]._id, pointData: changePoint }));
+    }
     onCancel();
   };
 
@@ -98,13 +126,13 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
               </div>
               <div>
                 <label
-                  htmlFor="message"
+                  htmlFor="description"
                   className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
                   {lang === LangKey.EN ? 'Description' : 'Описание'}
                 </label>
                 <textarea
-                  id="message"
+                  id="description"
                   rows={3}
                   className="block max-h-52 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
@@ -160,6 +188,27 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                   })}
                 </select>
                 {errors.users && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="priority" className="mb-2 block text-sm font-medium text-gray-900">
+                  {lang === LangKey.EN ? 'Priority' : 'Приоритет'}
+                </label>
+                <select
+                  id="priority"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  {...register('priority')}
+                >
+                  <option value="">Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                {errors.priority && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
                   </p>

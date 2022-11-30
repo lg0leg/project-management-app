@@ -1,4 +1,4 @@
-import { FC, KeyboardEvent, MouseEvent, useState } from 'react';
+import { FC, KeyboardEvent, useState } from 'react';
 import type { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd, MdDone } from 'react-icons/md';
 import { Task } from './Task';
@@ -9,17 +9,13 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { ModalTypes } from 'constants/modalTypes';
 import { fetchUpdateColumn } from 'app/actionCreators/columnActionCreator';
 import { HiXMark } from 'react-icons/hi2';
+import type { IOpenModalProps } from 'pages/Board';
 
 interface IColumnProps {
   index: number;
   column: IColumn;
   tasks: ITask[];
-  openModal: (
-    event: MouseEvent<HTMLButtonElement>,
-    modalType: string,
-    modalTargetId?: string,
-    modalTargetType?: string
-  ) => void;
+  openModal: ({ event, modalType, modalTargetId, modalTargetType }: IOpenModalProps) => void;
 }
 
 export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IColumnProps) => {
@@ -110,13 +106,13 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                   <button
                     className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     data-modal="modal-delete-column"
-                    onClick={(e) => {
-                      openModal(
-                        e,
-                        ModalTypes.DELETE,
-                        column._id,
-                        lang === LangKey.EN ? 'column' : 'колонку'
-                      );
+                    onClick={(event) => {
+                      openModal({
+                        event,
+                        modalType: ModalTypes.DELETE,
+                        modalTargetId: column._id,
+                        modalTargetType: lang === LangKey.EN ? 'column' : 'колонку',
+                      });
                     }}
                   >
                     <BiTrash className="h-5 w-5" />
@@ -144,8 +140,13 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
           <div className="p-2">
             <button
               className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
-              onClick={(e) => {
-                openModal(e, ModalTypes.ADD, column._id, 'task');
+              onClick={(event) => {
+                openModal({
+                  event,
+                  modalType: ModalTypes.ADD,
+                  modalTargetId: column._id,
+                  modalTargetType: 'task',
+                });
               }}
             >
               <MdAdd />

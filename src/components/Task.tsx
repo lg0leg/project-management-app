@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, useState } from 'react';
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import type { ITask } from 'models/dbTypes';
 import { Draggable } from '@hello-pangea/dnd';
@@ -6,16 +6,13 @@ import { ModalTypes } from 'constants/modalTypes';
 import { useAppSelector } from 'app/hooks';
 import { LangKey } from 'constants/lang';
 import { Popover } from 'react-tiny-popover';
+import { IOpenModalProps } from 'pages/Board';
+import { Priority } from './Priority';
 
 interface ITaskProps {
   task: ITask;
   index: number;
-  openModal: (
-    event: MouseEvent<HTMLButtonElement>,
-    modalType: string,
-    modalTargetId?: string,
-    modalTargetType?: string
-  ) => void;
+  openModal: ({ event, modalType, modalTargetId, modalTargetType }: IOpenModalProps) => void;
 }
 
 export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => {
@@ -24,8 +21,10 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
 
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
+  const { points } = useAppSelector((state) => state.pointReducer);
   const author = users.filter((user) => user._id === task.userId)[0];
   const assigned = task.users.map((taskUser) => users.filter((user) => user.login === taskUser)[0]);
+  const priority = points.filter((point) => point.taskId === task._id);
 
   return (
     <Draggable draggableId={task._id} index={index}>
@@ -41,21 +40,26 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
             <div className="ml-2 flex flex-row">
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={(e) => {
-                  openModal(e, ModalTypes.EDIT, task._id, 'task');
+                onClick={(event) => {
+                  openModal({
+                    event,
+                    modalType: ModalTypes.EDIT,
+                    modalTargetId: task._id,
+                    modalTargetType: 'task',
+                  });
                 }}
               >
                 <BiEdit className="h-5 w-5" />
               </button>
               <button
                 className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
-                onClick={(e) => {
-                  openModal(
-                    e,
-                    ModalTypes.DELETE,
-                    task._id,
-                    lang === LangKey.EN ? 'task' : 'задачу'
-                  );
+                onClick={(event) => {
+                  openModal({
+                    event,
+                    modalType: ModalTypes.DELETE,
+                    modalTargetId: task._id,
+                    modalTargetType: lang === LangKey.EN ? 'task' : 'задачу',
+                  });
                 }}
               >
                 <BiTrash className="h-5 w-5" />
@@ -73,7 +77,7 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
           ) : null} */}
           <div className="flex flex-col">
             <p className="pb-4 text-sm font-normal text-gray-700">{task.description}</p>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between pb-4">
               {author && author.login && (
                 <div className="inline-flex items-center text-sm">
                   <p>Author:</p>
@@ -109,52 +113,63 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
               )}
               <div></div>
               {assigned.length > 0 && (
-                <div>
-                  <div className={assigned.length > 1 ? 'flex -space-x-3' : ''}>
-                    {assigned.map((user, index) => {
-                      if (index >= 3) return;
-                      if (user && user.login)
-                        return (
-                          <Popover
-                            key={user._id}
-                            isOpen={isPopoverOpen && user._id === selectedUser}
-                            positions={['top', 'bottom', 'left', 'right']}
-                            content={
-                              <div className="min-w-16 mb-2 rounded-lg bg-gray-900 text-white shadow-sm">
-                                <div className="flex flex-col items-center justify-center p-2">
-                                  <p className="text-sm font-semibold leading-none">{user.name}</p>
-                                  <p className="text-sm font-normal">{user.login}</p>
-                                </div>
+                <div className={assigned.length > 1 ? 'flex -space-x-3' : ''}>
+                  {assigned.map((user, index) => {
+                    if (index >= 3) return;
+                    if (user && user.login)
+                      return (
+                        <Popover
+                          key={user._id}
+                          isOpen={isPopoverOpen && user._id === selectedUser}
+                          positions={['top', 'bottom', 'left', 'right']}
+                          content={
+                            <div className="min-w-16 mb-2 rounded-lg bg-gray-900 text-white shadow-sm">
+                              <div className="flex flex-col items-center justify-center p-2">
+                                <p className="text-sm font-semibold leading-none">{user.name}</p>
+                                <p className="text-sm font-normal">{user.login}</p>
                               </div>
-                            }
-                          >
-                            <div
-                              className="inline-flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
-                              onMouseEnter={() => {
-                                setIsPopoverOpen((prev) => !prev);
-                                setSelectedUser(user._id);
-                              }}
-                              onMouseLeave={() => {
-                                setIsPopoverOpen((prev) => !prev);
-                                setSelectedUser('');
-                              }}
-                            >
-                              <span className="text-sm font-medium text-gray-600">
-                                {user.login.charAt(0).toUpperCase()}
-                              </span>
                             </div>
-                          </Popover>
-                        );
-                    })}
-                    {assigned.length > 3 && (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white">
-                        <span>+{assigned.length - 3}</span>
-                      </div>
-                    )}
-                  </div>
+                          }
+                        >
+                          <div
+                            className="inline-flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-300"
+                            onMouseEnter={() => {
+                              setIsPopoverOpen((prev) => !prev);
+                              setSelectedUser(user._id);
+                            }}
+                            onMouseLeave={() => {
+                              setIsPopoverOpen((prev) => !prev);
+                              setSelectedUser('');
+                            }}
+                          >
+                            <span className="text-sm font-medium text-gray-600">
+                              {user.login.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        </Popover>
+                      );
+                  })}
+                  {assigned.length > 3 && (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-700 text-xs font-medium text-white">
+                      <span>+{assigned.length - 3}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
+            {priority.length > 0 && (
+              <div className="flex flex-col items-center justify-between">
+                {priority.map((p) => {
+                  return (
+                    // <div key={p._id} className="w-full bg-red-500 text-gray-800">
+                    //   {p.title}
+                    // </div>
+                    <Priority key={p._id} type={p.title} />
+                  );
+                })}
+                {/* <Priority /> */}
+              </div>
+            )}
           </div>
         </div>
       )}

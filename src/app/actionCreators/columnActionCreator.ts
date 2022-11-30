@@ -47,7 +47,7 @@ interface IUpdateColumnProps {
 }
 interface IColumnsParams {
   userId?: string;
-  ids?: string[];
+  ids?: string;
 }
 interface IGetColumnsByParams extends IColumnsParams {
   navigate: navigateType;
@@ -213,7 +213,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
       setLoadingStatus(dispatch);
       const params: IColumnsParams = {};
       if (userId) params.userId = userId;
-      if (ids) params.ids = ids;
+      if (ids) params.ids = JSON.stringify(ids);
       const response = await apiToken<IColumn[]>(`/columnsSet`, { params });
 
       if (response.status >= 200 && response.status < 300) {
