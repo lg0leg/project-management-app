@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import { useParams } from 'react-router-dom';
-import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
+import { fetchCreateTaskWithPoint } from 'app/actionCreators/taskActionCreator';
 import type { IPoint, ITask } from 'models/dbTypes';
 import { decodeToken } from 'react-jwt';
 import { IToken } from 'models/typescript';
@@ -39,8 +39,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   } = useForm<IFormData>();
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    const { title, description, users } = data;
+    const { title, description, users, priority } = data;
     const checkedUsers = users.includes('') ? users.filter((user) => user !== '') : users;
+    const pointData = { title: priority, done: false };
     const taskData = {
       title,
       description,
@@ -48,7 +49,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
       userId,
       users: checkedUsers,
     };
-    dispatch(fetchCreateTask({ boardId: _id, columnId, task: taskData, navigate }));
+    dispatch(
+      fetchCreateTaskWithPoint({ boardId: _id, columnId, task: taskData, pointData, navigate })
+    );
 
     // const newPoint = { taskId: task._id, boardId: task.boardId, title: point, done: false };
     // dispatch(fetchCreatePoint({ navigate, point: newPoint }));

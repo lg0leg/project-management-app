@@ -23,7 +23,7 @@ const setErrorStatus = (dispatch: AppDispatch) => {
   );
 };
 interface IPointParams {
-  ids?: string[];
+  ids?: string;
   userId?: string;
 }
 interface IGetPointsProps extends IPointParams {
@@ -33,6 +33,10 @@ interface IGetPointsProps extends IPointParams {
 interface IGetPointsByTaskIdProps {
   navigate: navigateType;
   taskId: string;
+}
+interface IGetPointsByTaskIdListProps {
+  navigate: navigateType;
+  taskIdList: string[];
 }
 
 interface IDeletePointProps {
@@ -79,8 +83,7 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
     try {
       setLoadingStatus(dispatch);
       const params: IPointParams = {};
-      if (userId) params.userId = userId;
-      if (ids && ids.length) params.ids = ids;
+      if (ids && ids.length) params.ids = JSON.stringify(ids);
       const response = await apiToken<IPoint[]>(`/points`, { params });
 
       dispatch(
@@ -155,7 +158,7 @@ export const fetchChangeDoneInPointList = ({
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken.patch<IPoint>(`/point`, pointList);
+      const response = await apiToken.patch<IPoint>(`/points`, pointList);
 
       if (response.status >= 200 && response.status < 300 && boardId) {
         dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
@@ -172,11 +175,43 @@ export const fetchChangePoint = ({ navigate, pointData, pointId }: IChangePointP
     try {
       setLoadingStatus(dispatch);
 
-      const response = await apiToken.patch<IPoint>(`/point/${pointId}`, pointData);
+      const response = await apiToken.patch<IPoint>(`/points/${pointId}`, pointData);
 
       if (response.status >= 200 && response.status < 300) {
         dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
       }
+    } catch (e) {
+      setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const fetchGetPointsByTaskIdList = ({
+  navigate,
+  taskIdList,
+}: IGetPointsByTaskIdListProps) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      setLoadingStatus(dispatch);
+      Promise.allSettled(
+        taskIdList.map(async (taskId) => await apiToken<IPoint[]>(`/points/${taskId}`))
+      ).then((response) => {
+        const isFulfilled = <T>(
+          input: PromiseSettledResult<T>
+        ): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+
+        const allPoint: IPoint[] = [];
+        response.filter(isFulfilled).forEach((points) => {
+          allPoint.push(...points.value.data);
+        });
+
+        dispatch(
+          pointSlice.actions.getPoints({
+            points: allPoint,
+          })
+        );
+      });
     } catch (e) {
       setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
