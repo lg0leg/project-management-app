@@ -72,6 +72,7 @@ export default function CreateBoardPopup(props: {
           <input
             type="text"
             id="title-input"
+            // minLength={2}
             maxLength={20}
             className="block h-[40px] w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-base text-blue-900 focus:border-blue-600 focus:bg-white focus:outline-none sm:h-[50px] sm:text-lg"
             value={title}
