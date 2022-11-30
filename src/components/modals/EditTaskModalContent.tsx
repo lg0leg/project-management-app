@@ -18,25 +18,26 @@ interface IEditTaskModalContentProps {
 
 interface IFormData extends ITask {
   attachment: FileList;
-  priority: '' | 'low' | 'medium' | 'high' | 'critical';
+  priority: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
   task,
-  priority: point,
+  priority,
   onCancel,
 }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
+  const point = priority.filter((p) => p.taskId === task._id);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormData>({
-    defaultValues: { ...task, priority: point[0].title ? point[0].title : '' },
+    defaultValues: { ...task, priority: point.length ? point[0].title : 'none' },
   });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
@@ -196,7 +197,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('priority')}
                 >
-                  <option value="">Priority</option>
+                  <option value="none">Priority</option>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>

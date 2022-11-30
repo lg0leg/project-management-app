@@ -18,7 +18,7 @@ interface IAddTaskModalContentProps {
 
 interface IFormData extends ITask {
   attachment: FileList;
-  priority: '' | 'low' | 'medium' | 'high' | 'critical';
+  priority: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, onCancel }) => {
@@ -171,7 +171,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('priority')}
                 >
-                  <option value="">Priority</option>
+                  <option value="none">Priority</option>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
