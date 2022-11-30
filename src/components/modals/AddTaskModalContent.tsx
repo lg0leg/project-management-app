@@ -6,7 +6,7 @@ import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import { useParams } from 'react-router-dom';
 import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
-import { ITask } from 'models/dbTypes';
+import type { IPoint, ITask } from 'models/dbTypes';
 import { decodeToken } from 'react-jwt';
 import { IToken } from 'models/typescript';
 
@@ -18,6 +18,7 @@ interface IAddTaskModalContentProps {
 
 interface IFormData extends ITask {
   attachment: FileList;
+  priority: '' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, onCancel }) => {
@@ -48,6 +49,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
       users: checkedUsers,
     };
     dispatch(fetchCreateTask({ boardId: _id, columnId, task: taskData, navigate }));
+
+    // const newPoint = { taskId: task._id, boardId: task.boardId, title: point, done: false };
+    // dispatch(fetchCreatePoint({ navigate, point: newPoint }));
     onCancel();
   };
 
@@ -91,13 +95,13 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
               </div>
               <div>
                 <label
-                  htmlFor="message"
+                  htmlFor="description"
                   className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
                   {lang === LangKey.EN ? 'Description' : 'Описание'}
                 </label>
                 <textarea
-                  id="message"
+                  id="description"
                   rows={3}
                   className="block max-h-60 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
@@ -153,6 +157,27 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   })}
                 </select>
                 {errors.users && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="priority" className="mb-2 block text-sm font-medium text-gray-900">
+                  {lang === LangKey.EN ? 'Priority' : 'Приоритет'}
+                </label>
+                <select
+                  id="priority"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  {...register('priority')}
+                >
+                  <option value="">Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                {errors.priority && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
                   </p>

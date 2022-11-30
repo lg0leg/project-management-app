@@ -7,8 +7,6 @@ import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
-import { fetchGetFilesByBoardId } from './fileActionCreator';
-import { fetchGetPointsByParams } from './pointActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -29,6 +27,7 @@ const setErrorStatus = (dispatch: AppDispatch) => {
 interface IBoardProps {
   _id: string;
   navigate: navigateType;
+  ownerId?: string;
   cb?: () => void;
 }
 interface ICreateBoardProps {
@@ -232,7 +231,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
   };
 };
 
-export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
+export const fetchGetAllBoardStore = ({ _id, ownerId, navigate }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(fetchGetBoard({ _id, navigate }));

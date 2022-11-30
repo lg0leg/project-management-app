@@ -83,7 +83,6 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
     try {
       setLoadingStatus(dispatch);
       const params: IPointParams = {};
-      if (userId) params.userId = userId;
       if (ids && ids.length) params.ids = JSON.stringify(ids);
       const response = await apiToken<IPoint[]>(`/points`, { params });
 
