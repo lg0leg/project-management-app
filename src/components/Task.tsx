@@ -160,14 +160,8 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal }: ITaskProps) => 
             {priority.length > 0 && (
               <div className="flex flex-col items-center justify-between">
                 {priority.map((p) => {
-                  return (
-                    // <div key={p._id} className="w-full bg-red-500 text-gray-800">
-                    //   {p.title}
-                    // </div>
-                    <Priority key={p._id} type={p.title} />
-                  );
+                  return <Priority key={p._id} type={p.title} />;
                 })}
-                {/* <Priority /> */}
               </div>
             )}
           </div>

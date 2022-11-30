@@ -193,16 +193,22 @@ export const Board: FC = () => {
       <SpinnerWithOverlay isLoading={isLoading} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-          <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
-            <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
-              {lang === LangKey.EN ? 'Back' : 'Назад'}
-            </Button>
-            <h1>{boardTitle}</h1>
+          <div className="flex w-full flex-row items-center justify-between">
+            <div className="flex max-h-[60px] max-w-[60%] flex-row items-center justify-start px-5 pt-4">
+              <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+                {lang === LangKey.EN ? 'Back' : 'Назад'}
+              </Button>
+              <h1 className="ml-2 truncate text-3xl font-semibold text-gray-900">{boardTitle}</h1>
+            </div>
+            <div className="max-w-[30%]">
+              <p>123</p>
+            </div>
           </div>
+
           <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
             {(provided) => (
               <div
-                className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
+                className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden px-4 py-3 text-gray-700"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
