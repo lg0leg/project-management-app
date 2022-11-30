@@ -177,7 +177,7 @@ function App() {
   return (
     <>
       <ToastContainer
-        position="top-right"
+        position="bottom-right"
         limit={10}
         transition={Zoom}
         autoClose={2500}
