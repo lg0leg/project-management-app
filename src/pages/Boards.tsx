@@ -32,30 +32,29 @@ export const Boards: FC = () => {
   const [currentBoardId, setCurrentBoard] = useState('');
 
   /*start*/
-  const testNotify = () =>
-    toast(
-      <div className="flex gap-[10px]">
-        <BiTrash size={20} color="rgb(107, 114, 128, 1)" /> <span>Tu-du-du-du ty-ty!</span>
-      </div>
-    );
-  const sucsNotify = () =>
-    toast.success('Uspeh!', {
-      autoClose: 2000,
-      hideProgressBar: false,
-      transition: Slide,
-    });
-  const warnNotify = () => toast.warn('Uuu');
-  const errorNotify = () => toast.error('Oppa..');
-  const infoNotify = () =>
-    toast.info('toooooooooooooooooooooooo looooooooooooooooooooooong string');
+  // const testNotify = () =>
+  //   toast(
+  //     <div className="flex gap-[10px]">
+  //       <BiTrash size={20} color="rgb(107, 114, 128, 1)" /> <span>Tu-du-du-du ty-ty!</span>
+  //     </div>,
+  //     {
+  //       autoClose: 2000,
+  //       hideProgressBar: false,
+  //       transition: Slide,
+  //     }
+  //   );
+  // const sucsNotify = () => toast.success('Uspeh!');
+  // const warnNotify = () => toast.warn('Uuu');
+  // const errorNotify = () => toast.error('Oppa..');
+  // const infoNotify = () => toast.info('Chto-to proizoshlo');
 
-  useEffect(() => {
-    testNotify();
-    sucsNotify();
-    warnNotify();
-    errorNotify();
-    infoNotify();
-  }, []);
+  // useEffect(() => {
+  //   testNotify();
+  //   sucsNotify();
+  //   warnNotify();
+  //   errorNotify();
+  //   infoNotify();
+  // }, []);
 
   /*end*/
 
@@ -161,7 +160,9 @@ export const Boards: FC = () => {
             {returnFilteredBoards(grid)}
           </div>
         ) : (
-          <div className="grid gap-[20px] px-[30px] pb-[20px]">{returnFilteredBoards(grid)}</div>
+          <div className="grid gap-[20px] px-[30px] pb-[20px] sm:px-[8vw]">
+            {returnFilteredBoards(grid)}
+          </div>
         )}
 
         <Popup popupVisible={popupVisible} setPopupVisible={setPopupVisible}>
