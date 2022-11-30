@@ -6,7 +6,7 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType } from 'models/typescript';
 import { fetchGetAllBoardStore } from './boardActionCreator';
 import { fetchAddFile } from './fileActionCreator';
-import { fetchCreatePoint } from './pointActionCreator';
+import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -200,6 +200,10 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
           tasks: response.data,
         })
       );
+      const taskIdList = response.data.map((task) => task._id);
+      if (response.status >= 200 && response.status < 300) {
+        dispatch(fetchGetPointsByTaskIdList({ taskIdList, navigate }));
+      }
     } catch (e) {
       setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
