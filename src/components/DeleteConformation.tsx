@@ -19,6 +19,7 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
       <div className="relative h-full w-full max-w-md ">
         <div className="relative rounded-lg bg-white shadow">
           <button
+            type="button"
             onClick={onCancel}
             className="absolute top-3 right-2.5 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
           >
