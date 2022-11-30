@@ -23,20 +23,20 @@ interface IFormData extends ITask {
 
 export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
   task,
-  priority: point,
+  priority: points,
   onCancel,
 }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-
+  const tasksPoint = points.filter((point) => point.taskId === task._id);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormData>({
-    defaultValues: { ...task, priority: point[0].title ? point[0].title : '' },
+    defaultValues: { ...task, priority: tasksPoint[0].title ? tasksPoint[0].title : '' },
   });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
@@ -49,6 +49,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
       users,
       columnId: task.columnId,
     };
+
     dispatch(
       fetchUpdateTask({
         _id: task._id,
@@ -65,17 +66,22 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
     //   console.log('attachment');
     // }
 
-    if (!point.length) {
+    if (!tasksPoint.length) {
       console.log('point 1');
-      const newPoint = { taskId: task._id, boardId: task.boardId, title: priority, done: false };
+      const newPoint = {
+        taskId: task._id,
+        boardId: task.boardId,
+        title: priority,
+        done: false,
+      };
       console.log('point 2');
       //#TODO - заменить на patch по taskid фильтрованную
       dispatch(fetchCreatePoint({ navigate, point: newPoint }));
       console.log('point 3');
     }
-    if (point.length) {
+    if (points.length) {
       const changePoint = { done: false, title: priority };
-      dispatch(fetchChangePoint({ navigate, pointId: point[0]._id, pointData: changePoint }));
+      dispatch(fetchChangePoint({ navigate, pointId: tasksPoint[0]._id, pointData: changePoint }));
     }
     onCancel();
   };
