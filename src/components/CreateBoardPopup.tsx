@@ -28,12 +28,9 @@ export default function CreateBoardPopup(props: {
   };
 
   const createBoard = () => {
-    const getBoards = () => {
-      dispatch(fetchGetBoards({ cb: hidePopup, navigate }));
-    };
     const { id } = decodeToken(token) as IToken;
     const titleJSON = JSON.stringify({ title, description });
-    dispatch(fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: getBoards, navigate }));
+    dispatch(fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: hidePopup, navigate }));
   };
 
   const overlayStylesBase =

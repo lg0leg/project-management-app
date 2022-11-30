@@ -9,8 +9,11 @@ import { BASE_URL } from 'constants/baseUrl';
 import type { ITask, IUser, IBoard, IColumn } from 'models/dbTypes';
 import { apiToken } from 'API/API';
 import { getBoardText } from 'utils/getBoardText';
-import { ToastContainer, Zoom, Slide, toast } from 'react-toastify';
+import { ToastContainer, Zoom, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAppDispatch, useAppNavigate } from 'app/hooks';
+import { webSocketBoards } from 'app/actionCreators/boardActionCreator';
+import { convertCompilerOptionsFromJson } from 'typescript';
 
 const socket = io(BASE_URL);
 
@@ -42,9 +45,10 @@ interface ICbShow {
   event: string;
   data: ISocketResponse;
   showNotify: (text: string) => void;
+  path: string;
 }
 
-const cbShow = async ({ event, data, showNotify }: ICbShow) => {
+const cbShow = async ({ event, data, showNotify, path }: ICbShow) => {
   const { action, ids, users, notify, guid, initUser } = data;
   if (event === 'tasks') {
     if (action === 'add') {
@@ -102,28 +106,17 @@ const cbShow = async ({ event, data, showNotify }: ICbShow) => {
       showNotify(`удалена колонка`);
     }
   }
+  // ----------------boards-----------------
   if (event === 'boards') {
-    if (action === 'add') {
-      if (!ids || !ids.length) return;
-      const params = { ids: JSON.stringify(ids) };
-      const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
-        params,
-      });
-      responseBoards.data.forEach(async (board) => {
-        const responseBoard = await apiToken<IBoard>(`/boards/${board._id}`);
-        const { title: boardTitle } = getBoardText(responseBoard.data.title);
-        showNotify(`Добавлена доска ${boardTitle}`);
-      });
-    }
-    if (action === 'delete') {
-      showNotify(`удалена доска`);
-    }
   }
 };
 
 function App() {
   const infoNotify = (text: string) => toast.info(text);
   const location = useLocation();
+  const getPath = () => location.pathname;
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
   useEffect(() => {
     socket.on('connect', () => {
       console.log('socket is connected');
@@ -134,18 +127,24 @@ function App() {
     });
 
     socket.on('boards', (data) => {
-      cbShow({ event: 'boards', data, showNotify: infoNotify });
+      dispatch(
+        webSocketBoards({
+          navigate,
+          data,
+          showNotify: infoNotify,
+        })
+      );
     });
     socket.on('columns', (data) => {
-      cbShow({ event: 'columns', data, showNotify: infoNotify });
+      cbShow({ event: 'columns', data, showNotify: infoNotify, path: location.pathname });
     });
     socket.on('tasks', (data: ISocketResponse) => {
-      cbShow({ event: 'tasks', data, showNotify: infoNotify });
+      cbShow({ event: 'tasks', path: location.pathname, data, showNotify: infoNotify });
     });
-    socket.on('points', (data) => {
-      // console.log('location', location);
-      // console.log('socket points', data);
-    });
+    // socket.on('points', (data) => {
+    //   // console.log('location', location);
+    //   // console.log('socket points', data);
+    // });
 
     return () => {
       socket.off('connect');
@@ -153,26 +152,11 @@ function App() {
       socket.off('boards');
       socket.off('columns');
       socket.off('tasks');
-      socket.off('users');
-      socket.off('files');
-      socket.off('points');
+      // socket.off('users');
+      // socket.off('files');
+      // socket.off('points');
     };
   }, []);
-
-  // const testNotify = () =>
-  //   toast(
-  //     <div className="flex gap-[10px]">
-  //       <BiTrash size={20} color="rgb(107, 114, 128, 1)" /> <span>Tu-du-du-du ty-ty!</span>
-  //     </div>,
-  //     {
-  //       autoClose: 2000,
-  //       hideProgressBar: false,
-  //       transition: Slide,
-  //     }
-  //   );
-  // const sucsNotify = () => toast.success('Uspeh!');
-  // const warnNotify = () => toast.warn('Uuu');
-  // const errorNotify = () => toast.error('Oppa..');
 
   return (
     <>

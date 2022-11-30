@@ -68,7 +68,7 @@ export const Board: FC = () => {
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
-      dispatch(fetchGetAllBoardStore({ _id, ownerId: board.owner, navigate }));
+      dispatch(fetchGetAllBoardStore({ _id, navigate }));
       dispatch(fetchGetPointsByParams({ navigate, userId: board.owner }));
     }
   }, []);
