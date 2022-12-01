@@ -131,7 +131,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
     }
   };
 };
-
+// перделано под webSocket
 export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   const { _id: columnId, boardId, title, order } = column;
   return async (dispatch: AppDispatch) => {
@@ -152,7 +152,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
     }
   };
 };
-
+// перделано под webSocket
 export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {

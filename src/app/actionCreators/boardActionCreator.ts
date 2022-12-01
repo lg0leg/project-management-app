@@ -176,6 +176,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
   };
 };
 
+// изменено под webSocket
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
 export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
@@ -186,7 +187,6 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
-        // dispatch(fetchGetBoards({ navigate, path }));
       }
     } catch (e) {
       setErrorStatus(dispatch);
