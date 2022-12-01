@@ -202,7 +202,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('priority')}
                 >
-                  <option value="none">Priority</option>
+                  <option value="none">None</option>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>

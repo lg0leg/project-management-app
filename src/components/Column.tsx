@@ -16,12 +16,22 @@ interface IColumnProps {
   column: IColumn;
   tasks: ITask[];
   openModal: ({ event, modalType, modalTargetId, modalTargetType }: IOpenModalProps) => void;
+  hashMap: Map<string, boolean>;
+  filterValue: string;
 }
 
-export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IColumnProps) => {
+export const Column: FC<IColumnProps> = ({
+  column,
+  tasks,
+  index,
+  openModal,
+  hashMap,
+  filterValue,
+}: IColumnProps) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
+  const { points } = useAppSelector((state) => state.pointReducer);
   const [isChanging, setIsChanging] = useState(false);
   const [title, setTitle] = useState(column.title);
 
@@ -130,8 +140,25 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
               >
                 {tasks
                   .sort((t1, t2) => t1.order - t2.order)
+                  .filter((task) => {
+                    if (filterValue === 'none') return task;
+                    return (
+                      task._id ===
+                      points
+                        .filter((p) => p.title === filterValue)
+                        .find((p) => p.taskId === task._id)?.taskId
+                    );
+                  })
                   .map((task, index) => {
-                    return <Task key={task._id} task={task} index={index} openModal={openModal} />;
+                    return (
+                      <Task
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        openModal={openModal}
+                        hashMap={hashMap}
+                      />
+                    );
                   })}
                 {provided.placeholder}
               </div>
