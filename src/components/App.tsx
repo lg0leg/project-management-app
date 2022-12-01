@@ -24,16 +24,15 @@ function App() {
   const { isAuth } = useAppSelector((state) => state.authReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const path = window.location.pathname;
   useEffect(() => {
     socket.on('connect', () => {
       infoNotify('socket is connected');
       if (!isAuth) return;
-      if (path === RoutesPath.BOARDS) {
+      if (window.location.pathname === RoutesPath.BOARDS) {
         dispatch(fetchGetBoards({ navigate }));
       }
       if (window.location.pathname.startsWith('/board/')) {
-        dispatch(fetchGetAllBoardStore({ navigate, _id: path.slice(7) }));
+        dispatch(fetchGetAllBoardStore({ navigate, _id: window.location.pathname.slice(7) }));
       }
     });
 
@@ -62,7 +61,7 @@ function App() {
       socket.off('tasks');
       socket.off('points');
     };
-  }, []);
+  }, [isAuth]);
 
   return (
     <>
