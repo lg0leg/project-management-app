@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch, useAppNavigate } from 'app/hooks';
 import { webSocketBoards } from 'app/actionCreators/boardActionCreator';
 import { convertCompilerOptionsFromJson } from 'typescript';
+import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
 
 const socket = io(BASE_URL);
 
@@ -81,34 +82,32 @@ const cbShow = async ({ event, data, showNotify, path }: ICbShow) => {
     }
   }
   // ----------------columns-----------------
-  if (event === 'columns') {
-    if (action === 'add') {
-      if (!ids || !ids.length) return;
-      const params = { ids: JSON.stringify(ids) };
-      const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
-      responseColumn.data.forEach(async (column) => {
-        const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-        const { title: boardTitle } = getBoardText(responseBoard.data.title);
-        showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
-      });
-    }
-    if (action === 'update') {
-      if (!ids || !ids.length) return;
-      const params = { ids: JSON.stringify(ids) };
-      const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
-      responseColumn.data.forEach(async (column) => {
-        const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-        const { title: boardTitle } = getBoardText(responseBoard.data.title);
-        showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
-      });
-    }
-    if (action === 'delete') {
-      showNotify(`удалена колонка`);
-    }
-  }
+  // if (event === 'columns') {
+  //   if (action === 'add') {
+  //     // if (!ids || !ids.length) return;
+  //     // const params = { ids: JSON.stringify(ids) };
+  //     // const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
+  //     // responseColumn.data.forEach(async (column) => {
+  //     //   const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+  //     //   const { title: boardTitle } = getBoardText(responseBoard.data.title);
+  //     //   showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
+  //     // });
+  //   }
+  //   // if (action === 'update') {
+  //   //   if (!ids || !ids.length) return;
+  //   //   const params = { ids: JSON.stringify(ids) };
+  //   //   const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
+  //   //   responseColumn.data.forEach(async (column) => {
+  //   //     const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+  //   //     const { title: boardTitle } = getBoardText(responseBoard.data.title);
+  //   //     showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
+  //   //   });
+  //   }
+  //   if (action === 'delete') {
+  //     // showNotify(`удалена колонка`);
+  //   }
+  // }
   // ----------------boards-----------------
-  if (event === 'boards') {
-  }
 };
 
 function App() {
@@ -135,8 +134,9 @@ function App() {
         })
       );
     });
+
     socket.on('columns', (data) => {
-      cbShow({ event: 'columns', data, showNotify: infoNotify, path: location.pathname });
+      dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
       cbShow({ event: 'tasks', path: location.pathname, data, showNotify: infoNotify });
