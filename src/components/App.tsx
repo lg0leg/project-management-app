@@ -15,6 +15,7 @@ import { useAppDispatch, useAppNavigate } from 'app/hooks';
 import { webSocketBoards } from 'app/actionCreators/boardActionCreator';
 import { convertCompilerOptionsFromJson } from 'typescript';
 import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
+import { webSocketTasks } from 'app/actionCreators/taskActionCreator';
 
 const socket = io(BASE_URL);
 
@@ -139,7 +140,7 @@ function App() {
       dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
-      cbShow({ event: 'tasks', path: location.pathname, data, showNotify: infoNotify });
+      dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
     });
     // socket.on('points', (data) => {
     //   // console.log('location', location);
