@@ -3,9 +3,7 @@ import type { AppDispatch } from 'app/store';
 import { columnSlice } from '../slices/columnSlice';
 import type { IColumn, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
-import type { navigateType, IWebSocket, ISocketResponse } from 'models/typescript';
-import { fetchGetAllBoardStore } from './boardActionCreator';
-import { RoutesPath } from 'constants/routes';
+import type { navigateType, IWebSocket } from 'models/typescript';
 import { getBoardText } from 'utils/getBoardText';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
@@ -111,7 +109,8 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
     }
   };
 };
-// перделано под webSocket
+
+// переделано под webSocket
 export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -244,7 +243,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
 
 export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, users, notify, guid, initUser } = data;
+    const { action, ids } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;

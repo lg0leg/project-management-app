@@ -4,8 +4,6 @@ import { taskSlice } from '../slices/taskSlice';
 import type { ITask, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
-import { fetchGetAllBoardStore } from './boardActionCreator';
-import { fetchAddFile } from './fileActionCreator';
 import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
 import { getBoardText } from 'utils/getBoardText';
 
@@ -92,9 +90,6 @@ interface IUpdateTaskProps {
   navigate: navigateType;
 }
 
-interface ICreateTaskWithImgProps extends ICreateTaskProps {
-  file: File;
-}
 interface ICreateTaskWithPointProps extends ICreateTaskProps {
   pointData: IPointData;
 }
@@ -314,7 +309,7 @@ export const fetchCreateTaskWithPoint = ({
 
 export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, users, notify, guid, initUser } = data;
+    const { action, ids } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;

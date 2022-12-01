@@ -1,7 +1,7 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
-import type { navigateType, IWebSocket, ISocketResponse } from 'models/typescript';
+import type { navigateType, IWebSocket } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
@@ -254,7 +254,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
 
 export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, users, notify, guid, initUser } = data;
+    const { action, ids } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;

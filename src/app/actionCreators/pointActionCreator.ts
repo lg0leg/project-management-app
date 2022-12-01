@@ -233,7 +233,7 @@ export const fetchGetPointsByTaskIdList = ({
 
 export const webSocketPoints = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, users, notify, guid, initUser } = data;
+    const { action, ids } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
