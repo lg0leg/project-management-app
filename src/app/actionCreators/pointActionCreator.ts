@@ -1,10 +1,11 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
-import type { navigateType } from 'models/typescript';
-import { IPoint } from 'models/dbTypes';
+import type { navigateType, IWebSocket } from 'models/typescript';
+import { IPoint, IBoard, ITask } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
 import { pointSlice } from 'app/slices/pointSlice';
 import { fetchGetAllBoardStore } from './boardActionCreator';
+import { getBoardText } from 'utils/getBoardText';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -14,6 +15,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const setCompleteStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    pointSlice.actions.setStatus({
+      isLoading: false,
+      isError: false,
+    })
+  );
+};
+
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     pointSlice.actions.setStatus({
@@ -83,6 +94,7 @@ export const fetchGetPointsByParams = ({ navigate, ids, userId }: IGetPointsProp
     try {
       setLoadingStatus(dispatch);
       const params: IPointParams = {};
+      if (userId) params.userId = userId;
       if (ids && ids.length) params.ids = JSON.stringify(ids);
       const response = await apiToken<IPoint[]>(`/points`, { params });
 
@@ -140,7 +152,7 @@ export const fetchCreatePoint = ({ navigate, point }: ICreatePointProps) => {
       const response = await apiToken.post<IPoint>(`/points`, point);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -169,7 +181,7 @@ export const fetchChangeDoneInPointList = ({
     }
   };
 };
-
+// изменено для WebSocket
 export const fetchChangePoint = ({ navigate, pointData, pointId }: IChangePointProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -178,7 +190,7 @@ export const fetchChangePoint = ({ navigate, pointData, pointId }: IChangePointP
       const response = await apiToken.patch<IPoint>(`/points/${pointId}`, pointData);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: response.data.boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -214,6 +226,57 @@ export const fetchGetPointsByTaskIdList = ({
       });
     } catch (e) {
       setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const webSocketPoints = ({ navigate, data, showNotify }: IWebSocket) => {
+  return async (dispatch: AppDispatch) => {
+    const { action, ids } = data;
+    const { pathname } = window.location;
+    try {
+      if (!ids || !ids.length) return;
+      if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responsePoints = await apiToken<IPoint[]>(`/points`, {
+          params,
+        });
+        const filteredPoints = responsePoints.data.filter(
+          (point) => pathname === `/board/${point.boardId}`
+        );
+        dispatch(
+          pointSlice.actions.addPoints({
+            points: filteredPoints,
+          })
+        );
+      }
+      if (action === 'update') {
+        const params = { ids: JSON.stringify(ids) };
+        const responsePoints = await apiToken<IPoint[]>(`/points`, {
+          params,
+        });
+        responsePoints.data.forEach(async (point) => {
+          const responseBoard = await apiToken<IBoard>(`/boards/${point.boardId}`);
+          const params = { ids: JSON.stringify([point.taskId]) };
+          const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
+            params,
+          });
+          const { title: boardTitle } = getBoardText(responseBoard.data.title);
+          showNotify(
+            `изменен приоритет на ${point.title} в таске ${responseTasks.data[0].title} (доска ${boardTitle})`
+          );
+        });
+        const filteredPoints = responsePoints.data.filter(
+          (point) => pathname === `/board/${point.boardId}`
+        );
+        dispatch(
+          pointSlice.actions.updatePoints({
+            updatedPoints: filteredPoints,
+          })
+        );
+      }
+    } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };

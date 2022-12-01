@@ -1,12 +1,13 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
-import type { navigateType } from 'models/typescript';
+import type { navigateType, IWebSocket } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
+import { getBoardText } from 'utils/getBoardText';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -16,6 +17,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const setCompleteStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    boardSlice.actions.setStatus({
+      isLoading: false,
+      isError: false,
+    })
+  );
+};
+
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     boardSlice.actions.setStatus({
@@ -27,7 +38,6 @@ const setErrorStatus = (dispatch: AppDispatch) => {
 interface IBoardProps {
   _id: string;
   navigate: navigateType;
-  ownerId?: string;
   cb?: () => void;
 }
 interface ICreateBoardProps {
@@ -112,20 +122,16 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
     }
   };
 };
-
+//  переделан под сокет
 export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
-      );
 
       if (response.status >= 200 && response.status < 300 && cb) {
+        setCompleteStatus(dispatch);
         cb();
       }
     } catch (e) {
@@ -134,6 +140,7 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
     }
   };
 };
+
 // редактирование доски. Если редактируетсся изнутри, то необходимо передать
 //  fromPage = RoutesPath.Board, иначе fromPage = RoutesPath.Boards
 export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProps) => {
@@ -169,6 +176,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
   };
 };
 
+// изменено под webSocket
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
 export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
@@ -178,7 +186,7 @@ export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => 
       const response = await apiToken.delete<IUser>(`/boards/${_id}`);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetBoards({ navigate, path }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -231,7 +239,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
   };
 };
 
-export const fetchGetAllBoardStore = ({ _id, ownerId, navigate }: IBoardProps) => {
+export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(fetchGetBoard({ _id, navigate }));
@@ -239,6 +247,51 @@ export const fetchGetAllBoardStore = ({ _id, ownerId, navigate }: IBoardProps) =
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
     } catch (e) {
       setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
+  return async (dispatch: AppDispatch) => {
+    const { action, ids } = data;
+    const { pathname } = window.location;
+    try {
+      if (!ids || !ids.length) return;
+
+      if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
+          params,
+        });
+        responseBoards.data.forEach(async (board) => {
+          const { title: boardTitle } = getBoardText(board.title);
+          showNotify(`Добавлена доска ${boardTitle}`);
+        });
+        if (pathname === RoutesPath.BOARDS) {
+          dispatch(
+            boardSlice.actions.addBoards({
+              boards: responseBoards.data,
+            })
+          );
+        }
+      }
+      if (action === 'delete') {
+        ids.forEach((id) => {
+          if (pathname === `/board/${id}`) {
+            showNotify(`Простите эта доска удалена!`);
+            navigate(RoutesPath.BOARDS);
+          } else {
+            showNotify(`удалена доска`);
+          }
+          dispatch(
+            boardSlice.actions.deleteBoards({
+              deletedIds: ids,
+            })
+          );
+        });
+      }
+    } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };

@@ -22,9 +22,15 @@ const initialState = {
 interface IColumnsPayload {
   columns: IColumn[];
 }
+interface IUpdateColumnsPayload {
+  updatedColumns: IColumn[];
+}
 
 interface IColumnPayload {
   column: IColumn;
+}
+interface IDeleteColumnsPayload {
+  deletedIds: string[];
 }
 
 export const columnSlice = createSlice({
@@ -41,6 +47,25 @@ export const columnSlice = createSlice({
       state.column = action.payload.column;
       state.isLoading = false;
       state.isError = false;
+    },
+
+    addColumns(state, action: PayloadAction<IColumnsPayload>) {
+      state.columns = [...state.columns, ...action.payload.columns];
+    },
+    deleteColumns(state, action: PayloadAction<IDeleteColumnsPayload>) {
+      state.columns = state.columns.filter(
+        (column) => !action.payload.deletedIds.some((deletedId) => column._id === deletedId)
+      );
+    },
+
+    updateColumns(state, action: PayloadAction<IUpdateColumnsPayload>) {
+      const updatedColumns = action.payload.updatedColumns;
+      state.columns = state.columns.map((column) => {
+        for (let i = 0; i < updatedColumns.length; i++) {
+          if (column._id === updatedColumns[i]._id) return updatedColumns[i];
+        }
+        return column;
+      });
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

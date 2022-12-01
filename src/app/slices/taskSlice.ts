@@ -33,6 +33,14 @@ interface ITaskPayload {
   task: ITask;
 }
 
+interface IDeleteTasksPayload {
+  deletedIds: string[];
+}
+
+interface IUpdateTasksPayload {
+  updatedTasks: ITask[];
+}
+
 export const taskSlice = createSlice({
   name: 'task',
   initialState,
@@ -47,6 +55,26 @@ export const taskSlice = createSlice({
       state.task = action.payload.task;
       state.isLoading = false;
       state.isError = false;
+    },
+
+    addTasks(state, action: PayloadAction<ITasksPayload>) {
+      state.tasks = [...state.tasks, ...action.payload.tasks];
+    },
+
+    deleteTasks(state, action: PayloadAction<IDeleteTasksPayload>) {
+      state.tasks = state.tasks.filter(
+        (task) => !action.payload.deletedIds.some((deletedId) => task._id === deletedId)
+      );
+    },
+
+    updateTasks(state, action: PayloadAction<IUpdateTasksPayload>) {
+      const updatedTasks = action.payload.updatedTasks;
+      state.tasks = state.tasks.map((task) => {
+        for (let i = 0; i < updatedTasks.length; i++) {
+          if (task._id === updatedTasks[i]._id) return updatedTasks[i];
+        }
+        return task;
+      });
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

@@ -23,6 +23,7 @@ import { EditTaskModalContent } from 'components/modals/EditTaskModalContent';
 import { Button } from 'components/Button';
 import { RoutesPath } from 'constants/routes';
 import { HighliteByPriority } from 'components/HighliteByPriority';
+import { toast } from 'react-toastify';
 
 export interface IOpenModalProps {
   event: MouseEvent<HTMLButtonElement>;
@@ -68,7 +69,7 @@ export const Board: FC = () => {
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
-      dispatch(fetchGetAllBoardStore({ _id, ownerId: board.owner, navigate }));
+      dispatch(fetchGetAllBoardStore({ _id, navigate }));
     }
   }, []);
 
@@ -82,6 +83,11 @@ export const Board: FC = () => {
 
   const onConfirmDelete = () => {
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
+      if (!tasks.find((task) => task._id === modalTargetId)) {
+        toast.error('Задача уже удалена');
+        onCancel();
+        return;
+      }
       const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
       const newTasks = tasks
         .filter((task) => task._id !== modalTargetId)
@@ -102,6 +108,11 @@ export const Board: FC = () => {
       dispatch(fetchTasksSet({ navigate, newTasks }));
     }
     if (modalTargetType === 'column' || modalTargetType === 'колонку') {
+      if (!copyColumns.find((column) => column._id === modalTargetId)) {
+        toast.error('Колонка уже удалена');
+        onCancel();
+        return;
+      }
       const targetCol = copyColumns.find((col) => col._id === modalTargetId);
       const newColumns = copyColumns
         .filter((col) => col._id !== modalTargetId)

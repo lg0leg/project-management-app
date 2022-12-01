@@ -7,6 +7,7 @@ import type { IToken } from 'models/typescript';
 import { IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { useLocation } from 'react-router-dom';
+import { LangKey } from 'constants/lang';
 
 export default function CreateBoardPopup(props: {
   popupVisible: boolean;
@@ -16,6 +17,7 @@ export default function CreateBoardPopup(props: {
   const { token } = useAppSelector((state) => state.authReducer);
   const { isLoading: isLoadingBoard } = useAppSelector((state) => state.boardReducer);
   const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState(false);
   const [description, setDescription] = useState('');
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
@@ -23,17 +25,22 @@ export default function CreateBoardPopup(props: {
   const hidePopup = () => {
     setTitle('');
     setDescription('');
+    setTitleError(false);
     props.setPopupVisible(false);
     if (location.pathname !== RoutesPath.BOARDS) navigate(RoutesPath.BOARDS);
   };
 
   const createBoard = () => {
-    const getBoards = () => {
-      dispatch(fetchGetBoards({ cb: hidePopup, navigate }));
-    };
-    const { id } = decodeToken(token) as IToken;
-    const titleJSON = JSON.stringify({ title, description });
-    dispatch(fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: getBoards, navigate }));
+    if (title.length > 1) {
+      const { id } = decodeToken(token) as IToken;
+      const titleJSON = JSON.stringify({ title, description });
+      dispatch(
+        fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: hidePopup, navigate })
+      );
+      setTitleError(false);
+    } else {
+      setTitleError(true);
+    }
   };
 
   const overlayStylesBase =
@@ -62,7 +69,7 @@ export default function CreateBoardPopup(props: {
           {lang == 'en' ? 'Create board' : 'Создать доску'}
         </h2>
 
-        <div className="w-[90%]">
+        <div className="relative w-[90%]">
           <label
             htmlFor="title-input"
             className="mb-2 block text-lg font-medium text-blue-700  sm:text-xl"
@@ -79,6 +86,11 @@ export default function CreateBoardPopup(props: {
               setTitle(value);
             }}
           />
+          {titleError && (
+            <p className=" mt-2 text-sm text-red-600">
+              {lang === LangKey.EN ? 'At least 2 characters' : 'Не менее 2  символов'}
+            </p>
+          )}
         </div>
 
         <div className="w-[90%]">

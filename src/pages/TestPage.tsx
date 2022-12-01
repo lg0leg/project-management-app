@@ -22,7 +22,49 @@ interface IUserInput {
   password: string;
 }
 
+import { Slide, toast } from 'react-toastify';
+import { BiTask } from 'react-icons/bi';
+
 export default function TestPage() {
+  /*start toast examples*/
+
+  const testNotify = () =>
+    toast(
+      <div className="flex gap-[10px]">
+        <BiTask size={20} color="rgb(107, 114, 128, 1)" /> <span>Tu-du-du-du ty-ty!</span>
+      </div>,
+      {
+        autoClose: 2000,
+        hideProgressBar: false,
+        transition: Slide,
+      }
+    );
+  const testNotify2 = () =>
+    toast(<span>Tu-du-du-du ty-ty!</span>, {
+      autoClose: 3000,
+      transition: Slide,
+      style: {
+        backgroundColor: 'rgb(59, 130, 246, 1)',
+        color: 'yellow',
+        fontSize: '30px',
+      },
+    });
+  const sucsNotify = () => toast.success('Uspeh!');
+  const warnNotify = () => toast.warn('Uuu');
+  const errorNotify = () => toast.error('Oppa..');
+  const infoNotify = () => toast.info('Chto-to proizoshlo');
+
+  useEffect(() => {
+    testNotify();
+    testNotify2();
+    sucsNotify();
+    warnNotify();
+    errorNotify();
+    infoNotify();
+  }, []);
+
+  /*end toast examples*/
+
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { register, handleSubmit } = useForm<IUserInput>();

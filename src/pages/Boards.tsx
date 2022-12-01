@@ -131,7 +131,9 @@ export const Boards: FC = () => {
             {returnFilteredBoards(grid)}
           </div>
         ) : (
-          <div className="grid gap-[20px] px-[30px] pb-[20px]">{returnFilteredBoards(grid)}</div>
+          <div className="grid gap-[20px] px-[30px] pb-[20px] sm:px-[8vw]">
+            {returnFilteredBoards(grid)}
+          </div>
         )}
 
         <Popup popupVisible={popupVisible} setPopupVisible={setPopupVisible}>
