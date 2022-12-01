@@ -114,7 +114,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
                       ? 'Max length is 100 characters'
-                      : 'Максимальная длинна 100 символов'}
+                      : 'Максимальная длина 100 символов'}
                   </p>
                 )}
               </div>
