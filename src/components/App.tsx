@@ -3,139 +3,55 @@ import { Main } from '../components/Main';
 import Footer from './Footer';
 import Header from './Header';
 import io from 'socket.io-client';
-import { useLocation } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
 import { BASE_URL } from 'constants/baseUrl';
-import type { ITask, IUser, IBoard, IColumn } from 'models/dbTypes';
-import { apiToken } from 'API/API';
-import { getBoardText } from 'utils/getBoardText';
 import { ToastContainer, Zoom, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAppDispatch, useAppNavigate } from 'app/hooks';
-import { webSocketBoards } from 'app/actionCreators/boardActionCreator';
-import { convertCompilerOptionsFromJson } from 'typescript';
+import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
+import {
+  fetchGetAllBoardStore,
+  fetchGetBoards,
+  webSocketBoards,
+} from 'app/actionCreators/boardActionCreator';
 import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
 import { webSocketTasks } from 'app/actionCreators/taskActionCreator';
 import { webSocketPoints } from 'app/actionCreators/pointActionCreator';
-
+import { ISocketResponse } from 'models/typescript';
 const socket = io(BASE_URL);
-
-interface ISocketResponse {
-  action: string;
-  guid: string;
-  ids: string[];
-  initUser: string;
-  notify: boolean;
-  users: string[];
-}
-interface IParamsIds {
-  ids: string[];
-}
-
-const checkPath = (path: string, cbShow: () => void, cbDoAndShow?: () => void) => {
-  if (
-    path === RoutesPath.BOARDS ||
-    path === RoutesPath.WELCOME ||
-    path === RoutesPath.SIGN_IN ||
-    path === RoutesPath.SIGN_UP ||
-    path === RoutesPath.PROFILE
-  ) {
-    console.log('show only message');
-  }
-};
-
-interface ICbShow {
-  event: string;
-  data: ISocketResponse;
-  showNotify: (text: string) => void;
-  path: string;
-}
-
-const cbShow = async ({ event, data, showNotify, path }: ICbShow) => {
-  const { action, ids, users, notify, guid, initUser } = data;
-  if (event === 'tasks') {
-    if (action === 'add') {
-      if (!ids || !ids.length) return;
-      const responseTask = await apiToken<ITask[]>(`/tasksSet`, {
-        params: { ids: JSON.stringify(ids) },
-      });
-      responseTask.data.forEach(async (task) => {
-        const responseUser = await apiToken<IUser>(`/users/${task.userId}`);
-        const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
-        const { title: boardTitle } = getBoardText(responseBoard.data.title);
-        showNotify(
-          `Добавлена таска ${task.title} юзером ${responseUser.data.login} в доске ${boardTitle}`
-        );
-      });
-    }
-    if (action === 'update') {
-      if (!ids || !ids.length) return;
-      const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
-        params: { ids: JSON.stringify(ids) },
-      });
-      responseTasks.data.map(async (task) => {
-        const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
-        const { title: boardTitle } = getBoardText(responseBoard.data.title);
-        showNotify(`Обновлена таска ${task.title} в доске ${boardTitle}`);
-      });
-    }
-    if (action === 'delete') {
-      showNotify(`удалена таска`);
-    }
-  }
-  // ----------------columns-----------------
-  // if (event === 'columns') {
-  //   if (action === 'add') {
-  //     // if (!ids || !ids.length) return;
-  //     // const params = { ids: JSON.stringify(ids) };
-  //     // const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
-  //     // responseColumn.data.forEach(async (column) => {
-  //     //   const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-  //     //   const { title: boardTitle } = getBoardText(responseBoard.data.title);
-  //     //   showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
-  //     // });
-  //   }
-  //   // if (action === 'update') {
-  //   //   if (!ids || !ids.length) return;
-  //   //   const params = { ids: JSON.stringify(ids) };
-  //   //   const responseColumn = await apiToken<IColumn[]>(`/columnsSet`, { params });
-  //   //   responseColumn.data.forEach(async (column) => {
-  //   //     const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-  //   //     const { title: boardTitle } = getBoardText(responseBoard.data.title);
-  //   //     showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
-  //   //   });
-  //   }
-  //   if (action === 'delete') {
-  //     // showNotify(`удалена колонка`);
-  //   }
-  // }
-  // ----------------boards-----------------
-};
 
 function App() {
   const infoNotify = (text: string) => toast.info(text);
+  const { isAuth } = useAppSelector((state) => state.authReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
+  const path = window.location.pathname;
   useEffect(() => {
     socket.on('connect', () => {
-      console.log('socket is connected');
+      infoNotify('socket is connected');
+      if (!isAuth) return;
+      if (path === RoutesPath.BOARDS) {
+        dispatch(fetchGetBoards({ navigate }));
+      }
+      if (window.location.pathname.startsWith('/board/')) {
+        dispatch(fetchGetAllBoardStore({ navigate, _id: path.slice(7) }));
+      }
     });
 
     socket.on('disconnect', () => {
-      console.log('socket is disconnected');
+      infoNotify('socket is disconnected');
     });
 
     socket.on('boards', (data: ISocketResponse) => {
-      dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
+      if (isAuth) dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
     });
     socket.on('columns', (data: ISocketResponse) => {
-      dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
+      if (isAuth) dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
-      dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
+      if (isAuth) dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('points', (data: ISocketResponse) => {
-      dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
+      if (isAuth) dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
     });
 
     return () => {
