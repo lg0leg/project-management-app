@@ -18,7 +18,7 @@ interface IEditTaskModalContentProps {
 
 interface IFormData extends ITask {
   attachment: FileList;
-  priority: '' | 'low' | 'medium' | 'high' | 'critical';
+  priority: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
@@ -30,13 +30,13 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
   const { users } = useAppSelector((state) => state.userReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const tasksPoint = points.filter((point) => point.taskId === task._id);
+  const taskPoint = points.filter((point) => point.taskId === task._id);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormData>({
-    defaultValues: { ...task, priority: tasksPoint[0].title ? tasksPoint[0].title : '' },
+    defaultValues: { ...task, priority: taskPoint.length ? taskPoint[0].title : 'none' },
   });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
@@ -66,7 +66,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
     //   console.log('attachment');
     // }
 
-    if (!tasksPoint.length) {
+    if (!taskPoint.length) {
       console.log('point 1');
       const newPoint = {
         taskId: task._id,
@@ -79,9 +79,9 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
       dispatch(fetchCreatePoint({ navigate, point: newPoint }));
       console.log('point 3');
     }
-    if (points.length) {
+    if (taskPoint.length) {
       const changePoint = { done: false, title: priority };
-      dispatch(fetchChangePoint({ navigate, pointId: tasksPoint[0]._id, pointData: changePoint }));
+      dispatch(fetchChangePoint({ navigate, pointId: taskPoint[0]._id, pointData: changePoint }));
     }
     onCancel();
   };
@@ -202,7 +202,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('priority')}
                 >
-                  <option value="">Priority</option>
+                  <option value="none">None</option>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
