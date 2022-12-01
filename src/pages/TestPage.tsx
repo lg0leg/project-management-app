@@ -6,13 +6,16 @@ import {
   fetchUpdateUser,
 } from 'app/actionCreators/userActionCreator';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
+import { Button } from 'components/Button';
+import { Priority } from 'components/Priority';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
 import type { IToken } from 'models/typescript';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { isExpired, decodeToken } from 'react-jwt';
+import { Popover } from 'react-tiny-popover';
 interface IUserInput {
   name: string;
   login: string;
@@ -69,6 +72,27 @@ export default function TestPage() {
 
   const deleteUser = () => {
     dispatch(fetchDeleteUser({ _id, navigate }));
+  };
+
+  const priority = ['none', 'low', 'medium', 'high', 'critical'];
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [checkedState, setCheckedState] = useState(new Array(priority.length).fill(false));
+  const hashMap = (keys: string[], values: boolean[]) => {
+    const map = new Map();
+    for (let i = 0; i < keys.length; i++) {
+      map.set(keys[i], values[i]);
+    }
+    return map;
+  };
+  console.log(hashMap(priority, checkedState));
+
+  const handleOnChange = (position: number) => {
+    const updatedCheckedState = checkedState.map((item, index) =>
+      index === position ? !item : item
+    );
+
+    setCheckedState(updatedCheckedState);
+    console.log(checkedState);
   };
 
   return (

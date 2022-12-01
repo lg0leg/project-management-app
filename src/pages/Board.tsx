@@ -22,7 +22,7 @@ import SpinnerWithOverlay from 'components/spinners/SpinnerWithOverlay';
 import { EditTaskModalContent } from 'components/modals/EditTaskModalContent';
 import { Button } from 'components/Button';
 import { RoutesPath } from 'constants/routes';
-import { fetchGetPointsByParams } from 'app/actionCreators/pointActionCreator';
+import { HighliteByPriority } from 'components/HighliteByPriority';
 
 export interface IOpenModalProps {
   event: MouseEvent<HTMLButtonElement>;
@@ -69,7 +69,6 @@ export const Board: FC = () => {
     } else {
       dispatch(fetchGetUsers(navigate));
       dispatch(fetchGetAllBoardStore({ _id, navigate }));
-      dispatch(fetchGetPointsByParams({ navigate, userId: board.owner }));
     }
   }, []);
 
@@ -188,21 +187,66 @@ export const Board: FC = () => {
     }
   };
 
+  const priority = ['none', 'low', 'medium', 'high', 'critical'];
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [checkedState, setCheckedState] = useState(new Array(priority.length).fill(false));
+  const buildHash = (keys: string[], values: boolean[]) => {
+    const map = new Map();
+    for (let i = 0; i < keys.length; i++) {
+      map.set(keys[i], values[i]);
+    }
+    return map;
+  };
+  const hashMap = buildHash(priority, checkedState);
+
+  const handleOnChange = (position: number) => {
+    const updatedCheckedState = checkedState.map((item, index) =>
+      index === position ? !item : item
+    );
+    setCheckedState(updatedCheckedState);
+  };
+
+  const [filterValue, setFilterValue] = useState('none');
+
   return (
     <>
       <SpinnerWithOverlay isLoading={isLoading} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-          <div className="flex max-h-[60px] w-full flex-row items-center justify-start px-5 pt-4 text-3xl font-semibold text-gray-900">
-            <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
-              {lang === LangKey.EN ? 'Back' : 'Назад'}
-            </Button>
-            <h1>{boardTitle}</h1>
+          <div className="flex w-full flex-row items-center justify-between px-5 pt-3">
+            <div className="flex max-h-[60px] max-w-[75%] flex-row items-center justify-start">
+              <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+                {lang === LangKey.EN ? 'Back' : 'Назад'}
+              </Button>
+              <h1 className="ml-2 truncate text-3xl font-semibold text-gray-900">{boardTitle}</h1>
+            </div>
+            <div className="flex w-[25%] flex-row items-center justify-evenly pr-5">
+              <HighliteByPriority
+                isFilterOpen={isFilterOpen}
+                setIsFilterOpen={setIsFilterOpen}
+                priority={priority}
+                checkedState={checkedState}
+                handleOnChange={handleOnChange}
+              />
+              <select
+                id="priority"
+                className="block w-fit rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
+              >
+                <option value="none">{lang === LangKey.EN ? 'None' : 'Нет фильтра'}</option>
+                <option value="low">{lang === LangKey.EN ? 'Low' : 'Низкий'}</option>
+                <option value="medium">{lang === LangKey.EN ? 'Medium' : 'Средний'}</option>
+                <option value="high">{lang === LangKey.EN ? 'High' : 'Высокий'}</option>
+                <option value="critical">{lang === LangKey.EN ? 'Critical' : 'Критический'}</option>
+              </select>
+            </div>
           </div>
+
           <Droppable droppableId={'board.' + id} type={'COLUMN'} direction={'horizontal'}>
-            {(provided) => (
+            {(provided, snapshot) => (
               <div
-                className="scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden p-4 text-gray-700"
+                className={`scrollbar flex h-full w-full items-stretch space-x-4 overflow-x-auto overflow-y-hidden px-4 py-3 text-gray-700 `}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -216,6 +260,8 @@ export const Board: FC = () => {
                         column={column}
                         tasks={tasks.filter((task) => task.columnId === column._id)}
                         openModal={openModal}
+                        hashMap={hashMap}
+                        filterValue={filterValue}
                       />
                     );
                   })}

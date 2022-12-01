@@ -1,3 +1,5 @@
+import { useAppSelector } from 'app/hooks';
+import { LangKey } from 'constants/lang';
 import { FC } from 'react';
 
 interface IPriority {
@@ -5,28 +7,37 @@ interface IPriority {
 }
 
 export const Priority: FC<IPriority> = ({ type }) => {
+  const { lang } = useAppSelector((state) => state.langReducer);
   return (
     <>
-      {type && type === '' && null}
+      {type && type === 'none' && null}
       {type && type === 'critical' && (
-        <span className="w-full rounded bg-red-100 px-2.5 py-0.5 text-center text-base font-medium text-red-800">
-          Critical
-        </span>
+        <div className="h-6 w-full rounded-t-full bg-red-100 text-center">
+          <span className=" text-sm font-medium text-red-800">
+            {lang === LangKey.EN ? 'Critical' : 'Критический'}
+          </span>
+        </div>
       )}
       {type && type === 'high' && (
-        <span className="w-full rounded bg-yellow-100 px-2.5 py-0.5 text-center text-base font-medium text-yellow-800">
-          High
-        </span>
+        <div className="h-6 w-full rounded-t-full bg-yellow-100 text-center">
+          <span className="text-sm font-medium text-yellow-800">
+            {lang === LangKey.EN ? 'High' : 'Высокий'}
+          </span>
+        </div>
       )}
       {type && type === 'medium' && (
-        <span className="w-full rounded bg-blue-100 px-2.5 py-0.5 text-center text-base font-medium text-blue-800">
-          Medium
-        </span>
+        <div className="h-6 w-full rounded-t-full bg-blue-100 text-center">
+          <span className="text-sm font-medium text-blue-800">
+            {lang === LangKey.EN ? 'Medium' : 'Средний'}
+          </span>
+        </div>
       )}
       {type && type === 'low' && (
-        <span className="w-full rounded bg-green-100 px-2.5 py-0.5 text-center text-base font-medium text-green-800">
-          Low
-        </span>
+        <div className="h-6 w-full rounded-t-full bg-green-100 text-center">
+          <span className="text-sm font-medium text-green-800">
+            {lang === LangKey.EN ? 'Low' : 'Низкий'}
+          </span>
+        </div>
       )}
     </>
   );

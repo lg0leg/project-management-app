@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  * {
+    @apply focus:outline-none focus-visible:outline-none;
+  }
+}
+
 @layer utilities {
   .scrollbar::-webkit-scrollbar {
     width: 7px;
@@ -14,7 +20,7 @@
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    background: rgb(59, 130, 246,0.7);
+    background: rgb(59, 130, 246, 0.7);
     border-radius: 100vh;
     /* border: 2px solid rgb(59, 130, 246, 0.6); */
   }
