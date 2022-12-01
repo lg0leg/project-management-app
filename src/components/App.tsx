@@ -16,6 +16,7 @@ import { webSocketBoards } from 'app/actionCreators/boardActionCreator';
 import { convertCompilerOptionsFromJson } from 'typescript';
 import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
 import { webSocketTasks } from 'app/actionCreators/taskActionCreator';
+import { webSocketPoints } from 'app/actionCreators/pointActionCreator';
 
 const socket = io(BASE_URL);
 
@@ -113,8 +114,6 @@ const cbShow = async ({ event, data, showNotify, path }: ICbShow) => {
 
 function App() {
   const infoNotify = (text: string) => toast.info(text);
-  const location = useLocation();
-  const getPath = () => location.pathname;
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -126,26 +125,18 @@ function App() {
       console.log('socket is disconnected');
     });
 
-    socket.on('boards', (data) => {
-      dispatch(
-        webSocketBoards({
-          navigate,
-          data,
-          showNotify: infoNotify,
-        })
-      );
+    socket.on('boards', (data: ISocketResponse) => {
+      dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
     });
-
-    socket.on('columns', (data) => {
+    socket.on('columns', (data: ISocketResponse) => {
       dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
       dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
     });
-    // socket.on('points', (data) => {
-    //   // console.log('location', location);
-    //   // console.log('socket points', data);
-    // });
+    socket.on('points', (data: ISocketResponse) => {
+      dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
+    });
 
     return () => {
       socket.off('connect');
@@ -153,9 +144,7 @@ function App() {
       socket.off('boards');
       socket.off('columns');
       socket.off('tasks');
-      // socket.off('users');
-      // socket.off('files');
-      // socket.off('points');
+      socket.off('points');
     };
   }, []);
 
