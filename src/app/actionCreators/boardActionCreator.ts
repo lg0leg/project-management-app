@@ -1,7 +1,7 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
-import type { navigateType } from 'models/typescript';
+import type { navigateType, IWebSocket, ISocketResponse } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
@@ -252,35 +252,20 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
   };
 };
 
-interface ISocketResponse {
-  action: string;
-  guid: string;
-  ids: string[];
-  initUser: string;
-  notify: boolean;
-  users: string[];
-}
-interface IWebSocket {
-  navigate: navigateType;
-  data: ISocketResponse;
-  showNotify: (text: string) => void;
-}
-
 export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
     const { action, ids, users, notify, guid, initUser } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
-      const params = { ids: JSON.stringify(ids) };
-      const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
-        params,
-      });
 
       if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
+          params,
+        });
         responseBoards.data.forEach(async (board) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${board._id}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
+          const { title: boardTitle } = getBoardText(board.title);
           showNotify(`Добавлена доска ${boardTitle}`);
         });
         if (pathname === RoutesPath.BOARDS) {
@@ -292,17 +277,19 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
         }
       }
       if (action === 'delete') {
-        if (ids.some((id) => pathname === `/board/${id}`)) {
-          showNotify(`Простите эта доска удалена!`);
-          navigate(RoutesPath.BOARDS);
-        } else if (pathname === RoutesPath.BOARDS) {
+        ids.forEach((id) => {
+          if (pathname === `/board/${id}`) {
+            showNotify(`Простите эта доска удалена!`);
+            navigate(RoutesPath.BOARDS);
+          } else {
+            showNotify(`удалена доска`);
+          }
           dispatch(
             boardSlice.actions.deleteBoards({
               deletedIds: ids,
             })
           );
-          showNotify(`удалена доска`);
-        }
+        });
       }
     } catch (e) {
       handleError(dispatch, e, navigate);
