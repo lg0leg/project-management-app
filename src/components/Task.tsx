@@ -23,7 +23,7 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal, hashMap }: ITaskP
     none: 'bg-gray-600',
     low: 'bg-green-600',
     medium: 'bg-blue-600',
-    high: 'bg-yellow-600',
+    high: 'bg-yellow-400',
     critical: 'bg-red-600',
   };
 
@@ -38,7 +38,7 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal, hashMap }: ITaskP
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
         <div
-          className="my-2 shadow last:mb-0"
+          className="my-2 rounded-lg shadow last:mb-0 hover:shadow-blue-400"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
@@ -48,10 +48,10 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal, hashMap }: ITaskP
               <div
                 className={`absolute -inset-0.5 rounded-lg ${
                   colorsPerPrio[priority[0].title]
-                } opacity-75 blur-sm`}
+                } opacity-40 blur-sm`}
               ></div>
             )}
-            <div className="relative flex max-w-[21rem] cursor-move flex-col rounded-lg bg-white p-5">
+            <div className="relative flex max-w-[21rem] cursor-grab flex-col rounded-lg bg-white px-5 pt-5">
               <div className="flex items-center justify-between pb-4">
                 <h3 className="truncate text-base font-semibold text-gray-900">{task.title}</h3>
                 <div className="ml-2 flex flex-row">
@@ -184,6 +184,19 @@ export const Task: FC<ITaskProps> = ({ task, index, openModal, hashMap }: ITaskP
                   </div>
                 )}
               </div>
+              {/* {priority.length && (
+                <>
+                  {priority.map((p) => {
+                    if (p.title === 'none') return null;
+                    return (
+                      <div
+                        key={p._id}
+                        className={`h-4 w-full rounded-t-full ${colorsPerPrio[priority[0].title]}`}
+                      ></div>
+                    );
+                  })}
+                </>
+              )} */}
             </div>
           </div>
         </div>

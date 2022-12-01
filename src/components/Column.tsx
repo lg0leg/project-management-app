@@ -59,11 +59,14 @@ export const Column: FC<IColumnProps> = ({
     <Draggable draggableId={'drag.' + column._id} index={index} isDragDisabled={isChanging}>
       {(provided) => (
         <div
-          className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
+          className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-transparent"
           {...provided.draggableProps}
           ref={provided.innerRef}
         >
-          <div className="flex items-center justify-between p-2" {...provided.dragHandleProps}>
+          <div
+            className="flex items-center justify-between rounded-t-lg p-2"
+            {...provided.dragHandleProps}
+          >
             {isChanging ? (
               <>
                 <div
@@ -132,9 +135,11 @@ export const Column: FC<IColumnProps> = ({
             )}
           </div>
           <Droppable droppableId={column._id} type="TASK">
-            {(provided) => (
+            {(provided, snapshot) => (
               <div
-                className="scrollbar flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden p-2"
+                className={`scrollbar flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden p-2 ${
+                  snapshot.isDraggingOver && 'bg-gray-100'
+                }`}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -164,9 +169,9 @@ export const Column: FC<IColumnProps> = ({
               </div>
             )}
           </Droppable>
-          <div className="p-2">
+          <div className="rounded-b-lg p-2">
             <button
-              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
+              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 py-2 font-semibold text-gray-600 hover:bg-gray-200 hover:bg-opacity-60"
               onClick={(event) => {
                 openModal({
                   event,

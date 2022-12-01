@@ -7,7 +7,6 @@ import {
 } from 'app/actionCreators/userActionCreator';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { Button } from 'components/Button';
-import PointFilter from 'components/PointFilter';
 import { Priority } from 'components/Priority';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
@@ -97,105 +96,69 @@ export default function TestPage() {
   };
 
   return (
-    <>
-      <Popover
-        isOpen={isFilterOpen}
-        positions={['bottom', 'left', 'top', 'right']}
-        padding={10}
-        content={
-          <PointFilter
-            priority={priority}
-            checkedState={checkedState}
-            handleOnChange={handleOnChange}
-          />
-        }
-      >
-        <div className="flex w-1/2 justify-center">
-          <Button onClick={() => setIsFilterOpen((prev) => !prev)}>
-            {isFilterOpen ? 'Close' : 'Open'}
-          </Button>
+    <div className="w-full border-2">
+      <h2 className="ml-auto mr-auto">userReduser</h2>
+      {isLoading && <Spinner />}
+      {isError && <p className="text-[20px] font-semibold text-red-500">{errorText}</p>}
+      <div className="mb-4 flex">
+        <h2>get users</h2>
+        <button className="w-[100px] bg-blue-500" onClick={getUsers}>
+          get users
+        </button>
+        <div className="max-h-[400]">
+          {users.map((item) => {
+            return (
+              <div key={`${item._id}`}>
+                <hr />
+                <p>{item.name}</p>
+                <p>{item.login}</p>
+                <p>{item._id}</p>
+                <hr />
+              </div>
+            );
+          })}
         </div>
-      </Popover>
-
-      <div>
-        <Priority type="none" />
       </div>
-      <div>
-        <Priority type="low" />
+      <hr />
+      <div className="mb-4 flex">
+        <h2>get user</h2>
+        <button className="w-[100px] bg-blue-500" onClick={getUser}>
+          get user
+        </button>
+        <div>
+          <p>{user.name}</p>
+          <p>{user.login}</p>
+          <p>{user._id}</p>
+        </div>
       </div>
-      <div>
-        <Priority type="medium" />
+      <hr />
+      <form className="mb-4 flex flex-col" onSubmit={handleSubmit(updateUser)}>
+        <h2>update user</h2>
+        <button className="w-[100px] bg-blue-500" onClick={getUser}>
+          update user
+        </button>
+        <span className="flex flex-col">id:{user._id}</span>
+        <label className="flex flex-col">
+          <span>username:{user.name}, enter new name:</span>
+          <input type="text" className="w-[200px] border-2" {...register('name')} />
+        </label>
+        <label>
+          <span className="flex flex-col">login:{user.login}, enter new login:</span>
+          <input type="text" className="w-[200px] border-2" {...register('login')} />
+        </label>
+        <label>
+          <span className="flex flex-col">enter new password:</span>
+          <input type="password" className="w-[200px] border-2" {...register('password')} />
+        </label>
+      </form>
+      <hr />
+      <div className="flex">
+        <h2>delete user</h2>
+        <button className="w-[100px] bg-blue-500" onClick={deleteUser}>
+          delete user
+        </button>
       </div>
-      <div>
-        <Priority type="high" />
-      </div>
-      <div>
-        <Priority type="critical" />
-      </div>
-    </>
-    // <div className="w-full border-2">
-    //   <h2 className="ml-auto mr-auto">userReduser</h2>
-    //   {isLoading && <Spinner />}
-    //   {isError && <p className="text-[20px] font-semibold text-red-500">{errorText}</p>}
-    //   <div className="mb-4 flex">
-    //     <h2>get users</h2>
-    //     <button className="w-[100px] bg-blue-500" onClick={getUsers}>
-    //       get users
-    //     </button>
-    //     <div className="max-h-[400]">
-    //       {users.map((item) => {
-    //         return (
-    //           <div key={`${item._id}`}>
-    //             <hr />
-    //             <p>{item.name}</p>
-    //             <p>{item.login}</p>
-    //             <p>{item._id}</p>
-    //             <hr />
-    //           </div>
-    //         );
-    //       })}
-    //     </div>
-    //   </div>
-    //   <hr />
-    //   <div className="mb-4 flex">
-    //     <h2>get user</h2>
-    //     <button className="w-[100px] bg-blue-500" onClick={getUser}>
-    //       get user
-    //     </button>
-    //     <div>
-    //       <p>{user.name}</p>
-    //       <p>{user.login}</p>
-    //       <p>{user._id}</p>
-    //     </div>
-    //   </div>
-    //   <hr />
-    //   <form className="mb-4 flex flex-col" onSubmit={handleSubmit(updateUser)}>
-    //     <h2>update user</h2>
-    //     <button className="w-[100px] bg-blue-500" onClick={getUser}>
-    //       update user
-    //     </button>
-    //     <span className="flex flex-col">id:{user._id}</span>
-    //     <label className="flex flex-col">
-    //       <span>username:{user.name}, enter new name:</span>
-    //       <input type="text" className="w-[200px] border-2" {...register('name')} />
-    //     </label>
-    //     <label>
-    //       <span className="flex flex-col">login:{user.login}, enter new login:</span>
-    //       <input type="text" className="w-[200px] border-2" {...register('login')} />
-    //     </label>
-    //     <label>
-    //       <span className="flex flex-col">enter new password:</span>
-    //       <input type="password" className="w-[200px] border-2" {...register('password')} />
-    //     </label>
-    //   </form>
-    //   <hr />
-    //   <div className="flex">
-    //     <h2>delete user</h2>
-    //     <button className="w-[100px] bg-blue-500" onClick={deleteUser}>
-    //       delete user
-    //     </button>
-    //   </div>
-    // </div>
+    </div>
   );
 }
 
