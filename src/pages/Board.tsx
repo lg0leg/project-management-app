@@ -224,24 +224,19 @@ export const Board: FC = () => {
       <SpinnerWithOverlay isLoading={isLoading} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-          <div className="flex w-full flex-row items-center justify-between px-5 pt-3">
-            <div className="flex max-h-[60px] max-w-[75%] flex-row items-center justify-start">
-              <Button color="light" onClick={() => navigate(RoutesPath.BOARDS)}>
+          <div className="flex w-full flex-col items-center px-3 pt-2 sm:flex-row sm:justify-between sm:px-5 sm:pt-3">
+            <div className="mb-2 flex max-h-[60px] w-full max-w-full flex-row items-center justify-start sm:mb-0">
+              <Button onClick={() => navigate(RoutesPath.BOARDS)}>
                 {lang === LangKey.EN ? 'Back' : 'Назад'}
               </Button>
-              <h1 className="ml-2 truncate text-3xl font-semibold text-gray-900">{boardTitle}</h1>
+              <h1 className="ml-2 w-fit max-w-full truncate text-2xl font-semibold text-gray-900 sm:text-3xl">
+                {boardTitle}
+              </h1>
             </div>
-            <div className="flex w-[25%] flex-row items-center justify-evenly pr-5">
-              <HighliteByPriority
-                isFilterOpen={isFilterOpen}
-                setIsFilterOpen={setIsFilterOpen}
-                priority={priority}
-                checkedState={checkedState}
-                handleOnChange={handleOnChange}
-              />
+            <div className="flex w-full flex-row items-center justify-between sm:justify-evenly md:ml-2  md:justify-end">
               <select
                 id="priority"
-                className="block w-fit rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
+                className="mr-2 w-full max-w-[15rem] rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 first-letter:block focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
@@ -251,6 +246,13 @@ export const Board: FC = () => {
                 <option value="high">{lang === LangKey.EN ? 'High' : 'Высокий'}</option>
                 <option value="critical">{lang === LangKey.EN ? 'Critical' : 'Критический'}</option>
               </select>
+              <HighliteByPriority
+                isFilterOpen={isFilterOpen}
+                setIsFilterOpen={setIsFilterOpen}
+                priority={priority}
+                checkedState={checkedState}
+                handleOnChange={handleOnChange}
+              />
             </div>
           </div>
 
@@ -277,9 +279,10 @@ export const Board: FC = () => {
                     );
                   })}
                 {provided.placeholder}
-                <div className="flex w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50">
+                <div className="flex min-w-[18rem] touch-none flex-col rounded-lg bg-gray-50 md:w-[20rem] md:min-w-[20rem]">
                   <button
-                    className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
+                    type="button"
+                    className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 py-2 font-semibold text-gray-600 hover:bg-gray-200 hover:bg-opacity-60"
                     onClick={(event) => {
                       openModal({ event, modalType: ModalTypes.ADD, modalTargetType: 'column' });
                     }}

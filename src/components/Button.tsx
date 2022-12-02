@@ -5,6 +5,7 @@ interface IButtonProps {
   color?: string;
   customClasses?: string;
   type?: 'button' | 'submit' | 'reset' | undefined;
+  margin?: number;
   onClick?: () => void;
 }
 
@@ -17,6 +18,7 @@ export const Button: FC<IButtonProps> = ({
   color = 'deafault',
   customClasses,
   type = 'button',
+  margin,
   onClick,
 }) => {
   const colors: Colors = {
@@ -35,7 +37,11 @@ export const Button: FC<IButtonProps> = ({
       type={type}
       className={
         !customClasses
-          ? `mx-2 rounded-lg px-5 py-2.5 text-sm font-medium focus:outline-none focus:ring-4 ${colors[color]}`
+          ? `mx-${
+              margin ? margin : '0'
+            } rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-4 ${
+              colors[color]
+            } `
           : customClasses
       }
       onClick={onClick}
