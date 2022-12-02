@@ -243,7 +243,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
 
 export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -253,11 +253,13 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           params,
         });
 
-        responseColumns.data.forEach(async (column) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
-        });
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
+          });
+        }
 
         const filteredColumns = responseColumns.data.filter(
           (column) => pathname === `/board/${column.boardId}`
@@ -273,11 +275,15 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
         const responseColumns = await apiToken<IColumn[]>(`/columnsSet`, {
           params,
         });
-        responseColumns.data.forEach(async (column) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
-        });
+
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
+          });
+        }
+
         const filteredColumns = responseColumns.data.filter(
           (column) => pathname === `/board/${column.boardId}`
         );
@@ -293,7 +299,9 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
             deletedIds: ids,
           })
         );
-        showNotify(`удалена колонка`);
+        if (notify) {
+          showNotify(`удалена колонка`);
+        }
       }
     } catch (e) {
       handleError(dispatch, e, navigate);

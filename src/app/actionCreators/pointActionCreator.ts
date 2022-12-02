@@ -233,7 +233,7 @@ export const fetchGetPointsByTaskIdList = ({
 
 export const webSocketPoints = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -256,17 +256,19 @@ export const webSocketPoints = ({ navigate, data, showNotify }: IWebSocket) => {
         const responsePoints = await apiToken<IPoint[]>(`/points`, {
           params,
         });
-        responsePoints.data.forEach(async (point) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${point.boardId}`);
-          const params = { ids: JSON.stringify([point.taskId]) };
-          const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
-            params,
+        if (notify) {
+          responsePoints.data.forEach(async (point) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${point.boardId}`);
+            const params = { ids: JSON.stringify([point.taskId]) };
+            const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
+              params,
+            });
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify(
+              `изменен приоритет на ${point.title} в таске ${responseTasks.data[0].title} (доска ${boardTitle})`
+            );
           });
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(
-            `изменен приоритет на ${point.title} в таске ${responseTasks.data[0].title} (доска ${boardTitle})`
-          );
-        });
+        }
         const filteredPoints = responsePoints.data.filter(
           (point) => pathname === `/board/${point.boardId}`
         );

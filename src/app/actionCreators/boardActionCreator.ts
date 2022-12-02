@@ -254,7 +254,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
 
 export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -264,10 +264,14 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
         const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
           params,
         });
-        responseBoards.data.forEach(async (board) => {
-          const { title: boardTitle } = getBoardText(board.title);
-          showNotify(`Добавлена доска ${boardTitle}`);
-        });
+
+        if (notify) {
+          responseBoards.data.forEach(async (board) => {
+            const { title: boardTitle } = getBoardText(board.title);
+            showNotify(`Добавлена доска ${boardTitle}`);
+          });
+        }
+
         if (pathname === RoutesPath.BOARDS) {
           dispatch(
             boardSlice.actions.addBoards({
@@ -277,19 +281,22 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
         }
       }
       if (action === 'delete') {
-        ids.forEach((id) => {
-          if (pathname === `/board/${id}`) {
-            showNotify(`Простите эта доска удалена!`);
-            navigate(RoutesPath.BOARDS);
-          } else {
-            showNotify(`удалена доска`);
-          }
-          dispatch(
-            boardSlice.actions.deleteBoards({
-              deletedIds: ids,
-            })
-          );
-        });
+        if (notify) {
+          ids.forEach((id) => {
+            if (pathname === `/board/${id}`) {
+              showNotify(`Простите эта доска удалена!`);
+              navigate(RoutesPath.BOARDS);
+            } else {
+              showNotify(`удалена доска`);
+            }
+          });
+        }
+
+        dispatch(
+          boardSlice.actions.deleteBoards({
+            deletedIds: ids,
+          })
+        );
       }
     } catch (e) {
       handleError(dispatch, e, navigate);
