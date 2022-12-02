@@ -17,6 +17,7 @@ import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
 import { webSocketTasks } from 'app/actionCreators/taskActionCreator';
 import { webSocketPoints } from 'app/actionCreators/pointActionCreator';
 import { ISocketResponse } from 'models/typescript';
+import NewHeader from './NewHeader';
 const socket = io(BASE_URL);
 
 function App() {
@@ -79,7 +80,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
-      <Header />
+      <NewHeader />
       <Main />
       <Footer />
     </>
