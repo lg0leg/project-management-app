@@ -8,6 +8,7 @@ import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
 import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -268,7 +269,7 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
         if (notify) {
           responseBoards.data.forEach(async (board) => {
             const { title: boardTitle } = getBoardText(board.title);
-            showNotify(`Добавлена доска ${boardTitle}`);
+            showNotify({ type: NotifyTipe.ADD_BOARD, board: boardTitle });
           });
         }
 
@@ -284,10 +285,10 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
         if (notify) {
           ids.forEach((id) => {
             if (pathname === `/board/${id}`) {
-              showNotify(`Простите эта доска удалена!`);
+              showNotify({ type: NotifyTipe.DELETE_BOARD_INNER });
               navigate(RoutesPath.BOARDS);
             } else {
-              showNotify(`удалена доска`);
+              showNotify({ type: NotifyTipe.DELETE_BOARD });
             }
           });
         }

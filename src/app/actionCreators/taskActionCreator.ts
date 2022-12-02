@@ -6,6 +6,7 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
 import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -322,7 +323,7 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
           responseTasks.data.forEach(async (task) => {
             const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
             const { title: boardTitle } = getBoardText(responseBoard.data.title);
-            showNotify(`Добавлена таска ${task.title} в доске ${boardTitle}`);
+            showNotify({ type: NotifyTipe.ADD_TASK, task: task.title, board: boardTitle });
           });
         }
 
@@ -344,7 +345,7 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
           responseTasks.data.forEach(async (task) => {
             const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
             const { title: boardTitle } = getBoardText(responseBoard.data.title);
-            showNotify(`обновлена таска ${task.title} в доске ${boardTitle}`);
+            showNotify({ type: NotifyTipe.UPDATE_TASK, task: task.title, board: boardTitle });
           });
         }
 
@@ -364,7 +365,7 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
           })
         );
         if (notify) {
-          showNotify(`удалена таска`);
+          showNotify({ type: NotifyTipe.DELETE_TASK });
         }
       }
     } catch (e) {

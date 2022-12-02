@@ -5,6 +5,7 @@ import type { IColumn, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -257,7 +258,7 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           responseColumns.data.forEach(async (column) => {
             const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
             const { title: boardTitle } = getBoardText(responseBoard.data.title);
-            showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
+            showNotify({ type: NotifyTipe.ADD_COLUMN, column: column.title, board: boardTitle });
           });
         }
 
@@ -280,7 +281,7 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           responseColumns.data.forEach(async (column) => {
             const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
             const { title: boardTitle } = getBoardText(responseBoard.data.title);
-            showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
+            showNotify({ type: NotifyTipe.UPDATE_COLUMN, column: column.title, board: boardTitle });
           });
         }
 
@@ -300,7 +301,7 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           })
         );
         if (notify) {
-          showNotify(`удалена колонка`);
+          showNotify({ type: NotifyTipe.DELETE_COLUMN });
         }
       }
     } catch (e) {
