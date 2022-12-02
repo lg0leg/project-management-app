@@ -24,6 +24,9 @@ const initialState = {
 interface IBoardsPayload {
   boards: IBoard[];
 }
+interface IDeleteBoardsPayload {
+  deletedIds: string[];
+}
 
 interface IBoardPayload {
   board: IBoard;
@@ -43,6 +46,16 @@ export const boardSlice = createSlice({
       state.board = action.payload.board;
       state.isLoading = false;
       state.isError = false;
+    },
+
+    addBoards(state, action: PayloadAction<IBoardsPayload>) {
+      state.boards = [...state.boards, ...action.payload.boards];
+    },
+
+    deleteBoards(state, action: PayloadAction<IDeleteBoardsPayload>) {
+      state.boards = state.boards.filter(
+        (board) => !action.payload.deletedIds.some((deletedId) => board._id === deletedId)
+      );
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

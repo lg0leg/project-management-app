@@ -61,3 +61,24 @@ export interface IProfileConfirmData {
   oldLogin: string;
   userId: string;
 }
+
+export interface ISocketResponse {
+  action: string;
+  guid: string;
+  ids: string[];
+  initUser: string;
+  notify: boolean;
+  users: string[];
+}
+
+export interface IInfoNotify {
+  type: string;
+  board?: string;
+  column?: string;
+  task?: string;
+}
+export interface IWebSocket {
+  navigate: navigateType;
+  data: ISocketResponse;
+  showNotify: (notifyParam: IInfoNotify) => void;
+}

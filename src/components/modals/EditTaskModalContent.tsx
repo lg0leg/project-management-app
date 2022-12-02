@@ -8,6 +8,7 @@ import type { IPoint, ITask } from 'models/dbTypes';
 import { fetchUpdateTask } from 'app/actionCreators/taskActionCreator';
 import { fetchAddFile } from 'app/actionCreators/fileActionCreator';
 import { fetchChangePoint, fetchCreatePoint } from 'app/actionCreators/pointActionCreator';
+import { toast } from 'react-toastify';
 
 interface IEditTaskModalContentProps {
   task: ITask;
@@ -28,15 +29,17 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
 }) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
+  const { tasks } = useAppSelector((state) => state.taskReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const taskPoint = points.filter((point) => point.taskId === task._id);
+  const curTask = { ...task };
+  const taskPoint = points.filter((point) => point.taskId === curTask._id);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormData>({
-    defaultValues: { ...task, priority: taskPoint.length ? taskPoint[0].title : 'none' },
+    defaultValues: { ...curTask, priority: taskPoint.length ? taskPoint[0].title : 'none' },
   });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
@@ -47,21 +50,27 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
       description,
       userId,
       users,
-      columnId: task.columnId,
+      columnId: curTask.columnId,
     };
+
+    if (!tasks.find((task) => task._id === curTask._id)) {
+      toast.error('Задача уже удалена');
+      onCancel();
+      return;
+    }
 
     dispatch(
       fetchUpdateTask({
-        _id: task._id,
-        boardId: task.boardId,
-        columnId: task.columnId,
+        _id: curTask._id,
+        boardId: curTask.boardId,
+        columnId: curTask.columnId,
         updateTask: taskData,
         navigate,
       })
     );
     // if (attachment.length) {
     //   Array.from(attachment).map((file) =>
-    //     dispatch(fetchAddFile({ boardId: task.boardId, file, navigate, taskId: task._id }))
+    //     dispatch(fetchAddFile({ boardId: curTask.boardId, file, navigate, taskId: curTask._id }))
     //   );
     //   console.log('attachment');
     // }
@@ -69,8 +78,8 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
     if (!taskPoint.length) {
       console.log('point 1');
       const newPoint = {
-        taskId: task._id,
-        boardId: task.boardId,
+        taskId: curTask._id,
+        boardId: curTask.boardId,
         title: priority,
         done: false,
       };
