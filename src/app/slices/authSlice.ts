@@ -11,6 +11,9 @@ interface ILoginSuccessPayload {
   navigate: navigateType;
   notRedirect?: boolean;
 }
+interface ILoginReloadPayload {
+  token: string;
+}
 
 const initialState = {
   token: localStorage.getItem(StorageKey.TOKEN) || '',
@@ -32,7 +35,6 @@ export const authSlice = createSlice({
       state.httpCode = 200;
 
       localStorage.removeItem(StorageKey.TOKEN);
-      localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
 
@@ -48,6 +50,15 @@ export const authSlice = createSlice({
       if (!action.payload.notRedirect) {
         action.payload.navigate(RoutesPath.BOARDS);
       }
+    },
+
+    loginReload(state, action: PayloadAction<ILoginReloadPayload>) {
+      state.token = action.payload.token;
+
+      state.isLoading = false;
+      state.isAuth = true;
+      state.isError = false;
+      state.httpCode = 200;
     },
 
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {

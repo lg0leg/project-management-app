@@ -19,6 +19,8 @@ import { webSocketPoints } from 'app/actionCreators/pointActionCreator';
 import { ISocketResponse, IInfoNotify } from 'models/typescript';
 import { NotifyTipe } from 'constants/notifyType';
 import { LangKey } from 'constants/lang';
+import { loginReload } from 'app/actionCreators/authActionCreators';
+import { StorageKey } from 'constants/storageKey';
 const socket = io(BASE_URL);
 
 function App() {
@@ -88,8 +90,8 @@ function App() {
   const dispatch = useAppDispatch();
   useEffect(() => {
     socket.on('connect', () => {
-      toast.info('socket is connected');
       if (!isAuth) return;
+      toast.info('socket is connected');
       if (window.location.pathname === RoutesPath.BOARDS) {
         dispatch(fetchGetBoards({ navigate }));
       }
@@ -99,6 +101,7 @@ function App() {
     });
 
     socket.on('disconnect', () => {
+      if (!isAuth) return;
       toast.error('socket is disconnected');
     });
 
@@ -124,6 +127,13 @@ function App() {
       socket.off('points');
     };
   }, [isAuth, lang]);
+
+  useEffect(() => {
+    const handlerChangeStorage = (e: StorageEvent) => {
+      if (e.key === StorageKey.TOKEN) dispatch(loginReload(navigate));
+    };
+    window.addEventListener('storage', handlerChangeStorage);
+  }, []);
 
   return (
     <>
