@@ -30,7 +30,7 @@ function App() {
         toast.info(lang === LangKey.EN ? `Add Board ${board}` : `Добавлена доска ${board}`);
         break;
       case NotifyTipe.DELETE_BOARD:
-        toast.info(lang === LangKey.EN ? `Delete Board` : `Удалена доска`);
+        toast.info(lang === LangKey.EN ? `Delete board ${board}` : `Удалена доска ${board}`);
         break;
       case NotifyTipe.DELETE_BOARD_INNER:
         toast.warn(
@@ -55,7 +55,11 @@ function App() {
 
         break;
       case NotifyTipe.DELETE_COLUMN:
-        toast.info(lang === LangKey.EN ? `Delete column` : `Удалена колонка`);
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete column ${column} in the board ${board}`
+            : `Удалена колонка ${column} в доске ${board}`
+        );
         break;
       case NotifyTipe.ADD_TASK:
         toast.info(
@@ -72,7 +76,11 @@ function App() {
         );
         break;
       case NotifyTipe.DELETE_TASK:
-        toast.info(lang === LangKey.EN ? `Delete task` : `Удалена задача`);
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete task ${task} in the board ${board}`
+            : `Удалена задача ${task} в доске ${board}`
+        );
         break;
     }
   };

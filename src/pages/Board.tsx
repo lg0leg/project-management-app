@@ -83,12 +83,12 @@ export const Board: FC = () => {
 
   const onConfirmDelete = () => {
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
-      if (!tasks.find((task) => task._id === modalTargetId)) {
-        toast.error('Задача уже удалена');
+      const targetTask = tasks.find((task) => task._id === modalTargetId);
+      if (!targetTask) {
+        toast.error(lang === LangKey.EN ? 'The task already deleted' : 'Задача уже удалена');
         onCancel();
         return;
       }
-      const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
       const newTasks = tasks
         .filter((task) => task._id !== modalTargetId)
         .map((task) => {
@@ -99,21 +99,21 @@ export const Board: FC = () => {
         });
       dispatch(
         fetchDeleteTask({
-          _id: modalTargetId,
+          task: targetTask,
           columnId: targetTask.columnId,
-          boardId: targetTask.boardId,
+          board,
           navigate,
         })
       );
       dispatch(fetchTasksSet({ navigate, newTasks }));
     }
     if (modalTargetType === 'column' || modalTargetType === 'колонку') {
-      if (!copyColumns.find((column) => column._id === modalTargetId)) {
-        toast.error('Колонка уже удалена');
+      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
+      if (!targetCol) {
+        toast.error(lang === LangKey.EN ? 'The column already deleted' : 'Колонка уже удалена');
         onCancel();
         return;
       }
-      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
       const newColumns = copyColumns
         .filter((col) => col._id !== modalTargetId)
         .map((col) => {
@@ -122,7 +122,8 @@ export const Board: FC = () => {
           }
           return { ...col };
         });
-      dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
+
+      dispatch(fetchDeleteColumn({ column: targetCol, navigate, board }));
       dispatch(fetchColumnsSet({ navigate, newColumns }));
     }
     onCancel();

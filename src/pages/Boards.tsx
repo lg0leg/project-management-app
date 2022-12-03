@@ -13,6 +13,8 @@ import DeleteConformation from 'components/DeleteConformation';
 import Popup from 'components/popup/popup';
 import { getBoardText } from 'utils/getBoardText';
 import SimpleSpinner from 'components/spinners/SimpleSpinner';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 // import { BiEdit } from 'react-icons/bi';
 // import { BiTask } from 'react-icons/bi';
 
@@ -63,7 +65,13 @@ export const Boards: FC = () => {
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
 
   const onConfirm = () => {
-    dispatch(fetchDeleteBoard({ _id: currentBoardId, navigate }));
+    const targetBoard = boards.find((board) => board._id === currentBoardId);
+    if (!targetBoard) {
+      toast.error(lang === LangKey.EN ? 'The board already deleted' : 'Доска уже удалена');
+      onCancel();
+      return;
+    }
+    dispatch(fetchDeleteBoard({ board: targetBoard, navigate }));
     setPopupVisible(false);
   };
 
