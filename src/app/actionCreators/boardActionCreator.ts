@@ -56,7 +56,7 @@ interface IBoardsProps {
 }
 
 interface IDeleteBoardProps extends IBoardsProps {
-  _id: string;
+  board: IBoard;
 }
 interface IUpdateBoardProps {
   board: IBoard;
@@ -107,7 +107,7 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
       const response = await apiToken<IBoard>(`/boards/${_id}`);
 
       if (response.status === 204) {
-        dispatch(fetchDeleteBoard({ _id, navigate }));
+        await apiToken.delete<IUser>(`/boards/${_id}`);
         navigate(RoutesPath.NOT_FOUND);
       } else {
         dispatch(
@@ -179,12 +179,20 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
 
 // изменено под webSocket
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
-export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
+export const fetchDeleteBoard = ({ board, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
+      const { _id, title } = board;
       setLoadingStatus(dispatch);
-
-      const response = await apiToken.delete<IUser>(`/boards/${_id}`);
+      const config = {
+        headers: {
+          guid: JSON.stringify({
+            boardName: title,
+            time: Date.now(),
+          }),
+        },
+      };
+      const response = await apiToken.delete<IUser>(`/boards/${_id}`, config);
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
@@ -255,7 +263,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
 
 export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify } = data;
+    const { action, ids, notify, guid } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -288,7 +296,9 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
               showNotify({ type: NotifyTipe.DELETE_BOARD_INNER });
               navigate(RoutesPath.BOARDS);
             } else {
-              showNotify({ type: NotifyTipe.DELETE_BOARD });
+              const { boardName } = JSON.parse(guid);
+              const { title: boardTitle } = getBoardText(boardName);
+              showNotify({ type: NotifyTipe.DELETE_BOARD, board: boardTitle });
             }
           });
         }

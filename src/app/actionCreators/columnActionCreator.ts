@@ -46,6 +46,11 @@ interface IColumnsProps {
 interface IColumnProps extends IColumnsProps {
   columnId: string;
 }
+interface IDeleteColumnProps {
+  column: IColumn;
+  board: IBoard;
+  navigate: navigateType;
+}
 
 interface ICreateColumnProps extends IColumnsProps {
   title: string;
@@ -153,12 +158,25 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   };
 };
 // перделано под webSocket
-export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps) => {
+export const fetchDeleteColumn = ({ column, navigate, board }: IDeleteColumnProps) => {
   return async (dispatch: AppDispatch) => {
+    const { title: columnName, _id: columnId } = column;
+    const { title: boardName, _id: boardId } = board;
     try {
       setLoadingStatus(dispatch);
-
-      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
+      const config = {
+        headers: {
+          guid: JSON.stringify({
+            columnName,
+            boardName,
+            time: Date.now(),
+          }),
+        },
+      };
+      const response = await apiToken.delete<IUser>(
+        `/boards/${boardId}/columns/${columnId}`,
+        config
+      );
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
@@ -244,7 +262,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
 
 export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify } = data;
+    const { action, ids, notify, guid } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -301,7 +319,13 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           })
         );
         if (notify) {
-          showNotify({ type: NotifyTipe.DELETE_COLUMN });
+          const { boardName, columnName } = JSON.parse(guid);
+          const { title: boardTitle } = getBoardText(boardName);
+          showNotify({
+            type: NotifyTipe.DELETE_COLUMN,
+            board: boardTitle,
+            column: columnName,
+          });
         }
       }
     } catch (e) {

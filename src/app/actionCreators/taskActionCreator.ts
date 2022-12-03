@@ -95,6 +95,13 @@ interface ICreateTaskWithPointProps extends ICreateTaskProps {
   pointData: IPointData;
 }
 
+interface IDeleteTaskProps {
+  board: IBoard;
+  columnId: string;
+  task: ITask;
+  navigate: navigateType;
+}
+
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -180,13 +187,24 @@ export const fetchUpdateTask = ({
   };
 };
 // изменено под webSocket
-export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps) => {
+export const fetchDeleteTask = ({ columnId, navigate, board, task }: IDeleteTaskProps) => {
   return async (dispatch: AppDispatch) => {
+    const { title: taskName, _id: taskId } = task;
+    const { title: boardName, _id: boardId } = board;
     try {
       setLoadingStatus(dispatch);
-
+      const config = {
+        headers: {
+          guid: JSON.stringify({
+            taskName: taskName,
+            boardName: boardName,
+            time: Date.now(),
+          }),
+        },
+      };
       const response = await apiToken.delete<IUser>(
-        `/boards/${boardId}/columns/${columnId}/tasks/${_id}`
+        `/boards/${boardId}/columns/${columnId}/tasks/${taskId}`,
+        config
       );
 
       if (response.status >= 200 && response.status < 300) {
@@ -310,7 +328,7 @@ export const fetchCreateTaskWithPoint = ({
 
 export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify } = data;
+    const { action, ids, notify, guid } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -365,7 +383,13 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
           })
         );
         if (notify) {
-          showNotify({ type: NotifyTipe.DELETE_TASK });
+          const { boardName, taskName } = JSON.parse(guid);
+          const { title: boardTitle } = getBoardText(boardName);
+          showNotify({
+            type: NotifyTipe.DELETE_TASK,
+            board: boardTitle,
+            task: taskName,
+          });
         }
       }
     } catch (e) {
