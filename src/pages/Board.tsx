@@ -85,7 +85,7 @@ export const Board: FC = () => {
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
       const targetTask = tasks.find((task) => task._id === modalTargetId);
       if (!targetTask) {
-        toast.error('Задача уже удалена');
+        toast.error(lang === LangKey.EN ? 'The task already deleted' : 'Задача уже удалена');
         onCancel();
         return;
       }
@@ -110,7 +110,7 @@ export const Board: FC = () => {
     if (modalTargetType === 'column' || modalTargetType === 'колонку') {
       const targetCol = copyColumns.find((col) => col._id === modalTargetId);
       if (!targetCol) {
-        toast.error('Колонка уже удалена');
+        toast.error(lang === LangKey.EN ? 'The column already deleted' : 'Колонка уже удалена');
         onCancel();
         return;
       }
