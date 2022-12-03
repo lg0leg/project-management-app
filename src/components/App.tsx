@@ -54,7 +54,11 @@ function App() {
 
         break;
       case NotifyTipe.DELETE_COLUMN:
-        toast.info(lang === LangKey.EN ? `Delete column` : `Удалена колонка`);
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete column ${column} in the board ${board}`
+            : `Удалена колонка ${column} в доске ${board}`
+        );
         break;
       case NotifyTipe.ADD_TASK:
         toast.info(

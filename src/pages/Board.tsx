@@ -108,12 +108,12 @@ export const Board: FC = () => {
       dispatch(fetchTasksSet({ navigate, newTasks }));
     }
     if (modalTargetType === 'column' || modalTargetType === 'колонку') {
-      if (!copyColumns.find((column) => column._id === modalTargetId)) {
+      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
+      if (!targetCol) {
         toast.error('Колонка уже удалена');
         onCancel();
         return;
       }
-      const targetCol = copyColumns.find((col) => col._id === modalTargetId);
       const newColumns = copyColumns
         .filter((col) => col._id !== modalTargetId)
         .map((col) => {
@@ -122,7 +122,8 @@ export const Board: FC = () => {
           }
           return { ...col };
         });
-      dispatch(fetchDeleteColumn({ columnId: modalTargetId, navigate, boardId: _id }));
+
+      dispatch(fetchDeleteColumn({ column: targetCol, navigate, board }));
       dispatch(fetchColumnsSet({ navigate, newColumns }));
     }
     onCancel();
