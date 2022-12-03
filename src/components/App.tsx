@@ -29,7 +29,7 @@ function App() {
         toast.info(lang === LangKey.EN ? `Add Board ${board}` : `Добавлена доска ${board}`);
         break;
       case NotifyTipe.DELETE_BOARD:
-        toast.info(lang === LangKey.EN ? `Delete Board` : `Удалена доска`);
+        toast.info(lang === LangKey.EN ? `Delete board ${board}` : `Удалена доска ${board}`);
         break;
       case NotifyTipe.DELETE_BOARD_INNER:
         toast.warn(
