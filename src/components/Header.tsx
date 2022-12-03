@@ -110,7 +110,7 @@ function SignOut(props: { lang: string; setPopupVisible: (arg: boolean) => void 
   const navigate = useAppNavigate();
   return (
     <div className="flex justify-end gap-[10px]">
-      <div className="flex items-center pr-[26px] sm:hidden">
+      <div className="flex items-center sm:hidden">
         <button
           className="flex  rounded  py-1 px-1 font-semibold text-blue-500  hover:bg-blue-100"
           onClick={() => {

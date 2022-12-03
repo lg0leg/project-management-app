@@ -6,6 +6,7 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
 import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -309,7 +310,7 @@ export const fetchCreateTaskWithPoint = ({
 
 export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -318,12 +319,13 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
         const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
           params,
         });
-
-        responseTasks.data.forEach(async (task) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`Добавлена таска ${task.title} в доске ${boardTitle}`);
-        });
+        if (notify) {
+          responseTasks.data.forEach(async (task) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.ADD_TASK, task: task.title, board: boardTitle });
+          });
+        }
 
         const filteredTasks = responseTasks.data.filter(
           (task) => pathname === `/board/${task.boardId}`
@@ -339,11 +341,14 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
         const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
           params,
         });
-        responseTasks.data.forEach(async (task) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`обновлена таска ${task.title} в доске ${boardTitle}`);
-        });
+        if (notify) {
+          responseTasks.data.forEach(async (task) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.UPDATE_TASK, task: task.title, board: boardTitle });
+          });
+        }
+
         const filteredTasks = responseTasks.data.filter(
           (task) => pathname === `/board/${task.boardId}`
         );
@@ -359,7 +364,9 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
             deletedIds: ids,
           })
         );
-        showNotify(`удалена таска`);
+        if (notify) {
+          showNotify({ type: NotifyTipe.DELETE_TASK });
+        }
       }
     } catch (e) {
       handleError(dispatch, e, navigate);

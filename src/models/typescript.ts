@@ -70,8 +70,15 @@ export interface ISocketResponse {
   notify: boolean;
   users: string[];
 }
+
+export interface IInfoNotify {
+  type: string;
+  board?: string;
+  column?: string;
+  task?: string;
+}
 export interface IWebSocket {
   navigate: navigateType;
   data: ISocketResponse;
-  showNotify: (text: string) => void;
+  showNotify: (notifyParam: IInfoNotify) => void;
 }
