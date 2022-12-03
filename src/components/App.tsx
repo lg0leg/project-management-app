@@ -131,12 +131,12 @@ function App() {
         position="bottom-right"
         limit={10}
         transition={Zoom}
-        autoClose={2500}
+        autoClose={3000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
+        pauseOnFocusLoss={false}
         draggable={false}
         pauseOnHover
         theme="light"
