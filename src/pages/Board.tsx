@@ -83,12 +83,12 @@ export const Board: FC = () => {
 
   const onConfirmDelete = () => {
     if (modalTargetType === 'task' || modalTargetType === 'задачу') {
-      if (!tasks.find((task) => task._id === modalTargetId)) {
+      const targetTask = tasks.find((task) => task._id === modalTargetId);
+      if (!targetTask) {
         toast.error('Задача уже удалена');
         onCancel();
         return;
       }
-      const targetTask = tasks.filter((task) => task._id === modalTargetId)[0];
       const newTasks = tasks
         .filter((task) => task._id !== modalTargetId)
         .map((task) => {
@@ -99,9 +99,9 @@ export const Board: FC = () => {
         });
       dispatch(
         fetchDeleteTask({
-          _id: modalTargetId,
+          task: targetTask,
           columnId: targetTask.columnId,
-          boardId: targetTask.boardId,
+          board,
           navigate,
         })
       );

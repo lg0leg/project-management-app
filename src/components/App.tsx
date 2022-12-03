@@ -75,7 +75,11 @@ function App() {
         );
         break;
       case NotifyTipe.DELETE_TASK:
-        toast.info(lang === LangKey.EN ? `Delete task` : `Удалена задача`);
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete task ${task} in the board ${board}`
+            : `Удалена задача ${task} в доске ${board}`
+        );
         break;
     }
   };
