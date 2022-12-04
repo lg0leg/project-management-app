@@ -40,8 +40,8 @@ function App() {
       case NotifyTipe.DELETE_BOARD_INNER:
         toast.warn(
           lang === LangKey.EN
-            ? `Sorry this board has been deleted`
-            : `Простите эта доска уже удалена`
+            ? `Sorry, this board has been deleted`
+            : `Простите, эта доска уже удалена`
         );
         break;
       case NotifyTipe.ADD_COLUMN:
