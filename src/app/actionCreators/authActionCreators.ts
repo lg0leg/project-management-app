@@ -1,5 +1,5 @@
 import { api } from 'API/API';
-import { AppDispatch } from 'app/store';
+import { AppDispatch, store } from 'app/store';
 import { authSlice } from '../slices/authSlice';
 import type {
   ILoginResponse,
@@ -13,6 +13,7 @@ import { StorageKey } from 'constants/storageKey';
 import { isExpired } from 'react-jwt';
 import { toast } from 'react-toastify';
 import { LangKey } from 'constants/lang';
+const { lang } = store.getState().langReducer;
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -37,6 +38,9 @@ const handleAuthError = (dispatch: AppDispatch, e: unknown, navigate: navigateTy
     const httpCode = e.response?.status as number;
     if (httpCode === 404) {
       navigate(RoutesPath.NOT_FOUND);
+    }
+    if (httpCode === 401 || httpCode === 403) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
     }
     dispatch(
       authSlice.actions.handleError({
