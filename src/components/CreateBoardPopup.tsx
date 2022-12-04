@@ -27,7 +27,6 @@ export default function CreateBoardPopup(props: {
     setDescription('');
     setTitleError(false);
     props.setPopupVisible(false);
-    if (location.pathname !== RoutesPath.BOARDS) navigate(RoutesPath.BOARDS);
   };
 
   const createBoard = () => {
