@@ -15,11 +15,20 @@ import {
   getValidatePassword,
 } from 'utils/getAuthValidation';
 import { InputLength } from 'constants/authValidation';
+import { toast } from 'react-toastify';
+
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
+  const showRegisterNotify = (login: string) => {
+    toast.success(
+      lang === LangKey.EN
+        ? `New user ${login} has been registered`
+        : `Зарегистрирован новый пользователь ${login}`
+    );
+  };
   const {
     register,
     handleSubmit,
@@ -27,7 +36,7 @@ export const SignIn: FC = () => {
   } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (data) => {
     const { login, password } = data;
-    dispatch(fetchLogin({ login, password, navigate }));
+    dispatch(fetchLogin({ login, password, navigate, lang }));
   };
 
   let errorText = '';

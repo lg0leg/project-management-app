@@ -30,7 +30,7 @@ export const SignUp: FC = () => {
   const onSubmit: SubmitHandler<IAuthRequest> = (res) => {
     const { name, login, password } = res as IRegisterRequest;
     const data = { name, login, password };
-    dispatch(fetchRegister({ data, navigate }));
+    dispatch(fetchRegister({ data, navigate, lang }));
   };
 
   let errorText = '';
