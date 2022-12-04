@@ -73,7 +73,7 @@ export default function ProfileConfirmInput({
 
   return (
     <div className="mb-5">
-      <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>
+      <label className="mt-2 mb-5 text-lg font-normal text-gray-500">{title}</label>
       {type === 'text' ? (
         <input
           type={type}
