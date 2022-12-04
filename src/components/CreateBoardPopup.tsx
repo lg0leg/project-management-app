@@ -22,6 +22,7 @@ export default function CreateBoardPopup(props: {
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
   const location = useLocation();
+
   const hidePopup = () => {
     setTitle('');
     setDescription('');

@@ -208,7 +208,7 @@ export const Welcome: FC = () => {
           </p>
         </section>
 
-        <section className="flex flex-col items-center gap-[20px] px-[30px] pt-[100px] text-center">
+        {/* <section className="flex flex-col items-center gap-[20px] px-[30px] pt-[100px] text-center">
           <h4 className={h4Styles}>
             {lang == 'en'
               ? 'Want to learn more about the app? '
@@ -234,7 +234,7 @@ export const Welcome: FC = () => {
               ></iframe>
             </div>
           )}
-        </section>
+        </section> */}
       </div>
     </>
   );
