@@ -25,6 +25,10 @@ const socket = io(BASE_URL);
 
 function App() {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const { isAuth } = useAppSelector((state) => state.authReducer);
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
+
   const infoNotify = ({ type, task, board, column }: IInfoNotify) => {
     switch (type) {
       case NotifyTipe.ADD_BOARD:
@@ -85,12 +89,14 @@ function App() {
         break;
     }
   };
-  const { isAuth } = useAppSelector((state) => state.authReducer);
-  const navigate = useAppNavigate();
-  const dispatch = useAppDispatch();
+
   useEffect(() => {
+    const isNotifyShow = () => {
+      const path = window.location.pathname;
+      return isAuth && (path === RoutesPath.BOARDS || path.startsWith('/board/'));
+    };
     socket.on('connect', () => {
-      if (!isAuth) return;
+      if (!isNotifyShow()) return;
       toast.info('socket is connected');
       if (window.location.pathname === RoutesPath.BOARDS) {
         dispatch(fetchGetBoards({ navigate }));
@@ -101,21 +107,21 @@ function App() {
     });
 
     socket.on('disconnect', () => {
-      if (!isAuth) return;
+      if (!isNotifyShow()) return;
       toast.error('socket is disconnected');
     });
 
     socket.on('boards', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
+      if (isNotifyShow()) dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
     });
     socket.on('columns', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('points', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
     });
 
     return () => {
