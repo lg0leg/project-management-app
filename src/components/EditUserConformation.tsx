@@ -43,6 +43,7 @@ export const EditUserConformation: FC<IEditUserConformation> = ({ formData, onCa
           name,
           password,
           navigate,
+          lang,
         })
       );
       onCancel();

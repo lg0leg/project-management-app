@@ -6,6 +6,8 @@ import { IUser } from 'models/dbTypes';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 import { handleError } from 'utils/handleErrors';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -34,6 +36,7 @@ interface IUpdateUserProps extends IUserProps {
   name: string;
   password: string;
   cb?: () => void;
+  lang: string;
 }
 
 export const fetchGetUsers = (navigate: (path: string) => void) => {
@@ -77,7 +80,14 @@ export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
   };
 };
 
-export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdateUserProps) => {
+export const fetchUpdateUser = ({
+  _id,
+  login,
+  name,
+  password,
+  navigate,
+  lang,
+}: IUpdateUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -89,6 +99,9 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
           user: response.data,
         })
       );
+      if (response.status >= 200 && response.status < 300) {
+        toast.success(lang === LangKey.EN ? 'Profile updated' : 'Профиль обновлен');
+      }
     } catch (e) {
       setErrorStatus(dispatch);
       if (e instanceof AxiosError) {

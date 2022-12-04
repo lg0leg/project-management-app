@@ -108,7 +108,14 @@ export default function TestPage() {
     const newLogin = data.login || user.login;
     const newName = data.name || user.name;
     dispatch(
-      fetchUpdateUser({ _id, login: newLogin, name: newName, password: data.password, navigate })
+      fetchUpdateUser({
+        _id,
+        login: newLogin,
+        name: newName,
+        password: data.password,
+        navigate,
+        lang,
+      })
     );
   };
 
