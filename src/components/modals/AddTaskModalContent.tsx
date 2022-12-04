@@ -59,7 +59,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   };
 
   return (
-    <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+    <div className="max-h-[600px] min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
       <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button
@@ -72,11 +72,11 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
             </div>
             <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
           </button>
-          <div className="py-6 px-6 ">
+          <div className="py-4 px-4">
             <h3 className="mb-4 text-xl font-medium text-gray-900">
               {lang === LangKey.EN ? 'Create new task' : 'Добавить задание'}
             </h3>
-            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="Text" className="mb-2 block text-sm font-medium text-gray-900">
                   {lang === LangKey.EN ? 'Title' : 'Название'}
@@ -92,7 +92,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
                       ? 'Type title beetwen 2 and 50 characters'
-                      : 'Длинна названия от 2 до 50 символов'}
+                      : 'Длина названия от 2 до 50 символов'}
                   </p>
                 )}
               </div>
@@ -113,8 +113,8 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
-                      ? 'Max length is 100 characters'
-                      : 'Максимальная длинна 100 символов'}
+                      ? 'Type description beetwen 2 and 100 characters'
+                      : 'Длина описания от 2 до 100 символов'}
                   </p>
                 )}
               </div>
@@ -147,7 +147,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 </label>
                 <select
                   id="users"
-                  className="block h-48 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  className="block h-32 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('users')}
                   multiple
                 >
@@ -186,7 +186,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   </p>
                 )}
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-2">
                 <Button type="submit">{lang === LangKey.EN ? 'Create' : 'Создать'}</Button>
                 <Button
                   color="light"
