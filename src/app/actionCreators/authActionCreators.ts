@@ -9,6 +9,8 @@ import type {
 } from 'models/typescript';
 import { AxiosError } from 'axios';
 import { RoutesPath } from 'constants/routes';
+import { StorageKey } from 'constants/storageKey';
+import { isExpired } from 'react-jwt';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -50,7 +52,6 @@ interface IPropsLogin {
   login: string;
   navigate: navigateType;
 }
-
 interface IPropsConfirmEditUser extends IPropsLogin {
   cb: () => void;
 }
@@ -97,9 +98,20 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
   };
 };
 
-export const logout = (navigate: (path: string) => void) => {
+export const logout = (navigate: navigateType) => {
   return (dispatch: AppDispatch) => {
     dispatch(authSlice.actions.logout({ navigate }));
+  };
+};
+
+export const loginReload = (navigate: navigateType) => {
+  return (dispatch: AppDispatch) => {
+    const token = localStorage.getItem(StorageKey.TOKEN);
+    if (!token || isExpired(token)) {
+      dispatch(authSlice.actions.logout({ navigate }));
+      return;
+    }
+    dispatch(authSlice.actions.loginReload({ token }));
   };
 };
 
