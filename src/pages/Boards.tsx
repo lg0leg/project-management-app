@@ -33,11 +33,13 @@ export const Boards: FC = () => {
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     }
   });
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));

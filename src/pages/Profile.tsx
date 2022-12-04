@@ -19,6 +19,7 @@ import { isExpired, decodeToken } from 'react-jwt';
 import { logout } from 'app/actionCreators/authActionCreators';
 import Popup from 'components/popup/popup';
 import { EditUserConformation } from 'components/EditUserConformation';
+import { toast } from 'react-toastify';
 
 export const Profile: FC = () => {
   const navigate = useAppNavigate();
@@ -47,12 +48,14 @@ export const Profile: FC = () => {
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     }
   });
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     } else {
       const { id: _id } = decodeToken(token) as IToken;
