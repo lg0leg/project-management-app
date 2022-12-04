@@ -137,7 +137,7 @@ export const Column: FC<IColumnProps> = ({
           <Droppable droppableId={column._id} type="TASK">
             {(provided, snapshot) => (
               <div
-                className={`scrollbar mb-2 flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden px-2 ${
+                className={`scrollbar mb-2 flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden px-2 pb-2 ${
                   snapshot.isDraggingOver && 'bg-gray-100'
                 }`}
                 ref={provided.innerRef}
