@@ -225,7 +225,7 @@ export const Board: FC = () => {
       <SpinnerWithOverlay isLoading={isLoading} />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex h-[calc(100vh-100px-80px)] flex-col items-center justify-center bg-gray-50">
-          <div className="flex w-full flex-col items-center px-3 pt-2 sm:flex-row sm:justify-between sm:px-5 sm:pt-3">
+          <div className="flex w-full flex-col items-center px-3 pt-2 pb-1 sm:flex-row sm:justify-between sm:px-5 sm:pt-3">
             <div className="mb-2 flex max-h-[60px] w-full max-w-full flex-row items-center justify-start sm:mb-0">
               <Button onClick={() => navigate(RoutesPath.BOARDS)}>
                 {lang === LangKey.EN ? 'Back' : 'Назад'}
