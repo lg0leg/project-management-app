@@ -120,7 +120,7 @@ export default function TestPage() {
   };
 
   const deleteUser = () => {
-    dispatch(fetchDeleteUser({ _id, navigate }));
+    dispatch(fetchDeleteUser({ _id, navigate, lang }));
   };
 
   const priority = ['none', 'low', 'medium', 'high', 'critical'];

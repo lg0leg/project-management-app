@@ -31,6 +31,10 @@ interface IUserProps {
   cb?: () => void;
 }
 
+interface IDeleteUserProps extends IUserProps {
+  lang: string;
+}
+
 interface IUpdateUserProps extends IUserProps {
   login: string;
   name: string;
@@ -120,7 +124,7 @@ export const fetchUpdateUser = ({
   };
 };
 
-export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
+export const fetchDeleteUser = ({ _id, navigate, lang }: IDeleteUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -129,6 +133,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
       if (response.status >= 200 && response.status < 300) {
         dispatch(userSlice.actions.deleteUser());
         dispatch(logout(navigate));
+        toast.success(lang === LangKey.EN ? 'Profile deleted' : 'Профиль удален');
       }
     } catch (e) {
       setErrorStatus(dispatch);
