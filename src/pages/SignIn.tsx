@@ -22,13 +22,7 @@ export const SignIn: FC = () => {
   const dispatch = useAppDispatch();
   const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
-  const showRegisterNotify = (login: string) => {
-    toast.success(
-      lang === LangKey.EN
-        ? `New user ${login} has been registered`
-        : `Зарегистрирован новый пользователь ${login}`
-    );
-  };
+
   const {
     register,
     handleSubmit,
