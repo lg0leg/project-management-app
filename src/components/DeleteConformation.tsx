@@ -37,12 +37,14 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
                 ? `Are you sure you want to delete this ${type}?`
                 : `Вы уверены что хотите удалить ${type}?`}
             </h3>
-            <Button color="red" onClick={onConfirm}>
-              {lang === LangKey.EN ? 'Delete' : 'Удалить'}
-            </Button>
-            <Button color="light" onClick={onCancel}>
-              {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
-            </Button>
+            <div className="flex flex-row items-center justify-center gap-2">
+              <Button color="red" onClick={onConfirm}>
+                {lang === LangKey.EN ? 'Delete' : 'Удалить'}
+              </Button>
+              <Button color="light" onClick={onCancel}>
+                {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
