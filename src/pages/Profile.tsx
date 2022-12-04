@@ -104,7 +104,7 @@ export const Profile: FC = () => {
   }
 
   return (
-    <div className="min-h-[100%] bg-gray-300">
+    <div className="min-h-[100%] bg-gradient-to-r from-gray-100 to-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
       <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
         <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-profile bg-contain bg-no-repeat">
@@ -112,7 +112,10 @@ export const Profile: FC = () => {
             className="max-w-[280px] rounded-xl border-2 border-gray-400 bg-gray-50/90 p-5"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <h2 className="text-center text-lg font-medium">{`${user.name}(${user.login})`}</h2>
+            <h2 className="flex max-w-[280px] flex-col flex-wrap justify-center text-center text-lg font-medium">
+              <span>{`${user.name}`}</span>
+              <span>{`(${user.login})`}</span>
+            </h2>
             {isShowError && (
               <div className="underline-offset-3 w-full text-center text-base font-medium text-red-500 underline underline-offset-2">
                 {errorText}

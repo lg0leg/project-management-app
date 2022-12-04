@@ -44,7 +44,7 @@ export const SignIn: FC = () => {
     errorText = lang === LangKey.EN ? 'Wrong login/password' : 'Неправильный пароль/логин';
   }
   return (
-    <div className="min-h-[100%] bg-gray-300">
+    <div className="min-h-[100%] bg-gradient-to-r from-gray-100 to-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
       <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
         <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">

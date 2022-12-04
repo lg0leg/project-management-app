@@ -10,7 +10,7 @@ import type { IProfileConfirm } from 'models/typescript';
 import type { FieldErrorsImpl } from 'react-hook-form';
 import { useAppSelector } from 'app/hooks';
 import { getErrorMessage } from 'utils/getAuthValidation';
-import { BsEyeFill, BsEyeSlashFill } from 'react-icons/bs';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 interface IProps {
   type: string;
@@ -106,7 +106,7 @@ export default function ProfileConfirmInput({
             className="absolute top-4 right-3 cursor-pointer duration-300 hover:scale-125"
             onClick={togglePasswordVisibility}
           >
-            {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
+            {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
           </i>
         </div>
       )}
