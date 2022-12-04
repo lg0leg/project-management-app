@@ -200,6 +200,7 @@ export const Board: FC = () => {
   };
 
   const priority = ['none', 'low', 'medium', 'high', 'critical'];
+  const priorityRu = ['Без приоритета', 'Низкий', 'Средний', 'Высокий', 'Критический'];
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [checkedState, setCheckedState] = useState(new Array(priority.length).fill(false));
   const buildHash = (keys: string[], values: boolean[]) => {
@@ -251,6 +252,7 @@ export const Board: FC = () => {
                 isFilterOpen={isFilterOpen}
                 setIsFilterOpen={setIsFilterOpen}
                 priority={priority}
+                priorityRu={priorityRu}
                 checkedState={checkedState}
                 handleOnChange={handleOnChange}
               />

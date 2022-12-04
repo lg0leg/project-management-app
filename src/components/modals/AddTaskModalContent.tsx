@@ -113,8 +113,8 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
-                      ? 'Max length is 100 characters'
-                      : 'Максимальная длина 100 символов'}
+                      ? 'Type description beetwen 2 and 100 characters'
+                      : 'Длина описания от 2 до 100 символов'}
                   </p>
                 )}
               </div>

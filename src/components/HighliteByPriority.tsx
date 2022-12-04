@@ -8,6 +8,7 @@ interface IPointFilter {
   isFilterOpen: boolean;
   setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
   priority: string[];
+  priorityRu: string[];
   checkedState: boolean[];
   handleOnChange: (position: number) => void;
 }
@@ -15,6 +16,7 @@ export const HighliteByPriority: FC<IPointFilter> = ({
   isFilterOpen,
   setIsFilterOpen,
   priority,
+  priorityRu,
   checkedState,
   handleOnChange,
 }) => {
@@ -48,7 +50,9 @@ export const HighliteByPriority: FC<IPointFilter> = ({
                       htmlFor={'checkbox-' + p}
                       className="ml-2 w-full rounded text-base font-medium text-gray-900"
                     >
-                      {p.charAt(0).toUpperCase() + p.slice(1)}
+                      {lang === LangKey.EN
+                        ? p.charAt(0).toUpperCase() + p.slice(1)
+                        : priorityRu[index]}
                     </label>
                   </div>
                 </li>
