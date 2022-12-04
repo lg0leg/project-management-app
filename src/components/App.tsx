@@ -59,13 +59,6 @@ function App() {
         );
 
         break;
-      case NotifyTipe.DELETE_COLUMN:
-        toast.info(
-          lang === LangKey.EN
-            ? `Delete column ${column} in the board ${board}`
-            : `Удалена колонка ${column} в доске ${board}`
-        );
-        break;
       case NotifyTipe.ADD_TASK:
         toast.info(
           lang === LangKey.EN
@@ -78,13 +71,6 @@ function App() {
           lang === LangKey.EN
             ? `Update task ${task} in the board ${board}`
             : `Обновлена задача ${task} в доске ${board}`
-        );
-        break;
-      case NotifyTipe.DELETE_TASK:
-        toast.info(
-          lang === LangKey.EN
-            ? `Delete task ${task} in the board ${board}`
-            : `Удалена задача ${task} в доске ${board}`
         );
         break;
     }
