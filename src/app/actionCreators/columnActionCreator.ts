@@ -5,6 +5,7 @@ import type { IColumn, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -44,6 +45,11 @@ interface IColumnsProps {
 
 interface IColumnProps extends IColumnsProps {
   columnId: string;
+}
+interface IDeleteColumnProps {
+  column: IColumn;
+  board: IBoard;
+  navigate: navigateType;
 }
 
 interface ICreateColumnProps extends IColumnsProps {
@@ -152,12 +158,25 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   };
 };
 // перделано под webSocket
-export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps) => {
+export const fetchDeleteColumn = ({ column, navigate, board }: IDeleteColumnProps) => {
   return async (dispatch: AppDispatch) => {
+    const { title: columnName, _id: columnId } = column;
+    const { title: boardName, _id: boardId } = board;
     try {
       setLoadingStatus(dispatch);
-
-      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
+      const config = {
+        headers: {
+          guid: JSON.stringify({
+            columnName,
+            boardName,
+            time: Date.now(),
+          }),
+        },
+      };
+      const response = await apiToken.delete<IUser>(
+        `/boards/${boardId}/columns/${columnId}`,
+        config
+      );
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
@@ -243,7 +262,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
 
 export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids } = data;
+    const { action, ids, notify, guid } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -253,11 +272,13 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
           params,
         });
 
-        responseColumns.data.forEach(async (column) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`Добавлена колонка ${column.title} в доске ${boardTitle}`);
-        });
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.ADD_COLUMN, column: column.title, board: boardTitle });
+          });
+        }
 
         const filteredColumns = responseColumns.data.filter(
           (column) => pathname === `/board/${column.boardId}`
@@ -273,11 +294,15 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
         const responseColumns = await apiToken<IColumn[]>(`/columnsSet`, {
           params,
         });
-        responseColumns.data.forEach(async (column) => {
-          const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
-          const { title: boardTitle } = getBoardText(responseBoard.data.title);
-          showNotify(`обновлена колонка ${column.title} в доске ${boardTitle}`);
-        });
+
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.UPDATE_COLUMN, column: column.title, board: boardTitle });
+          });
+        }
+
         const filteredColumns = responseColumns.data.filter(
           (column) => pathname === `/board/${column.boardId}`
         );
@@ -293,7 +318,15 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
             deletedIds: ids,
           })
         );
-        showNotify(`удалена колонка`);
+        if (notify) {
+          const { boardName, columnName } = JSON.parse(guid);
+          const { title: boardTitle } = getBoardText(boardName);
+          showNotify({
+            type: NotifyTipe.DELETE_COLUMN,
+            board: boardTitle,
+            column: columnName,
+          });
+        }
       }
     } catch (e) {
       handleError(dispatch, e, navigate);

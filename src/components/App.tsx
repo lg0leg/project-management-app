@@ -16,18 +16,82 @@ import {
 import { webSocketColumns } from 'app/actionCreators/columnActionCreator';
 import { webSocketTasks } from 'app/actionCreators/taskActionCreator';
 import { webSocketPoints } from 'app/actionCreators/pointActionCreator';
-import { ISocketResponse } from 'models/typescript';
+import { ISocketResponse, IInfoNotify } from 'models/typescript';
+import { NotifyTipe } from 'constants/notifyType';
+import { LangKey } from 'constants/lang';
+import { loginReload } from 'app/actionCreators/authActionCreators';
+import { StorageKey } from 'constants/storageKey';
 const socket = io(BASE_URL);
 
 function App() {
-  const infoNotify = (text: string) => toast.info(text);
+  const { lang } = useAppSelector((state) => state.langReducer);
+  const infoNotify = ({ type, task, board, column }: IInfoNotify) => {
+    switch (type) {
+      case NotifyTipe.ADD_BOARD:
+        toast.info(lang === LangKey.EN ? `Add Board ${board}` : `Добавлена доска ${board}`);
+        break;
+      case NotifyTipe.DELETE_BOARD:
+        toast.info(lang === LangKey.EN ? `Delete board ${board}` : `Удалена доска ${board}`);
+        break;
+      case NotifyTipe.DELETE_BOARD_INNER:
+        toast.warn(
+          lang === LangKey.EN
+            ? `Sorry this board has been deleted`
+            : `Простите эта доска уже удалена`
+        );
+        break;
+      case NotifyTipe.ADD_COLUMN:
+        toast.info(
+          lang === LangKey.EN
+            ? `Add column ${column} in the board ${board}`
+            : `Добавлена колонка ${column} в доске ${board}`
+        );
+        break;
+      case NotifyTipe.UPDATE_COLUMN:
+        toast.info(
+          lang === LangKey.EN
+            ? `Update column ${column} in the board ${board}`
+            : `Обновлена колонка ${column} в доске ${board}`
+        );
+
+        break;
+      case NotifyTipe.DELETE_COLUMN:
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete column ${column} in the board ${board}`
+            : `Удалена колонка ${column} в доске ${board}`
+        );
+        break;
+      case NotifyTipe.ADD_TASK:
+        toast.info(
+          lang === LangKey.EN
+            ? `Add task ${task} in the board ${board}`
+            : `Добавлена задача ${task} в доске ${board}`
+        );
+        break;
+      case NotifyTipe.UPDATE_TASK:
+        toast.info(
+          lang === LangKey.EN
+            ? `Update task ${task} in the board ${board}`
+            : `Обновлена задача ${task} в доске ${board}`
+        );
+        break;
+      case NotifyTipe.DELETE_TASK:
+        toast.info(
+          lang === LangKey.EN
+            ? `Delete task ${task} in the board ${board}`
+            : `Удалена задача ${task} в доске ${board}`
+        );
+        break;
+    }
+  };
   const { isAuth } = useAppSelector((state) => state.authReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   useEffect(() => {
     socket.on('connect', () => {
-      infoNotify('socket is connected');
       if (!isAuth) return;
+      toast.info('socket is connected');
       if (window.location.pathname === RoutesPath.BOARDS) {
         dispatch(fetchGetBoards({ navigate }));
       }
@@ -37,7 +101,8 @@ function App() {
     });
 
     socket.on('disconnect', () => {
-      infoNotify('socket is disconnected');
+      if (!isAuth) return;
+      toast.error('socket is disconnected');
     });
 
     socket.on('boards', (data: ISocketResponse) => {
@@ -61,7 +126,14 @@ function App() {
       socket.off('tasks');
       socket.off('points');
     };
-  }, [isAuth]);
+  }, [isAuth, lang]);
+
+  useEffect(() => {
+    const handlerChangeStorage = (e: StorageEvent) => {
+      if (e.key === StorageKey.TOKEN) dispatch(loginReload(navigate));
+    };
+    window.addEventListener('storage', handlerChangeStorage);
+  }, []);
 
   return (
     <>
