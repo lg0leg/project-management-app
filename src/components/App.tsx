@@ -32,10 +32,10 @@ function App() {
   const infoNotify = ({ type, task, board, column }: IInfoNotify) => {
     switch (type) {
       case NotifyTipe.ADD_BOARD:
-        toast.info(lang === LangKey.EN ? `Add Board ${board}` : `Добавлена доска ${board}`);
+        toast.info(lang === LangKey.EN ? `"${board}" board added` : `Добавлена доска "${board}"`);
         break;
       case NotifyTipe.DELETE_BOARD:
-        toast.info(lang === LangKey.EN ? `Delete board ${board}` : `Удалена доска ${board}`);
+        toast.info(lang === LangKey.EN ? `"${board}" board deleted` : `Удалена доска "${board}"`);
         break;
       case NotifyTipe.DELETE_BOARD_INNER:
         toast.warn(
@@ -47,30 +47,30 @@ function App() {
       case NotifyTipe.ADD_COLUMN:
         toast.info(
           lang === LangKey.EN
-            ? `Add column ${column} in the board ${board}`
-            : `Добавлена колонка ${column} в доске ${board}`
+            ? `"${column}" column added in the board "${board}"`
+            : `Добавлена колонка "${column}" в доске "${board}"`
         );
         break;
       case NotifyTipe.UPDATE_COLUMN:
         toast.info(
           lang === LangKey.EN
-            ? `Update column ${column} in the board ${board}`
-            : `Обновлена колонка ${column} в доске ${board}`
+            ? `"${column}" column updated in the board "${board}"`
+            : `Обновлена колонка "${column}" в доске "${board}"`
         );
 
         break;
       case NotifyTipe.ADD_TASK:
         toast.info(
           lang === LangKey.EN
-            ? `Add task ${task} in the board ${board}`
-            : `Добавлена задача ${task} в доске ${board}`
+            ? `"${task}" task added in the board "${board}"`
+            : `Добавлена задача "${task}" в доске "${board}"`
         );
         break;
       case NotifyTipe.UPDATE_TASK:
         toast.info(
           lang === LangKey.EN
-            ? `Update task ${task} in the board ${board}`
-            : `Обновлена задача ${task} в доске ${board}`
+            ? `"${task}" task updated in the board "${board}"`
+            : `Обновлена задача "${task}" в доске "${board}"`
         );
         break;
     }

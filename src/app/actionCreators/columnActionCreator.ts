@@ -173,7 +173,9 @@ export const fetchDeleteColumn = ({ column, navigate, board, lang }: IDeleteColu
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
-        toast.info(lang === LangKey.EN ? `Delete column ${title}` : `Удалена колонка ${title}`);
+        toast.info(
+          lang === LangKey.EN ? `"${title}" column deleted` : `Удалена колонка "${title}"`
+        );
       }
     } catch (e) {
       setErrorStatus(dispatch);

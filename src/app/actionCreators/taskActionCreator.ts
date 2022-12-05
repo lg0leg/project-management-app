@@ -204,7 +204,7 @@ export const fetchDeleteTask = ({ columnId, navigate, board, task, lang }: IDele
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
-        toast.info(lang === LangKey.EN ? `Delete task ${title}` : `Удалена задача ${title}`);
+        toast.info(lang === LangKey.EN ? `"${title}" task deleted` : `Удалена задача "${title}"`);
       }
     } catch (e) {
       setErrorStatus(dispatch);
