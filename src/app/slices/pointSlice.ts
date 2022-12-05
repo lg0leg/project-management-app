@@ -23,6 +23,13 @@ const initialState = {
 interface IPointsPayload {
   points: IPoint[];
 }
+interface IPointPayload {
+  point: IPoint;
+}
+
+interface IUpdatePointsPayload {
+  updatedPoints: IPoint[];
+}
 
 export const pointSlice = createSlice({
   name: 'point',
@@ -32,6 +39,25 @@ export const pointSlice = createSlice({
       state.points = action.payload.points;
       state.isLoading = false;
       state.isError = false;
+    },
+    addPoint(state, action: PayloadAction<IPointPayload>) {
+      state.points = [...state.points, action.payload.point];
+      state.isLoading = false;
+      state.isError = false;
+    },
+
+    addPoints(state, action: PayloadAction<IPointsPayload>) {
+      state.points = [...state.points, ...action.payload.points];
+    },
+
+    updatePoints(state, action: PayloadAction<IUpdatePointsPayload>) {
+      const updatedPoints = action.payload.updatedPoints;
+      state.points = state.points.map((point) => {
+        for (let i = 0; i < updatedPoints.length; i++) {
+          if (point._id === updatedPoints[i]._id) return updatedPoints[i];
+        }
+        return point;
+      });
     },
 
     setStatus(state, action: PayloadAction<IStatusPayload>) {

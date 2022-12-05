@@ -19,6 +19,7 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
       <div className="relative h-full w-full max-w-md ">
         <div className="relative rounded-lg bg-white shadow">
           <button
+            type="button"
             onClick={onCancel}
             className="absolute top-3 right-2.5 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900"
           >
@@ -36,12 +37,14 @@ export const DeleteConformation: FC<IDeleteConformationProps> = ({ type, onConfi
                 ? `Are you sure you want to delete this ${type}?`
                 : `Вы уверены что хотите удалить ${type}?`}
             </h3>
-            <Button color="red" onClick={onConfirm}>
-              {lang === LangKey.EN ? 'Delete' : 'Удалить'}
-            </Button>
-            <Button color="light" onClick={onCancel}>
-              {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
-            </Button>
+            <div className="flex flex-row items-center justify-center gap-2">
+              <Button color="red" onClick={onConfirm}>
+                {lang === LangKey.EN ? 'Delete' : 'Удалить'}
+              </Button>
+              <Button color="light" onClick={onCancel}>
+                {lang === LangKey.EN ? 'Cancel' : 'Отмена'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

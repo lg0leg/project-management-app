@@ -1,4 +1,4 @@
-import { FC, KeyboardEvent, MouseEvent, useState } from 'react';
+import { FC, KeyboardEvent, useState } from 'react';
 import type { IColumn, ITask } from 'models/dbTypes';
 import { MdAdd, MdDone } from 'react-icons/md';
 import { Task } from './Task';
@@ -9,23 +9,29 @@ import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import { ModalTypes } from 'constants/modalTypes';
 import { fetchUpdateColumn } from 'app/actionCreators/columnActionCreator';
 import { HiXMark } from 'react-icons/hi2';
+import type { IOpenModalProps } from 'pages/Board';
 
 interface IColumnProps {
   index: number;
   column: IColumn;
   tasks: ITask[];
-  openModal: (
-    event: MouseEvent<HTMLButtonElement>,
-    modalType: string,
-    modalTargetId?: string,
-    modalTargetType?: string
-  ) => void;
+  openModal: ({ event, modalType, modalTargetId, modalTargetType }: IOpenModalProps) => void;
+  hashMap: Map<string, boolean>;
+  filterValue: string;
 }
 
-export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IColumnProps) => {
+export const Column: FC<IColumnProps> = ({
+  column,
+  tasks,
+  index,
+  openModal,
+  hashMap,
+  filterValue,
+}: IColumnProps) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
+  const { points } = useAppSelector((state) => state.pointReducer);
   const [isChanging, setIsChanging] = useState(false);
   const [title, setTitle] = useState(column.title);
 
@@ -53,11 +59,14 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
     <Draggable draggableId={'drag.' + column._id} index={index} isDragDisabled={isChanging}>
       {(provided) => (
         <div
-          className="flex h-auto w-[22rem] min-w-[22rem] flex-shrink-0 touch-none flex-col rounded-lg bg-gray-50"
+          className="flex h-auto w-[18rem] min-w-[18rem] flex-shrink-0 touch-none flex-col rounded-lg bg-transparent sm:w-[19rem] md:w-[20rem] md:min-w-[20rem]"
           {...provided.draggableProps}
           ref={provided.innerRef}
         >
-          <div className="flex items-center justify-between p-2" {...provided.dragHandleProps}>
+          <div
+            className="mb-2 flex items-center justify-between rounded-t-lg px-2"
+            {...provided.dragHandleProps}
+          >
             {isChanging ? (
               <>
                 <div
@@ -110,13 +119,13 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
                   <button
                     className="rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-200"
                     data-modal="modal-delete-column"
-                    onClick={(e) => {
-                      openModal(
-                        e,
-                        ModalTypes.DELETE,
-                        column._id,
-                        lang === LangKey.EN ? 'column' : 'колонку'
-                      );
+                    onClick={(event) => {
+                      openModal({
+                        event,
+                        modalType: ModalTypes.DELETE,
+                        modalTargetId: column._id,
+                        modalTargetType: lang === LangKey.EN ? 'column' : 'колонку',
+                      });
                     }}
                   >
                     <BiTrash className="h-5 w-5" />
@@ -126,26 +135,51 @@ export const Column: FC<IColumnProps> = ({ column, tasks, index, openModal }: IC
             )}
           </div>
           <Droppable droppableId={column._id} type="TASK">
-            {(provided) => (
+            {(provided, snapshot) => (
               <div
-                className="scrollbar flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden p-2"
+                className={`scrollbar mb-2 flex h-auto min-h-[2.5rem] w-full flex-col overflow-x-hidden px-2 pb-2 ${
+                  snapshot.isDraggingOver && 'bg-gray-100'
+                }`}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
                 {tasks
                   .sort((t1, t2) => t1.order - t2.order)
+                  .filter((task) => {
+                    if (filterValue === 'none') return task;
+                    return (
+                      task._id ===
+                      points
+                        .filter((p) => p.title === filterValue)
+                        .find((p) => p.taskId === task._id)?.taskId
+                    );
+                  })
                   .map((task, index) => {
-                    return <Task key={task._id} task={task} index={index} openModal={openModal} />;
+                    return (
+                      <Task
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        openModal={openModal}
+                        hashMap={hashMap}
+                      />
+                    );
                   })}
                 {provided.placeholder}
               </div>
             )}
           </Droppable>
-          <div className="p-2">
+          <div className="flex min-w-[18rem] touch-none flex-col rounded-lg bg-gray-50 px-2 md:w-[20rem] md:min-w-[20rem]">
             <button
-              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-2 font-semibold text-gray-500 hover:bg-gray-100"
-              onClick={(e) => {
-                openModal(e, ModalTypes.ADD, column._id, 'task');
+              type="button"
+              className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 py-2 font-semibold text-gray-600 hover:bg-gray-200 hover:bg-opacity-60"
+              onClick={(event) => {
+                openModal({
+                  event,
+                  modalType: ModalTypes.ADD,
+                  modalTargetId: column._id,
+                  modalTargetType: 'task',
+                });
               }}
             >
               <MdAdd />

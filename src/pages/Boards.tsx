@@ -1,6 +1,6 @@
 import { fetchGetBoards, fetchDeleteBoard } from 'app/actionCreators/boardActionCreator';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
-import { IBoard, IUser } from 'models/dbTypes';
+import { IBoard } from 'models/dbTypes';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect, useState } from 'react';
 import { isExpired } from 'react-jwt';
@@ -13,14 +13,14 @@ import DeleteConformation from 'components/DeleteConformation';
 import Popup from 'components/popup/popup';
 import { getBoardText } from 'utils/getBoardText';
 import SimpleSpinner from 'components/spinners/SimpleSpinner';
-// import { BiEdit } from 'react-icons/bi';
-// import { BiTask } from 'react-icons/bi';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
-  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingUsers;
   const { lang } = useAppSelector((state) => state.langReducer);
@@ -31,22 +31,19 @@ export const Boards: FC = () => {
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     }
   });
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
       dispatch(fetchGetBoards({ navigate }));
     }
   }, []);
-
-  const getLogin = (users: IUser[], id: string) => {
-    const res = users.find((user) => user._id === id);
-    return res ? res.login : '-';
-  };
 
   useEffect(() => {
     const gridLS = localStorage.getItem('gridLS');
@@ -63,7 +60,13 @@ export const Boards: FC = () => {
   const listButtonStyle = grid == 'grid' ? 'rgb(0, 0, 0, 0.5)' : 'rgb(59, 130, 246, 1)';
 
   const onConfirm = () => {
-    dispatch(fetchDeleteBoard({ _id: currentBoardId, navigate }));
+    const targetBoard = boards.find((board) => board._id === currentBoardId);
+    if (!targetBoard) {
+      toast.error(lang === LangKey.EN ? 'The board already deleted' : 'Доска уже удалена');
+      onCancel();
+      return;
+    }
+    dispatch(fetchDeleteBoard({ board: targetBoard, navigate }));
     setPopupVisible(false);
   };
 
@@ -131,7 +134,9 @@ export const Boards: FC = () => {
             {returnFilteredBoards(grid)}
           </div>
         ) : (
-          <div className="grid gap-[20px] px-[30px] pb-[20px]">{returnFilteredBoards(grid)}</div>
+          <div className="grid gap-[20px] px-[30px] pb-[20px] sm:px-[8vw]">
+            {returnFilteredBoards(grid)}
+          </div>
         )}
 
         <Popup popupVisible={popupVisible} setPopupVisible={setPopupVisible}>
@@ -165,7 +170,7 @@ function BoardsCardGrid(props: {
     >
       <div className="flex items-center gap-[5px]">
         <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
-        <h3 className="max-w-[210px] truncate text-xl font-semibold text-gray-700">
+        <h3 className="max-w-[165px] truncate text-xl font-semibold text-gray-700 sm:max-w-[200px]">
           {props.title}
         </h3>
       </div>
@@ -207,7 +212,9 @@ function BoardsCardList(props: {
     >
       <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
 
-      <h3 className="truncate text-xl font-semibold text-gray-700">{props.title}</h3>
+      <h3 className="truncate pr-[30px] text-xl font-semibold text-gray-700 sm:pr-[10px]">
+        {props.title}
+      </h3>
 
       <textarea
         className="text-md col-span-2 h-[40px] cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none sm:col-auto sm:h-[60px]"

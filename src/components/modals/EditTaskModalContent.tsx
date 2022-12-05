@@ -4,62 +4,88 @@ import { FC, ReactNode } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
-import { ITask } from 'models/dbTypes';
+import type { IPoint, ITask } from 'models/dbTypes';
 import { fetchUpdateTask } from 'app/actionCreators/taskActionCreator';
-import { fetchAddFile } from 'app/actionCreators/fileActionCreator';
+import { fetchChangePoint, fetchCreatePoint } from 'app/actionCreators/pointActionCreator';
+import { toast } from 'react-toastify';
 
 interface IEditTaskModalContentProps {
   task: ITask;
+  priority: IPoint[];
   onCancel: () => void;
   children?: ReactNode;
 }
 
 interface IFormData extends ITask {
   attachment: FileList;
+  priority: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
-export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onCancel }) => {
+export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
+  task,
+  priority: points,
+  onCancel,
+}) => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { users } = useAppSelector((state) => state.userReducer);
+  const { tasks } = useAppSelector((state) => state.taskReducer);
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-
+  const curTask = { ...task };
+  const taskPoint = points.filter((point) => point.taskId === curTask._id);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormData>({ defaultValues: task });
+  } = useForm<IFormData>({
+    defaultValues: { ...curTask, priority: taskPoint.length ? taskPoint[0].title : 'none' },
+  });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    const { title, description, order, userId, users, attachment } = data;
+    const { title, description, order, userId, users, priority } = data;
     const taskData = {
       title,
       order,
       description,
       userId,
       users,
-      columnId: task.columnId,
+      columnId: curTask.columnId,
     };
+
+    if (!tasks.find((task) => task._id === curTask._id)) {
+      toast.error('Задача уже удалена');
+      onCancel();
+      return;
+    }
+
     dispatch(
       fetchUpdateTask({
-        _id: task._id,
-        boardId: task.boardId,
-        columnId: task.columnId,
+        _id: curTask._id,
+        boardId: curTask.boardId,
+        columnId: curTask.columnId,
         updateTask: taskData,
         navigate,
       })
     );
-    // if (attachment.length) {
-    //   Array.from(attachment).map((file) =>
-    //     dispatch(fetchAddFile({ boardId: task.boardId, file, navigate, taskId: task._id }))
-    //   );
-    //   console.log('attachment');
-    // }
+
+    if (!taskPoint.length) {
+      const newPoint = {
+        taskId: curTask._id,
+        boardId: curTask.boardId,
+        title: priority,
+        done: false,
+      };
+      dispatch(fetchCreatePoint({ navigate, point: newPoint }));
+    }
+    if (taskPoint.length) {
+      const changePoint = { done: false, title: priority };
+      dispatch(fetchChangePoint({ navigate, pointId: taskPoint[0]._id, pointData: changePoint }));
+    }
     onCancel();
   };
 
   return (
-    <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+    <div className="min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
       <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button
@@ -72,11 +98,11 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
             </div>
             <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
           </button>
-          <div className="py-6 px-6 ">
+          <div className="py-4 px-4">
             <h3 className="mb-4 text-xl font-medium text-gray-900">
-              {lang === LangKey.EN ? 'Create new task' : 'Добавить задание'}
+              {lang === LangKey.EN ? 'Edit task' : 'Изменить задание'}
             </h3>
-            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="Text" className="mb-2 block text-sm font-medium text-gray-900">
                   {lang === LangKey.EN ? 'Title' : 'Название'}
@@ -92,19 +118,19 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
                       ? 'Type title beetwen 2 and 50 characters'
-                      : 'Длинна названия от 2 до 50 символов'}
+                      : 'Длина названия от 2 до 50 символов'}
                   </p>
                 )}
               </div>
               <div>
                 <label
-                  htmlFor="message"
+                  htmlFor="description"
                   className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
                   {lang === LangKey.EN ? 'Description' : 'Описание'}
                 </label>
                 <textarea
-                  id="message"
+                  id="description"
                   rows={3}
                   className="block max-h-52 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
@@ -113,8 +139,8 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
-                      ? 'Max length is 100 characters'
-                      : 'Максимальная длинна 100 символов'}
+                      ? 'Type description beetwen 2 and 100 characters'
+                      : 'Длина описания от 2 до 100 символов'}
                   </p>
                 )}
               </div>
@@ -147,7 +173,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                 </label>
                 <select
                   id="users"
-                  className="block h-48 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  className="block h-32 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('users')}
                   multiple
                 >
@@ -160,6 +186,27 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({ task, onC
                   })}
                 </select>
                 {errors.users && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="priority" className="mb-2 block text-sm font-medium text-gray-900">
+                  {lang === LangKey.EN ? 'Priority' : 'Приоритет'}
+                </label>
+                <select
+                  id="priority"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  {...register('priority')}
+                >
+                  <option value="none">None</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                {errors.priority && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
                   </p>

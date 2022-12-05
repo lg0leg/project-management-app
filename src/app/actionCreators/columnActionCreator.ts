@@ -1,10 +1,13 @@
 import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { columnSlice } from '../slices/columnSlice';
-import type { IColumn, IUser } from 'models/dbTypes';
+import type { IColumn, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
-import type { navigateType } from 'models/typescript';
-import { fetchGetAllBoardStore } from './boardActionCreator';
+import type { navigateType, IWebSocket } from 'models/typescript';
+import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -14,6 +17,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const setCompleteStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    columnSlice.actions.setStatus({
+      isLoading: false,
+      isError: false,
+    })
+  );
+};
+
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     columnSlice.actions.setStatus({
@@ -35,6 +48,12 @@ interface IColumnsProps {
 interface IColumnProps extends IColumnsProps {
   columnId: string;
 }
+interface IDeleteColumnProps {
+  column: IColumn;
+  board: IBoard;
+  navigate: navigateType;
+  lang: string;
+}
 
 interface ICreateColumnProps extends IColumnsProps {
   title: string;
@@ -47,7 +66,7 @@ interface IUpdateColumnProps {
 }
 interface IColumnsParams {
   userId?: string;
-  ids?: string[];
+  ids?: string;
 }
 interface IGetColumnsByParams extends IColumnsParams {
   navigate: navigateType;
@@ -100,6 +119,7 @@ export const fetchGetColumn = ({ boardId, columnId, navigate }: IColumnProps) =>
   };
 };
 
+// переделано под webSocket
 export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -111,7 +131,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
       });
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -119,7 +139,7 @@ export const fetchCreateColumn = ({ boardId, title, order, navigate }: ICreateCo
     }
   };
 };
-
+// перделано под webSocket
 export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   const { _id: columnId, boardId, title, order } = column;
   return async (dispatch: AppDispatch) => {
@@ -132,7 +152,7 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
       });
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -140,16 +160,21 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
     }
   };
 };
-
-export const fetchDeleteColumn = ({ columnId, navigate, boardId }: IColumnProps) => {
+// перделано под webSocket
+export const fetchDeleteColumn = ({ column, navigate, board, lang }: IDeleteColumnProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
+      const { _id: columnId, title } = column;
+      const { _id: boardId } = board;
 
       const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
+        toast.info(
+          lang === LangKey.EN ? `"${title}" column deleted` : `Удалена колонка "${title}"`
+        );
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -213,7 +238,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
       setLoadingStatus(dispatch);
       const params: IColumnsParams = {};
       if (userId) params.userId = userId;
-      if (ids) params.ids = ids;
+      if (ids) params.ids = JSON.stringify(ids);
       const response = await apiToken<IColumn[]>(`/columnsSet`, { params });
 
       if (response.status >= 200 && response.status < 300) {
@@ -225,6 +250,71 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
       }
     } catch (e) {
       setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
+  return async (dispatch: AppDispatch) => {
+    const { action, ids, notify } = data;
+    const { pathname } = window.location;
+    try {
+      if (!ids || !ids.length) return;
+      if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseColumns = await apiToken<IColumn[]>(`/columnsSet`, {
+          params,
+        });
+
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.ADD_COLUMN, column: column.title, board: boardTitle });
+          });
+        }
+
+        const filteredColumns = responseColumns.data.filter(
+          (column) => pathname === `/board/${column.boardId}`
+        );
+        dispatch(
+          columnSlice.actions.addColumns({
+            columns: filteredColumns,
+          })
+        );
+      }
+      if (action === 'update') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseColumns = await apiToken<IColumn[]>(`/columnsSet`, {
+          params,
+        });
+
+        if (notify) {
+          responseColumns.data.forEach(async (column) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${column.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.UPDATE_COLUMN, column: column.title, board: boardTitle });
+          });
+        }
+
+        const filteredColumns = responseColumns.data.filter(
+          (column) => pathname === `/board/${column.boardId}`
+        );
+        dispatch(
+          columnSlice.actions.updateColumns({
+            updatedColumns: filteredColumns,
+          })
+        );
+      }
+      if (action === 'delete') {
+        dispatch(
+          columnSlice.actions.deleteColumns({
+            deletedIds: ids,
+          })
+        );
+      }
+    } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };

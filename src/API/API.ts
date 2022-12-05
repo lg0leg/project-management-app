@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { BASE_URL } from 'constants/baseUrl';
 import { StorageKey } from 'constants/storageKey';
 
@@ -10,15 +10,12 @@ export const apiToken = axios.create({
   baseURL: BASE_URL,
 });
 
-apiToken.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem(StorageKey.TOKEN);
-    if (token) {
-      if (config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+apiToken.interceptors.request.use((config) => {
+  const token = localStorage.getItem(StorageKey.TOKEN);
+  if (token) {
+    if (config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error: AxiosError) => console.log(error)
-);
+  }
+  return config;
+});

@@ -36,7 +36,7 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
 
   return (
     <>
-      <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+      <div className="min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
         <div className="h-full w-full">
           <div className="relative rounded-lg bg-white shadow">
             <button
@@ -70,11 +70,11 @@ export const AddColumnModalContent: FC<IAddColumnModalContentProps> = ({ onCance
                     <p className="mt-2 text-sm text-red-600">
                       {lang === LangKey.EN
                         ? 'Type title beetwen 2 and 50 characters'
-                        : 'Длинна названия от 2 до 50 символов'}
+                        : 'Длина названия от 2 до 50 символов'}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center gap-2">
                   <Button type="submit">{lang === LangKey.EN ? 'Create' : 'Создать'}</Button>
                   <Button
                     color="light"

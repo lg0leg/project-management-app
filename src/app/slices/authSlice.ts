@@ -9,6 +9,10 @@ interface ILogoutPayload {
 interface ILoginSuccessPayload {
   token: string;
   navigate: navigateType;
+  notRedirect?: boolean;
+}
+interface ILoginReloadPayload {
+  token: string;
 }
 
 const initialState = {
@@ -31,7 +35,6 @@ export const authSlice = createSlice({
       state.httpCode = 200;
 
       localStorage.removeItem(StorageKey.TOKEN);
-      localStorage.removeItem(StorageKey.IS_AUTH);
       action.payload.navigate(RoutesPath.WELCOME);
     },
 
@@ -44,7 +47,18 @@ export const authSlice = createSlice({
       state.httpCode = 200;
 
       localStorage.setItem(StorageKey.TOKEN, action.payload.token);
-      action.payload.navigate(RoutesPath.BOARDS);
+      if (!action.payload.notRedirect) {
+        action.payload.navigate(RoutesPath.BOARDS);
+      }
+    },
+
+    loginReload(state, action: PayloadAction<ILoginReloadPayload>) {
+      state.token = action.payload.token;
+
+      state.isLoading = false;
+      state.isAuth = true;
+      state.isError = false;
+      state.httpCode = 200;
     },
 
     handleError(state, action: PayloadAction<IHandleErrorPayload>) {

@@ -11,6 +11,7 @@ export interface IAuthRequest {
   name?: string;
   login: string;
   password: string;
+  passwordRepeat?: string;
 }
 
 export interface IRegisterResponse {
@@ -42,3 +43,42 @@ export interface IStatusPayload {
 }
 
 export type navigateType = (path: string) => void;
+
+export interface IAuthValidate {
+  value: number;
+  message: string;
+}
+
+export type ValueOf<T> = T[keyof T];
+
+export interface IProfileConfirm {
+  oldPassword: string;
+}
+export interface IProfileConfirmData {
+  name: string;
+  login: string;
+  newPassword: string;
+  oldLogin: string;
+  userId: string;
+}
+
+export interface ISocketResponse {
+  action: string;
+  guid: string;
+  ids: string[];
+  initUser: string;
+  notify: boolean;
+  users: string[];
+}
+
+export interface IInfoNotify {
+  type: string;
+  board?: string;
+  column?: string;
+  task?: string;
+}
+export interface IWebSocket {
+  navigate: navigateType;
+  data: ISocketResponse;
+  showNotify: (notifyParam: IInfoNotify) => void;
+}

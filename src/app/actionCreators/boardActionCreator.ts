@@ -1,13 +1,15 @@
 import { apiToken } from 'API/API';
 import { AppDispatch } from 'app/store';
 import { boardSlice } from '../slices/boardSlice';
-import type { navigateType } from 'models/typescript';
+import type { navigateType, IWebSocket } from 'models/typescript';
 import { IBoard, IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { handleError } from 'utils/handleErrors';
 import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
-import { fetchGetFilesByBoardId } from './fileActionCreator';
+import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
+import { store } from 'app/store';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -17,6 +19,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const setCompleteStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    boardSlice.actions.setStatus({
+      isLoading: false,
+      isError: false,
+    })
+  );
+};
+
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     boardSlice.actions.setStatus({
@@ -45,7 +57,7 @@ interface IBoardsProps {
 }
 
 interface IDeleteBoardProps extends IBoardsProps {
-  _id: string;
+  board: IBoard;
 }
 interface IUpdateBoardProps {
   board: IBoard;
@@ -96,8 +108,7 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
       const response = await apiToken<IBoard>(`/boards/${_id}`);
 
       if (response.status === 204) {
-        console.log('the page has been deleted');
-        dispatch(fetchDeleteBoard({ _id, navigate }));
+        await apiToken.delete<IUser>(`/boards/${_id}`);
         navigate(RoutesPath.NOT_FOUND);
       } else {
         dispatch(
@@ -113,20 +124,16 @@ export const fetchGetBoard = ({ _id, navigate, cb }: IBoardProps) => {
     }
   };
 };
-
+//  переделан под сокет
 export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.post<IBoard>(`/boards`, { title, owner, users });
-      dispatch(
-        boardSlice.actions.getBoard({
-          board: response.data,
-        })
-      );
 
       if (response.status >= 200 && response.status < 300 && cb) {
+        setCompleteStatus(dispatch);
         cb();
       }
     } catch (e) {
@@ -135,6 +142,7 @@ export const fetchCreateBoard = ({ title, owner, users, cb, navigate }: ICreateB
     }
   };
 };
+
 // редактирование доски. Если редактируетсся изнутри, то необходимо передать
 //  fromPage = RoutesPath.Board, иначе fromPage = RoutesPath.Boards
 export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProps) => {
@@ -170,16 +178,19 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
   };
 };
 
+// изменено под webSocket
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
-export const fetchDeleteBoard = ({ _id, navigate, path }: IDeleteBoardProps) => {
+export const fetchDeleteBoard = ({ board, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
+      const { _id } = board;
+
       setLoadingStatus(dispatch);
 
       const response = await apiToken.delete<IUser>(`/boards/${_id}`);
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetBoards({ navigate, path }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -216,7 +227,7 @@ export const fetchGetBoardsByBoardsIdList = ({ navigate, ids }: IBoardsByIdsList
 
       const response = await apiToken<IBoard[]>(`/boardsSet`, {
         params: {
-          ids,
+          ids: JSON.stringify(ids),
         },
       });
 
@@ -238,9 +249,66 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
       dispatch(fetchGetBoard({ _id, navigate }));
       dispatch(fetchGetColumns({ boardId: _id, navigate }));
       dispatch(fetchGetTasksInBoard({ boardId: _id, navigate }));
-      dispatch(fetchGetFilesByBoardId({ boardId: _id, navigate }));
     } catch (e) {
       setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
+  return async (dispatch: AppDispatch) => {
+    const { action, ids, notify, guid } = data;
+    const { pathname } = window.location;
+    try {
+      if (!ids || !ids.length) return;
+
+      if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseBoards = await apiToken<IBoard[]>(`/boardsSet`, {
+          params,
+        });
+
+        if (notify) {
+          responseBoards.data.forEach(async (board) => {
+            const { title: boardTitle } = getBoardText(board.title);
+            showNotify({ type: NotifyTipe.ADD_BOARD, board: boardTitle });
+          });
+        }
+
+        if (pathname === RoutesPath.BOARDS) {
+          dispatch(
+            boardSlice.actions.addBoards({
+              boards: responseBoards.data,
+            })
+          );
+        }
+      }
+      if (action === 'delete') {
+        if (notify) {
+          ids.forEach((id) => {
+            if (pathname === `/board/${id}`) {
+              showNotify({ type: NotifyTipe.DELETE_BOARD_INNER });
+              navigate(RoutesPath.BOARDS);
+            } else {
+              const boards = store.getState().boardReducer.boards;
+              const deletedBoard = boards.find((board) => board._id === id);
+              if (!deletedBoard) return;
+              const { title: boardName } = getBoardText(deletedBoard.title);
+              showNotify({
+                type: NotifyTipe.DELETE_BOARD,
+                board: boardName,
+              });
+            }
+          });
+        }
+        dispatch(
+          boardSlice.actions.deleteBoards({
+            deletedIds: ids,
+          })
+        );
+      }
+    } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };

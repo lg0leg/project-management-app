@@ -6,7 +6,7 @@ import {
   ValidationRule,
   ValidationValueMessage,
 } from 'react-hook-form';
-import type { IAuthRequest } from 'models/typescript';
+import type { IProfileConfirm } from 'models/typescript';
 import type { FieldErrorsImpl } from 'react-hook-form';
 import { useAppSelector } from 'app/hooks';
 import { getErrorMessage } from 'utils/getAuthValidation';
@@ -16,8 +16,8 @@ interface IProps {
   type: string;
   title: string;
   placeholder: string;
-  label: Path<IAuthRequest>;
-  register: UseFormRegister<IAuthRequest>;
+  label: Path<IProfileConfirm>;
+  register: UseFormRegister<IProfileConfirm>;
   minLength: ValidationValueMessage<number>;
   maxLength: ValidationValueMessage<number>;
   required?: boolean;
@@ -29,15 +29,12 @@ interface IProps {
     | undefined;
   errors: Partial<
     FieldErrorsImpl<{
-      name: string;
-      login: string;
-      password: string;
-      passwordRepeat: string;
+      oldPassword: string;
     }>
   >;
 }
 
-export default function AuthInput({
+export default function ProfileConfirmInput({
   type,
   placeholder,
   title,
@@ -75,8 +72,8 @@ export default function AuthInput({
   };
 
   return (
-    <div>
-      <label className="mt-2 block text-sm font-medium text-gray-900">{title}</label>
+    <div className="mb-5">
+      <label className="mt-2 mb-5 text-lg font-normal text-gray-500">{title}</label>
       {type === 'text' ? (
         <input
           type={type}
@@ -106,7 +103,7 @@ export default function AuthInput({
             })}
           />
           <i
-            className="absolute top-4 right-3 cursor-pointer  duration-300 hover:scale-125"
+            className="absolute top-4 right-3 cursor-pointer duration-300 hover:scale-125"
             onClick={togglePasswordVisibility}
           >
             {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}

@@ -1,12 +1,11 @@
-import { fetchCreateBoard, fetchGetBoards } from 'app/actionCreators/boardActionCreator';
-import { fetchGetUser } from 'app/actionCreators/userActionCreator';
+import { fetchCreateBoard } from 'app/actionCreators/boardActionCreator';
 import { useAppDispatch, useAppSelector, useAppNavigate } from 'app/hooks';
 import React, { useState } from 'react';
 import { decodeToken } from 'react-jwt';
 import type { IToken } from 'models/typescript';
-import { IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { useLocation } from 'react-router-dom';
+import { LangKey } from 'constants/lang';
 
 export default function CreateBoardPopup(props: {
   popupVisible: boolean;
@@ -14,26 +13,31 @@ export default function CreateBoardPopup(props: {
 }) {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { token } = useAppSelector((state) => state.authReducer);
-  const { isLoading: isLoadingBoard } = useAppSelector((state) => state.boardReducer);
   const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState(false);
   const [description, setDescription] = useState('');
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
   const location = useLocation();
+
   const hidePopup = () => {
     setTitle('');
     setDescription('');
+    setTitleError(false);
     props.setPopupVisible(false);
-    if (location.pathname !== RoutesPath.BOARDS) navigate(RoutesPath.BOARDS);
   };
 
   const createBoard = () => {
-    const getBoards = () => {
-      dispatch(fetchGetBoards({ cb: hidePopup, navigate }));
-    };
-    const { id } = decodeToken(token) as IToken;
-    const titleJSON = JSON.stringify({ title, description });
-    dispatch(fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: getBoards, navigate }));
+    if (title.length > 1) {
+      const { id } = decodeToken(token) as IToken;
+      const titleJSON = JSON.stringify({ title, description });
+      dispatch(
+        fetchCreateBoard({ title: titleJSON, owner: id, users: [], cb: hidePopup, navigate })
+      );
+      setTitleError(false);
+    } else {
+      setTitleError(true);
+    }
   };
 
   const overlayStylesBase =
@@ -58,14 +62,14 @@ export default function CreateBoardPopup(props: {
       onClick={() => props.setPopupVisible(false)}
     >
       <div className={popupStylesBase + popupStylesCurrent} onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-3xl font-medium text-blue-700">
+        <h2 className="text-3xl font-medium text-blue-500">
           {lang == 'en' ? 'Create board' : 'Создать доску'}
         </h2>
 
-        <div className="w-[90%]">
+        <div className="relative w-[90%]">
           <label
             htmlFor="title-input"
-            className="mb-2 block text-lg font-medium text-blue-700  sm:text-xl"
+            className="mb-2 block text-lg font-medium text-blue-500  sm:text-xl"
           >
             {lang == 'en' ? 'Title' : 'Название'}
           </label>
@@ -79,12 +83,17 @@ export default function CreateBoardPopup(props: {
               setTitle(value);
             }}
           />
+          {titleError && (
+            <p className=" mt-2 text-sm text-red-600">
+              {lang === LangKey.EN ? 'At least 2 characters' : 'Не менее 2  символов'}
+            </p>
+          )}
         </div>
 
         <div className="w-[90%]">
           <label
             htmlFor="description-input"
-            className="mb-2 block text-lg font-medium text-blue-700  sm:text-xl"
+            className="mb-2 block text-lg font-medium text-blue-500  sm:text-xl"
           >
             {lang == 'en' ? 'Description' : 'Описание'}
           </label>
@@ -100,13 +109,13 @@ export default function CreateBoardPopup(props: {
 
         <div className="flex w-full justify-center gap-[10px] sm:gap-[30px]">
           <button
-            className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white sm:px-8"
+            className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-500 hover:border-transparent hover:bg-blue-500 hover:text-white sm:px-8"
             onClick={hidePopup}
           >
             <span className=" text-lg">{lang == 'en' ? 'Cancel' : 'Отмена'}</span>
           </button>
           <button
-            className="rounded border border-blue-700 bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 sm:px-8"
+            className="rounded border border-blue-500 bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 sm:px-8"
             onClick={createBoard}
           >
             <span className=" text-lg">{lang == 'en' ? 'Create' : 'Создать'}</span>

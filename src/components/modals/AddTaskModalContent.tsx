@@ -5,8 +5,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import { useParams } from 'react-router-dom';
-import { fetchCreateTask } from 'app/actionCreators/taskActionCreator';
-import { ITask } from 'models/dbTypes';
+import { fetchCreateTaskWithPoint } from 'app/actionCreators/taskActionCreator';
+import type { ITask } from 'models/dbTypes';
 import { decodeToken } from 'react-jwt';
 import { IToken } from 'models/typescript';
 
@@ -18,6 +18,7 @@ interface IAddTaskModalContentProps {
 
 interface IFormData extends ITask {
   attachment: FileList;
+  priority: 'none' | 'low' | 'medium' | 'high' | 'critical';
 }
 
 export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, onCancel }) => {
@@ -38,8 +39,9 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   } = useForm<IFormData>();
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    const { title, description, users } = data;
+    const { title, description, users, priority } = data;
     const checkedUsers = users.includes('') ? users.filter((user) => user !== '') : users;
+    const pointData = { title: priority, done: false };
     const taskData = {
       title,
       description,
@@ -47,12 +49,14 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
       userId,
       users: checkedUsers,
     };
-    dispatch(fetchCreateTask({ boardId: _id, columnId, task: taskData, navigate }));
+    dispatch(
+      fetchCreateTaskWithPoint({ boardId: _id, columnId, task: taskData, pointData, navigate })
+    );
     onCancel();
   };
 
   return (
-    <div className="w-[600px] overflow-y-auto overflow-x-hidden p-4">
+    <div className="max-h-[600px] min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
       <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button
@@ -65,11 +69,11 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
             </div>
             <span className="sr-only">{lang === LangKey.EN ? 'Close' : 'Закрыть'}</span>
           </button>
-          <div className="py-6 px-6 ">
+          <div className="py-4 px-4">
             <h3 className="mb-4 text-xl font-medium text-gray-900">
               {lang === LangKey.EN ? 'Create new task' : 'Добавить задание'}
             </h3>
-            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="Text" className="mb-2 block text-sm font-medium text-gray-900">
                   {lang === LangKey.EN ? 'Title' : 'Название'}
@@ -85,19 +89,19 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
                       ? 'Type title beetwen 2 and 50 characters'
-                      : 'Длинна названия от 2 до 50 символов'}
+                      : 'Длина названия от 2 до 50 символов'}
                   </p>
                 )}
               </div>
               <div>
                 <label
-                  htmlFor="message"
+                  htmlFor="description"
                   className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >
                   {lang === LangKey.EN ? 'Description' : 'Описание'}
                 </label>
                 <textarea
-                  id="message"
+                  id="description"
                   rows={3}
                   className="block max-h-60 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   placeholder={`${lang === LangKey.EN ? 'Write description here' : 'Описание'}...`}
@@ -106,8 +110,8 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 {errors.description && (
                   <p className="mt-2 text-sm text-red-600">
                     {lang === LangKey.EN
-                      ? 'Max length is 100 characters'
-                      : 'Максимальная длинна 100 символов'}
+                      ? 'Type description beetwen 2 and 100 characters'
+                      : 'Длина описания от 2 до 100 символов'}
                   </p>
                 )}
               </div>
@@ -140,7 +144,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                 </label>
                 <select
                   id="users"
-                  className="block h-48 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  className="block h-32 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                   {...register('users')}
                   multiple
                 >
@@ -158,7 +162,28 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
                   </p>
                 )}
               </div>
-              <div className="flex items-center justify-center">
+              <div>
+                <label htmlFor="priority" className="mb-2 block text-sm font-medium text-gray-900">
+                  {lang === LangKey.EN ? 'Priority' : 'Приоритет'}
+                </label>
+                <select
+                  id="priority"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                  {...register('priority')}
+                >
+                  <option value="none">None</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                {errors.priority && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {lang === LangKey.EN ? 'Some error happens' : 'Неизвестная ошибка'}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center justify-center gap-2">
                 <Button type="submit">{lang === LangKey.EN ? 'Create' : 'Создать'}</Button>
                 <Button
                   color="light"

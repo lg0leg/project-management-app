@@ -1,11 +1,14 @@
 import { apiToken } from 'API/API';
 import type { AppDispatch } from 'app/store';
 import { taskSlice } from '../slices/taskSlice';
-import type { ITask, IUser } from 'models/dbTypes';
+import type { ITask, IUser, IBoard } from 'models/dbTypes';
 import { handleError } from 'utils/handleErrors';
-import type { navigateType } from 'models/typescript';
-import { fetchGetAllBoardStore } from './boardActionCreator';
-import { fetchAddFile } from './fileActionCreator';
+import type { navigateType, IWebSocket } from 'models/typescript';
+import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
+import { getBoardText } from 'utils/getBoardText';
+import { NotifyTipe } from 'constants/notifyType';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -15,6 +18,16 @@ const setLoadingStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+const setCompleteStatus = (dispatch: AppDispatch) => {
+  dispatch(
+    taskSlice.actions.setStatus({
+      isLoading: false,
+      isError: false,
+    })
+  );
+};
+
 const setErrorStatus = (dispatch: AppDispatch) => {
   dispatch(
     taskSlice.actions.setStatus({
@@ -23,6 +36,11 @@ const setErrorStatus = (dispatch: AppDispatch) => {
     })
   );
 };
+
+interface IPointData {
+  title: string;
+  done: boolean;
+}
 interface ISetTasksProps {
   newTasks: ITask[];
   navigate: navigateType;
@@ -52,7 +70,7 @@ interface ITasksInBoardProps {
   navigate: navigateType;
 }
 interface ITasksParams {
-  ids?: string[];
+  ids?: string;
   search?: string;
   userId?: string;
 }
@@ -75,8 +93,16 @@ interface IUpdateTaskProps {
   navigate: navigateType;
 }
 
-interface ICreateTaskWithImgProps extends ICreateTaskProps {
-  file: File;
+interface ICreateTaskWithPointProps extends ICreateTaskProps {
+  pointData: IPointData;
+}
+
+interface IDeleteTaskProps {
+  board: IBoard;
+  columnId: string;
+  task: ITask;
+  navigate: navigateType;
+  lang: string;
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -116,6 +142,7 @@ export const fetchGetTask = ({ boardId, columnId, _id, navigate }: ITaskProps) =
   };
 };
 
+// изменено под webSocket
 export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTaskProps) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -127,7 +154,7 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -136,6 +163,7 @@ export const fetchCreateTask = ({ boardId, columnId, task, navigate }: ICreateTa
   };
 };
 
+// изменено под webSocket
 export const fetchUpdateTask = ({
   boardId,
   columnId,
@@ -153,7 +181,7 @@ export const fetchUpdateTask = ({
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -161,18 +189,22 @@ export const fetchUpdateTask = ({
     }
   };
 };
-
-export const fetchDeleteTask = ({ columnId, navigate, boardId, _id }: ITaskProps) => {
+// изменено под webSocket
+export const fetchDeleteTask = ({ columnId, navigate, board, task, lang }: IDeleteTaskProps) => {
   return async (dispatch: AppDispatch) => {
+    const { _id: taskId, title } = task;
+    const { _id: boardId } = board;
+
     try {
       setLoadingStatus(dispatch);
 
       const response = await apiToken.delete<IUser>(
-        `/boards/${boardId}/columns/${columnId}/tasks/${_id}`
+        `/boards/${boardId}/columns/${columnId}/tasks/${taskId}`
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchGetAllBoardStore({ _id: boardId, navigate }));
+        setCompleteStatus(dispatch);
+        toast.info(lang === LangKey.EN ? `"${title}" task deleted` : `Удалена задача "${title}"`);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -191,6 +223,11 @@ export const fetchGetTasksInBoard = ({ navigate, boardId }: ITasksInBoardProps) 
           tasks: response.data,
         })
       );
+
+      if (response.status >= 200 && response.status < 300) {
+        const taskIdList = response.data.map((task) => task._id);
+        dispatch(fetchGetPointsByTaskIdList({ taskIdList, navigate }));
+      }
     } catch (e) {
       setErrorStatus(dispatch);
       handleError(dispatch, e, navigate);
@@ -237,7 +274,7 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
       const params: ITasksParams = {};
       if (userId) params.userId = userId;
       if (search) params.search = search;
-      if (ids && ids.length) params.ids = ids;
+      if (ids && ids.length) params.ids = JSON.stringify(ids);
       const response = await apiToken<ITask[]>(`/tasksSet`, {
         params,
       });
@@ -255,14 +292,14 @@ export const fetchGetTasksByParams = ({ navigate, userId, search, ids }: IGetTas
     }
   };
 };
-
-export const fetchCreateTaskWithImg = ({
+// изменено под webSocket
+export const fetchCreateTaskWithPoint = ({
   boardId,
   columnId,
   task,
-  file,
+  pointData,
   navigate,
-}: ICreateTaskWithImgProps) => {
+}: ICreateTaskWithPointProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -273,10 +310,76 @@ export const fetchCreateTaskWithImg = ({
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
+        const { title, done } = pointData;
+        const point = { boardId, taskId: response.data._id, title, done };
+        dispatch(fetchCreatePoint({ point, navigate }));
+        setCompleteStatus(dispatch);
       }
     } catch (e) {
       setErrorStatus(dispatch);
+      handleError(dispatch, e, navigate);
+    }
+  };
+};
+
+export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
+  return async (dispatch: AppDispatch) => {
+    const { action, ids, notify } = data;
+    const { pathname } = window.location;
+    try {
+      if (!ids || !ids.length) return;
+      if (action === 'add') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
+          params,
+        });
+        if (notify) {
+          responseTasks.data.forEach(async (task) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.ADD_TASK, task: task.title, board: boardTitle });
+          });
+        }
+
+        const filteredTasks = responseTasks.data.filter(
+          (task) => pathname === `/board/${task.boardId}`
+        );
+        dispatch(
+          taskSlice.actions.addTasks({
+            tasks: filteredTasks,
+          })
+        );
+      }
+      if (action === 'update') {
+        const params = { ids: JSON.stringify(ids) };
+        const responseTasks = await apiToken<ITask[]>(`/tasksSet`, {
+          params,
+        });
+        if (notify) {
+          responseTasks.data.forEach(async (task) => {
+            const responseBoard = await apiToken<IBoard>(`/boards/${task.boardId}`);
+            const { title: boardTitle } = getBoardText(responseBoard.data.title);
+            showNotify({ type: NotifyTipe.UPDATE_TASK, task: task.title, board: boardTitle });
+          });
+        }
+
+        const filteredTasks = responseTasks.data.filter(
+          (task) => pathname === `/board/${task.boardId}`
+        );
+        dispatch(
+          taskSlice.actions.updateTasks({
+            updatedTasks: filteredTasks,
+          })
+        );
+      }
+      if (action === 'delete') {
+        dispatch(
+          taskSlice.actions.deleteTasks({
+            deletedIds: ids,
+          })
+        );
+      }
+    } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };
