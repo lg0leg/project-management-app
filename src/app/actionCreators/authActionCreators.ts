@@ -14,7 +14,6 @@ import { isExpired } from 'react-jwt';
 import { toast } from 'react-toastify';
 import { LangKey } from 'constants/lang';
 const { lang } = store.getState().langReducer;
-const { isAuth } = store.getState().authReducer;
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(

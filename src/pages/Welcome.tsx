@@ -1,7 +1,6 @@
 import { useAppSelector } from 'app/hooks';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import Rocket from '../assets/images/rocket.png';
-import { CiYoutube } from 'react-icons/ci';
 import {
   SiTailwindcss,
   SiReact,
