@@ -15,7 +15,6 @@ import {
   getValidatePassword,
 } from 'utils/getAuthValidation';
 import { InputLength } from 'constants/authValidation';
-import { toast } from 'react-toastify';
 
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();

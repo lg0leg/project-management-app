@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector, useAppNavigate } from 'app/hooks';
 import React, { useState } from 'react';
 import { decodeToken } from 'react-jwt';
 import type { IToken } from 'models/typescript';
-import { RoutesPath } from 'constants/routes';
-import { useLocation } from 'react-router-dom';
 import { LangKey } from 'constants/lang';
 
 export default function CreateBoardPopup(props: {
@@ -18,7 +16,6 @@ export default function CreateBoardPopup(props: {
   const [description, setDescription] = useState('');
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
-  const location = useLocation();
 
   const hidePopup = () => {
     setTitle('');

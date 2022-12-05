@@ -180,7 +180,7 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
 
 // изменено под webSocket
 // удаление доски. Если удаляется изнутри то необходимо передать path = RoutesPath.Boards
-export const fetchDeleteBoard = ({ board, navigate, path }: IDeleteBoardProps) => {
+export const fetchDeleteBoard = ({ board, navigate }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       const { _id } = board;
@@ -258,7 +258,7 @@ export const fetchGetAllBoardStore = ({ _id, navigate }: IBoardProps) => {
 
 export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify, guid } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
