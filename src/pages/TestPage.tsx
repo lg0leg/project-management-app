@@ -11,6 +11,7 @@ import { Priority } from 'components/Priority';
 import Spinner from 'components/Spinner';
 import { LangKey } from 'constants/lang';
 import type { IToken } from 'models/typescript';
+import type { IUser } from 'models/dbTypes';
 
 import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -24,6 +25,7 @@ interface IUserInput {
 
 import { Slide, toast } from 'react-toastify';
 import { BiTask } from 'react-icons/bi';
+import { apiToken } from 'API/API';
 
 export default function TestPage() {
   /*start toast examples*/
@@ -146,9 +148,18 @@ export default function TestPage() {
     console.log(checkedState);
   };
 
+  const deleteAllUser = async () => {
+    const responseUsers = await apiToken<IUser[]>(`/users/`);
+    responseUsers.data.forEach(async (user) => {
+      const response = await apiToken.delete<IUser>(`/users/${user._id}`);
+    });
+  };
   return (
     <div className="w-full border-2">
       <h2 className="ml-auto mr-auto">userReduser</h2>
+      <button type="button" onClick={deleteAllUser}>
+        DELETE ALL USERS
+      </button>
       {isLoading && <Spinner />}
       {isError && <p className="text-[20px] font-semibold text-red-500">{errorText}</p>}
       <div className="mb-4 flex">
