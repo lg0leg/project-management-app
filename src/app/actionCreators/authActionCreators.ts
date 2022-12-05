@@ -14,6 +14,7 @@ import { isExpired } from 'react-jwt';
 import { toast } from 'react-toastify';
 import { LangKey } from 'constants/lang';
 const { lang } = store.getState().langReducer;
+const { isAuth } = store.getState().authReducer;
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -124,7 +125,6 @@ export const fetchLogin = ({ login, password, navigate, lang }: IPropsLogin) => 
 export const logout = (navigate: navigateType) => {
   return (dispatch: AppDispatch) => {
     dispatch(authSlice.actions.logout({ navigate }));
-    toast.info('Logout');
   };
 };
 
@@ -132,7 +132,7 @@ export const loginReload = (navigate: navigateType) => {
   return (dispatch: AppDispatch) => {
     const token = localStorage.getItem(StorageKey.TOKEN);
     if (!token || isExpired(token)) {
-      dispatch(authSlice.actions.logout({ navigate }));
+      if (isAuth) dispatch(authSlice.actions.logout({ navigate }));
       return;
     }
     dispatch(authSlice.actions.loginReload({ token }));
