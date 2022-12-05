@@ -132,7 +132,7 @@ export const loginReload = (navigate: navigateType) => {
   return (dispatch: AppDispatch) => {
     const token = localStorage.getItem(StorageKey.TOKEN);
     if (!token || isExpired(token)) {
-      if (isAuth) dispatch(authSlice.actions.logout({ navigate }));
+      dispatch(authSlice.actions.logout({ navigate }));
       return;
     }
     dispatch(authSlice.actions.loginReload({ token }));
