@@ -1,12 +1,12 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NotFoundImage from '../assets/images/NotFound.jpg';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 import { RoutesPath } from 'constants/routes';
+import { useAppSelector } from 'app/hooks';
 
 export const NotFound: FC = () => {
-  // TODO - context lang change
-  const [lang, setLang] = useState('en');
+  const { lang } = useAppSelector((state) => state.langReducer);
   const navigate = useNavigate();
 
   return (
