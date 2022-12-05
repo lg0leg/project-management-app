@@ -6,7 +6,6 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { getBoardText } from 'utils/getBoardText';
 import { NotifyTipe } from 'constants/notifyType';
-import { store } from 'app/store';
 import { toast } from 'react-toastify';
 import { LangKey } from 'constants/lang';
 

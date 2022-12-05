@@ -8,15 +8,6 @@ module.exports = {
         registration: "url('assets/images/registration.png')",
         profile: "url('assets/images/profile.png')",
       },
-      keyframes: {
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(-30deg)' },
-          '50%': { transform: 'rotate(30deg)' },
-        },
-      },
-      animation: {
-        wiggle: 'wiggle 2s cubic-bezier(0.6, 0, 0.6, 1) infinite',
-      },
     },
   },
   plugins: [],
