@@ -12,15 +12,20 @@ import {
 } from 'react-icons/si';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
-import Screen1 from '../assets/screenshots/screen1.png';
 import { Flowbite } from '../components/icons/Flowbite';
 import { HelloPangea } from 'components/icons/HelloPangea';
+import Screen1 from '../assets/screenshots/1reg.jpg';
+import Screen2 from '../assets/screenshots/2board.png';
+import Screen3 from '../assets/screenshots/3cards.png';
+import Screen4 from '../assets/screenshots/4change.jpg';
+import Screen5 from '../assets/screenshots/5colors.jpg';
 
 export const Welcome: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const [showVideo, setShowVideo] = useState(false);
 
   const h4Styles = 'text-lg font-bold text-blue-500 sm:text-xl lg:text-4xl';
+
   const carouselDescriptionStyles =
     'legend color !bottom-[0px] !ml-[-50%] !w-[100%] !bg-white !p-[4px] !text-xs !text-blue-500 !opacity-100  sm:!p-[15px] sm:!text-xl';
 
@@ -51,25 +56,39 @@ export const Welcome: FC = () => {
                 <img src={Screen1} className="rounded-xl " />
                 <p className={carouselDescriptionStyles}>
                   {lang == 'en'
-                    ? 'Step 1 -  Create an account. Just a username and password, nothing else!'
+                    ? 'Step 1. Create an account. Just a username and password, nothing else!'
                     : 'Шаг 1. Создай аккаунт. Только логин и пароль, ничего лишнего!'}
                 </p>
               </div>
               <div>
-                <img src={Screen1} className="rounded-xl " />
-                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 2' : 'Шаг 2'}</p>
+                <img src={Screen2} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>
+                  {lang == 'en'
+                    ? 'Step 2: Create your first board'
+                    : 'Шаг 2. Создай свою первую доску'}
+                </p>
               </div>
               <div>
-                <img src={Screen1} className="rounded-xl " />
-                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 3' : 'Шаг 3'}</p>
+                <img src={Screen3} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>
+                  {lang == 'en'
+                    ? 'Step 3. Add as many cards as you want!'
+                    : 'Шаг 3. Добавляй столько карточек, сколько захочешь!'}
+                </p>
               </div>
               <div>
-                <img src={Screen1} className="rounded-xl " />
-                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 4' : 'Шаг 4'}</p>
+                <img src={Screen4} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>
+                  {lang == 'en'
+                    ? 'Step 4. Tasks can be dragged and changed'
+                    : 'Шаг 4. Задачи можно перетаскивать и изменять'}
+                </p>
               </div>
               <div>
-                <img src={Screen1} className="rounded-xl " />
-                <p className={carouselDescriptionStyles}>{lang == 'en' ? 'Step 5' : 'Шаг 5'}</p>
+                <img src={Screen5} className="rounded-xl " />
+                <p className={carouselDescriptionStyles}>
+                  {lang == 'en' ? 'Step 5. Brighten it up!' : 'Шаг 5. Прибавь яркости!'}
+                </p>
               </div>
             </Carousel>
           </div>
@@ -187,7 +206,7 @@ export const Welcome: FC = () => {
           </p>
         </section>
 
-        <section className="flex flex-col items-center gap-[20px] px-[30px] pt-[100px] text-center">
+        {/* <section className="flex flex-col items-center gap-[20px] px-[30px] pt-[100px] text-center">
           <h4 className={h4Styles}>
             {lang == 'en'
               ? 'Want to learn more about the app? '
@@ -213,7 +232,7 @@ export const Welcome: FC = () => {
               ></iframe>
             </div>
           )}
-        </section>
+        </section> */}
       </div>
     </>
   );

@@ -19,12 +19,12 @@ export default function CreateBoardPopup(props: {
   const dispatch = useAppDispatch();
   const navigate = useAppNavigate();
   const location = useLocation();
+
   const hidePopup = () => {
     setTitle('');
     setDescription('');
     setTitleError(false);
     props.setPopupVisible(false);
-    if (location.pathname !== RoutesPath.BOARDS) navigate(RoutesPath.BOARDS);
   };
 
   const createBoard = () => {
@@ -62,14 +62,14 @@ export default function CreateBoardPopup(props: {
       onClick={() => props.setPopupVisible(false)}
     >
       <div className={popupStylesBase + popupStylesCurrent} onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-3xl font-medium text-blue-700">
+        <h2 className="text-3xl font-medium text-blue-500">
           {lang == 'en' ? 'Create board' : 'Создать доску'}
         </h2>
 
         <div className="relative w-[90%]">
           <label
             htmlFor="title-input"
-            className="mb-2 block text-lg font-medium text-blue-700  sm:text-xl"
+            className="mb-2 block text-lg font-medium text-blue-500  sm:text-xl"
           >
             {lang == 'en' ? 'Title' : 'Название'}
           </label>
@@ -93,7 +93,7 @@ export default function CreateBoardPopup(props: {
         <div className="w-[90%]">
           <label
             htmlFor="description-input"
-            className="mb-2 block text-lg font-medium text-blue-700  sm:text-xl"
+            className="mb-2 block text-lg font-medium text-blue-500  sm:text-xl"
           >
             {lang == 'en' ? 'Description' : 'Описание'}
           </label>
@@ -109,13 +109,13 @@ export default function CreateBoardPopup(props: {
 
         <div className="flex w-full justify-center gap-[10px] sm:gap-[30px]">
           <button
-            className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white sm:px-8"
+            className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-500 hover:border-transparent hover:bg-blue-500 hover:text-white sm:px-8"
             onClick={hidePopup}
           >
             <span className=" text-lg">{lang == 'en' ? 'Cancel' : 'Отмена'}</span>
           </button>
           <button
-            className="rounded border border-blue-700 bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 sm:px-8"
+            className="rounded border border-blue-500 bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 sm:px-8"
             onClick={createBoard}
           >
             <span className=" text-lg">{lang == 'en' ? 'Create' : 'Создать'}</span>
