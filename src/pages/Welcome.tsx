@@ -15,15 +15,12 @@ import { Carousel } from 'react-responsive-carousel';
 import Screen1 from '../assets/screenshots/screen1.png';
 import { Flowbite } from '../components/icons/Flowbite';
 import { HelloPangea } from 'components/icons/HelloPangea';
-// import { ReactHookForm } from 'components/icons/ReactHookForm';
 
 export const Welcome: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
   const [showVideo, setShowVideo] = useState(false);
 
   const h4Styles = 'text-lg font-bold text-blue-500 sm:text-xl lg:text-4xl';
-  // const carouselDescriptionStyles =
-  //   'legend color !bottom-[10px] !ml-[-40%] !w-[80%] !bg-white !p-[5px] !text-sm !text-blue-500 !opacity-100 shadow-xl sm:!p-[15px] sm:!text-xl';
   const carouselDescriptionStyles =
     'legend color !bottom-[0px] !ml-[-50%] !w-[100%] !bg-white !p-[4px] !text-xs !text-blue-500 !opacity-100  sm:!p-[15px] sm:!text-xl';
 
@@ -83,7 +80,6 @@ export const Welcome: FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-[10px] py-[10px] sm:gap-[30px] sm:py-[30px]">
             <HelloPangea size={60} color={'rgb(59, 130, 246, 1)'} />
             <SiTailwindcss size={50} color={'rgb(59, 130, 246, 1)'} />
-            {/* <ReactHookForm size={60} /> */}
             <SiReact size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiRedux size={50} color={'rgb(59, 130, 246, 1)'} />
             <SiTypescript size={50} color={'rgb(59, 130, 246, 1)'} />
@@ -96,7 +92,6 @@ export const Welcome: FC = () => {
           <h4 className={h4Styles}>
             {lang == 'en' ? "Who's on our team?" : 'Кто в нашей команде?'}
           </h4>
-          {/* <ol className="items-center sm:flex"> */}
           <ol className=" lg:grid lg:grid-cols-[1fr_1fr_1fr]">
             <li className="relative mb-6 lg:mb-0">
               <div className="flex items-center">

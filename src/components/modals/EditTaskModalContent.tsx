@@ -6,7 +6,6 @@ import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import type { IPoint, ITask } from 'models/dbTypes';
 import { fetchUpdateTask } from 'app/actionCreators/taskActionCreator';
-import { fetchAddFile } from 'app/actionCreators/fileActionCreator';
 import { fetchChangePoint, fetchCreatePoint } from 'app/actionCreators/pointActionCreator';
 import { toast } from 'react-toastify';
 
@@ -43,7 +42,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
   });
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    const { title, description, order, userId, users, attachment, priority } = data;
+    const { title, description, order, userId, users, priority } = data;
     const taskData = {
       title,
       order,
@@ -68,12 +67,6 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
         navigate,
       })
     );
-    // if (attachment.length) {
-    //   Array.from(attachment).map((file) =>
-    //     dispatch(fetchAddFile({ boardId: curTask.boardId, file, navigate, taskId: curTask._id }))
-    //   );
-    //   console.log('attachment');
-    // }
 
     if (!taskPoint.length) {
       const newPoint = {
