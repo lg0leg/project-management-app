@@ -18,7 +18,7 @@ export default function DeleteUserBtn({ text, _id }: IProps) {
   const onConfirm = () => {
     if (!_id) return;
     OnCancel();
-    dispatch(fetchDeleteUser({ _id, navigate }));
+    dispatch(fetchDeleteUser({ _id, navigate, lang }));
   };
   const OnCancel = () => setModalOpen(false);
   return (

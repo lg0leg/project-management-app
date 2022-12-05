@@ -6,6 +6,8 @@ import { IUser } from 'models/dbTypes';
 import { AxiosError } from 'axios';
 import { logout } from './authActionCreators';
 import { handleError } from 'utils/handleErrors';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -29,11 +31,16 @@ interface IUserProps {
   cb?: () => void;
 }
 
+interface IDeleteUserProps extends IUserProps {
+  lang: string;
+}
+
 interface IUpdateUserProps extends IUserProps {
   login: string;
   name: string;
   password: string;
   cb?: () => void;
+  lang: string;
 }
 
 export const fetchGetUsers = (navigate: (path: string) => void) => {
@@ -77,7 +84,14 @@ export const fetchGetUser = ({ _id, navigate, cb }: IUserProps) => {
   };
 };
 
-export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdateUserProps) => {
+export const fetchUpdateUser = ({
+  _id,
+  login,
+  name,
+  password,
+  navigate,
+  lang,
+}: IUpdateUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -89,6 +103,9 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
           user: response.data,
         })
       );
+      if (response.status >= 200 && response.status < 300) {
+        toast.success(lang === LangKey.EN ? 'Profile updated' : 'Профиль обновлен');
+      }
     } catch (e) {
       setErrorStatus(dispatch);
       if (e instanceof AxiosError) {
@@ -107,7 +124,7 @@ export const fetchUpdateUser = ({ _id, login, name, password, navigate }: IUpdat
   };
 };
 
-export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
+export const fetchDeleteUser = ({ _id, navigate, lang }: IDeleteUserProps) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -116,6 +133,7 @@ export const fetchDeleteUser = ({ _id, navigate }: IUserProps) => {
       if (response.status >= 200 && response.status < 300) {
         dispatch(userSlice.actions.deleteUser());
         dispatch(logout(navigate));
+        toast.success(lang === LangKey.EN ? 'Profile deleted' : 'Профиль удален');
       }
     } catch (e) {
       setErrorStatus(dispatch);

@@ -11,22 +11,22 @@ export const getErrorMessage = (
   switch (errorKey) {
     case ValidateKey.NAME:
       return lang === LangKey.EN
-        ? `must be only latin letters`
-        : `должны быть только латинские буквы`;
+        ? `Must be only latin letters`
+        : `Должны быть только латинские буквы`;
 
     case ValidateKey.PASSWORD:
       return lang === LangKey.EN
-        ? `must be at least one number or one latin letter`
-        : `должна быть хотя бы одна цифра или одна латинская буква`;
+        ? `Must be at least one number or one latin letter`
+        : `Должна быть хотя бы одна цифра или одна латинская буква`;
 
     case ValidateKey.MIN_LENGTH:
-      return lang === LangKey.EN ? `minimum ${length} characters` : `минимум ${length} символа`;
+      return lang === LangKey.EN ? `Minimum ${length} characters` : `Минимум ${length} символа`;
 
     case ValidateKey.MAX_LENGTH:
-      return lang === LangKey.EN ? `maximum ${length} characters` : `максимум ${length} символа`;
+      return lang === LangKey.EN ? `Maximum ${length} characters` : `Максимум ${length} символа`;
 
     case ValidateKey.REPEAT_PASS:
-      return lang === LangKey.EN ? `password does not match` : `пароль не совпадает`;
+      return lang === LangKey.EN ? `Password does not match` : `Пароль не совпадает`;
     default:
       return '';
   }

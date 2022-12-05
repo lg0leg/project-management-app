@@ -60,12 +60,14 @@ export const Board: FC = () => {
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     }
   });
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
@@ -103,6 +105,7 @@ export const Board: FC = () => {
           columnId: targetTask.columnId,
           board,
           navigate,
+          lang,
         })
       );
       dispatch(fetchTasksSet({ navigate, newTasks }));
@@ -123,7 +126,7 @@ export const Board: FC = () => {
           return { ...col };
         });
 
-      dispatch(fetchDeleteColumn({ column: targetCol, navigate, board }));
+      dispatch(fetchDeleteColumn({ column: targetCol, navigate, board, lang }));
       dispatch(fetchColumnsSet({ navigate, newColumns }));
     }
     onCancel();

@@ -6,7 +6,7 @@ import { HiXMark } from 'react-icons/hi2';
 import { Button } from 'components/Button';
 import { useParams } from 'react-router-dom';
 import { fetchCreateTaskWithPoint } from 'app/actionCreators/taskActionCreator';
-import type { IPoint, ITask } from 'models/dbTypes';
+import type { ITask } from 'models/dbTypes';
 import { decodeToken } from 'react-jwt';
 import { IToken } from 'models/typescript';
 
@@ -52,9 +52,6 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
     dispatch(
       fetchCreateTaskWithPoint({ boardId: _id, columnId, task: taskData, pointData, navigate })
     );
-
-    // const newPoint = { taskId: task._id, boardId: task.boardId, title: point, done: false };
-    // dispatch(fetchCreatePoint({ navigate, point: newPoint }));
     onCancel();
   };
 

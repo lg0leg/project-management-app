@@ -9,6 +9,7 @@ import { fetchGetColumns } from './columnActionCreator';
 import { fetchGetTasksInBoard } from './taskActionCreator';
 import { getBoardText } from 'utils/getBoardText';
 import { NotifyTipe } from 'constants/notifyType';
+import { store } from 'app/store';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -182,17 +183,11 @@ export const fetchUpdateBoard = ({ board, navigate, fromPage }: IUpdateBoardProp
 export const fetchDeleteBoard = ({ board, navigate, path }: IDeleteBoardProps) => {
   return async (dispatch: AppDispatch) => {
     try {
-      const { _id, title } = board;
+      const { _id } = board;
+
       setLoadingStatus(dispatch);
-      const config = {
-        headers: {
-          guid: JSON.stringify({
-            boardName: title,
-            time: Date.now(),
-          }),
-        },
-      };
-      const response = await apiToken.delete<IUser>(`/boards/${_id}`, config);
+
+      const response = await apiToken.delete<IUser>(`/boards/${_id}`);
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
@@ -296,13 +291,17 @@ export const webSocketBoards = ({ navigate, data, showNotify }: IWebSocket) => {
               showNotify({ type: NotifyTipe.DELETE_BOARD_INNER });
               navigate(RoutesPath.BOARDS);
             } else {
-              const { boardName } = JSON.parse(guid);
-              const { title: boardTitle } = getBoardText(boardName);
-              showNotify({ type: NotifyTipe.DELETE_BOARD, board: boardTitle });
+              const boards = store.getState().boardReducer.boards;
+              const deletedBoard = boards.find((board) => board._id === id);
+              if (!deletedBoard) return;
+              const { title: boardName } = getBoardText(deletedBoard.title);
+              showNotify({
+                type: NotifyTipe.DELETE_BOARD,
+                board: boardName,
+              });
             }
           });
         }
-
         dispatch(
           boardSlice.actions.deleteBoards({
             deletedIds: ids,

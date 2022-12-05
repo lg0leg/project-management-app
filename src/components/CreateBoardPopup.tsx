@@ -1,10 +1,8 @@
-import { fetchCreateBoard, fetchGetBoards } from 'app/actionCreators/boardActionCreator';
-import { fetchGetUser } from 'app/actionCreators/userActionCreator';
+import { fetchCreateBoard } from 'app/actionCreators/boardActionCreator';
 import { useAppDispatch, useAppSelector, useAppNavigate } from 'app/hooks';
 import React, { useState } from 'react';
 import { decodeToken } from 'react-jwt';
 import type { IToken } from 'models/typescript';
-import { IUser } from 'models/dbTypes';
 import { RoutesPath } from 'constants/routes';
 import { useLocation } from 'react-router-dom';
 import { LangKey } from 'constants/lang';
@@ -15,7 +13,6 @@ export default function CreateBoardPopup(props: {
 }) {
   const { lang } = useAppSelector((state) => state.langReducer);
   const { token } = useAppSelector((state) => state.authReducer);
-  const { isLoading: isLoadingBoard } = useAppSelector((state) => state.boardReducer);
   const [title, setTitle] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [description, setDescription] = useState('');

@@ -24,7 +24,7 @@ export default function Header() {
       }
 
       timeout = setTimeout(() => {
-        if (scroll >= window.scrollY && window.scrollY < 10) {
+        if (scroll >= window.scrollY && window.scrollY < 2) {
           headerRef.current!.classList.remove('h-[85px]');
         } else {
           headerRef.current!.classList.add('h-[85px]');

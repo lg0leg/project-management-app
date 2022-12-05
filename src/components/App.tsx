@@ -25,72 +25,64 @@ const socket = io(BASE_URL);
 
 function App() {
   const { lang } = useAppSelector((state) => state.langReducer);
+  const { isAuth } = useAppSelector((state) => state.authReducer);
+  const navigate = useAppNavigate();
+  const dispatch = useAppDispatch();
+
   const infoNotify = ({ type, task, board, column }: IInfoNotify) => {
     switch (type) {
       case NotifyTipe.ADD_BOARD:
-        toast.info(lang === LangKey.EN ? `Add Board ${board}` : `Добавлена доска ${board}`);
+        toast.info(lang === LangKey.EN ? `"${board}" board added` : `Добавлена доска "${board}"`);
         break;
       case NotifyTipe.DELETE_BOARD:
-        toast.info(lang === LangKey.EN ? `Delete board ${board}` : `Удалена доска ${board}`);
+        toast.info(lang === LangKey.EN ? `"${board}" board deleted` : `Удалена доска "${board}"`);
         break;
       case NotifyTipe.DELETE_BOARD_INNER:
         toast.warn(
           lang === LangKey.EN
-            ? `Sorry this board has been deleted`
-            : `Простите эта доска уже удалена`
+            ? `Sorry, this board has been deleted`
+            : `Простите, эта доска уже удалена`
         );
         break;
       case NotifyTipe.ADD_COLUMN:
         toast.info(
           lang === LangKey.EN
-            ? `Add column ${column} in the board ${board}`
-            : `Добавлена колонка ${column} в доске ${board}`
+            ? `"${column}" column added in the board "${board}"`
+            : `Добавлена колонка "${column}" в доске "${board}"`
         );
         break;
       case NotifyTipe.UPDATE_COLUMN:
         toast.info(
           lang === LangKey.EN
-            ? `Update column ${column} in the board ${board}`
-            : `Обновлена колонка ${column} в доске ${board}`
+            ? `"${column}" column updated in the board "${board}"`
+            : `Обновлена колонка "${column}" в доске "${board}"`
         );
 
-        break;
-      case NotifyTipe.DELETE_COLUMN:
-        toast.info(
-          lang === LangKey.EN
-            ? `Delete column ${column} in the board ${board}`
-            : `Удалена колонка ${column} в доске ${board}`
-        );
         break;
       case NotifyTipe.ADD_TASK:
         toast.info(
           lang === LangKey.EN
-            ? `Add task ${task} in the board ${board}`
-            : `Добавлена задача ${task} в доске ${board}`
+            ? `"${task}" task added in the board "${board}"`
+            : `Добавлена задача "${task}" в доске "${board}"`
         );
         break;
       case NotifyTipe.UPDATE_TASK:
         toast.info(
           lang === LangKey.EN
-            ? `Update task ${task} in the board ${board}`
-            : `Обновлена задача ${task} в доске ${board}`
-        );
-        break;
-      case NotifyTipe.DELETE_TASK:
-        toast.info(
-          lang === LangKey.EN
-            ? `Delete task ${task} in the board ${board}`
-            : `Удалена задача ${task} в доске ${board}`
+            ? `"${task}" task updated in the board "${board}"`
+            : `Обновлена задача "${task}" в доске "${board}"`
         );
         break;
     }
   };
-  const { isAuth } = useAppSelector((state) => state.authReducer);
-  const navigate = useAppNavigate();
-  const dispatch = useAppDispatch();
+
   useEffect(() => {
+    const isNotifyShow = () => {
+      const path = window.location.pathname;
+      return isAuth && (path === RoutesPath.BOARDS || path.startsWith('/board/'));
+    };
     socket.on('connect', () => {
-      if (!isAuth) return;
+      if (!isNotifyShow()) return;
       toast.info('socket is connected');
       if (window.location.pathname === RoutesPath.BOARDS) {
         dispatch(fetchGetBoards({ navigate }));
@@ -101,21 +93,21 @@ function App() {
     });
 
     socket.on('disconnect', () => {
-      if (!isAuth) return;
+      if (!isNotifyShow()) return;
       toast.error('socket is disconnected');
     });
 
     socket.on('boards', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
+      if (isNotifyShow()) dispatch(webSocketBoards({ navigate, data, showNotify: infoNotify }));
     });
     socket.on('columns', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketColumns({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('tasks', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketTasks({ data, showNotify: infoNotify, navigate }));
     });
     socket.on('points', (data: ISocketResponse) => {
-      if (isAuth) dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
+      if (isNotifyShow()) dispatch(webSocketPoints({ data, showNotify: infoNotify, navigate }));
     });
 
     return () => {

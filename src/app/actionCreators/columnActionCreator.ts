@@ -6,6 +6,8 @@ import { handleError } from 'utils/handleErrors';
 import type { navigateType, IWebSocket } from 'models/typescript';
 import { getBoardText } from 'utils/getBoardText';
 import { NotifyTipe } from 'constants/notifyType';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -50,6 +52,7 @@ interface IDeleteColumnProps {
   column: IColumn;
   board: IBoard;
   navigate: navigateType;
+  lang: string;
 }
 
 interface ICreateColumnProps extends IColumnsProps {
@@ -158,28 +161,20 @@ export const fetchUpdateColumn = ({ column, navigate }: IUpdateColumnProps) => {
   };
 };
 // перделано под webSocket
-export const fetchDeleteColumn = ({ column, navigate, board }: IDeleteColumnProps) => {
+export const fetchDeleteColumn = ({ column, navigate, board, lang }: IDeleteColumnProps) => {
   return async (dispatch: AppDispatch) => {
-    const { title: columnName, _id: columnId } = column;
-    const { title: boardName, _id: boardId } = board;
     try {
       setLoadingStatus(dispatch);
-      const config = {
-        headers: {
-          guid: JSON.stringify({
-            columnName,
-            boardName,
-            time: Date.now(),
-          }),
-        },
-      };
-      const response = await apiToken.delete<IUser>(
-        `/boards/${boardId}/columns/${columnId}`,
-        config
-      );
+      const { _id: columnId, title } = column;
+      const { _id: boardId } = board;
+
+      const response = await apiToken.delete<IUser>(`/boards/${boardId}/columns/${columnId}`);
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
+        toast.info(
+          lang === LangKey.EN ? `"${title}" column deleted` : `Удалена колонка "${title}"`
+        );
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -262,7 +257,7 @@ export const fetchGetColumnsByParams = ({ navigate, userId, ids }: IGetColumnsBy
 
 export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify, guid } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -318,15 +313,6 @@ export const webSocketColumns = ({ navigate, data, showNotify }: IWebSocket) => 
             deletedIds: ids,
           })
         );
-        if (notify) {
-          const { boardName, columnName } = JSON.parse(guid);
-          const { title: boardTitle } = getBoardText(boardName);
-          showNotify({
-            type: NotifyTipe.DELETE_COLUMN,
-            board: boardTitle,
-            column: columnName,
-          });
-        }
       }
     } catch (e) {
       handleError(dispatch, e, navigate);

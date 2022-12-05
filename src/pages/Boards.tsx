@@ -1,6 +1,6 @@
 import { fetchGetBoards, fetchDeleteBoard } from 'app/actionCreators/boardActionCreator';
 import { fetchGetUsers } from 'app/actionCreators/userActionCreator';
-import { IBoard, IUser } from 'models/dbTypes';
+import { IBoard } from 'models/dbTypes';
 import { useAppDispatch, useAppNavigate, useAppSelector } from 'app/hooks';
 import React, { FC, useEffect, useState } from 'react';
 import { isExpired } from 'react-jwt';
@@ -15,14 +15,12 @@ import { getBoardText } from 'utils/getBoardText';
 import SimpleSpinner from 'components/spinners/SimpleSpinner';
 import { toast } from 'react-toastify';
 import { LangKey } from 'constants/lang';
-// import { BiEdit } from 'react-icons/bi';
-// import { BiTask } from 'react-icons/bi';
 
 export const Boards: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
   const { boards, isLoading: isLoadingBoards } = useAppSelector((state) => state.boardReducer);
-  const { users, isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
+  const { isLoading: isLoadingUsers } = useAppSelector((state) => state.userReducer);
   const { token } = useAppSelector((state) => state.authReducer);
   const isLoading = isLoadingBoards || isLoadingUsers;
   const { lang } = useAppSelector((state) => state.langReducer);
@@ -33,22 +31,19 @@ export const Boards: FC = () => {
 
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     }
   });
   useEffect(() => {
     if (isExpired(token)) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
       dispatch(logout(navigate));
     } else {
       dispatch(fetchGetUsers(navigate));
       dispatch(fetchGetBoards({ navigate }));
     }
   }, []);
-
-  const getLogin = (users: IUser[], id: string) => {
-    const res = users.find((user) => user._id === id);
-    return res ? res.login : '-';
-  };
 
   useEffect(() => {
     const gridLS = localStorage.getItem('gridLS');

@@ -1,5 +1,5 @@
 import { api } from 'API/API';
-import { AppDispatch } from 'app/store';
+import { AppDispatch, store } from 'app/store';
 import { authSlice } from '../slices/authSlice';
 import type {
   ILoginResponse,
@@ -11,6 +11,10 @@ import { AxiosError } from 'axios';
 import { RoutesPath } from 'constants/routes';
 import { StorageKey } from 'constants/storageKey';
 import { isExpired } from 'react-jwt';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
+const { lang } = store.getState().langReducer;
+const { isAuth } = store.getState().authReducer;
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -36,6 +40,9 @@ const handleAuthError = (dispatch: AppDispatch, e: unknown, navigate: navigateTy
     if (httpCode === 404) {
       navigate(RoutesPath.NOT_FOUND);
     }
+    if (httpCode === 401 || httpCode === 403) {
+      toast.error(lang === LangKey.EN ? 'Authorisation Error' : 'Ошибка авторизации');
+    }
     dispatch(
       authSlice.actions.handleError({
         code: httpCode,
@@ -43,20 +50,26 @@ const handleAuthError = (dispatch: AppDispatch, e: unknown, navigate: navigateTy
     );
   }
 };
+
 interface IPropsRegister {
   data: IRegisterRequest;
   navigate: navigateType;
+  lang: string;
 }
 interface IPropsLogin {
   password: string;
   login: string;
   navigate: navigateType;
+  lang: string;
 }
-interface IPropsConfirmEditUser extends IPropsLogin {
+interface IPropsConfirmEditUser {
+  password: string;
+  login: string;
+  navigate: navigateType;
   cb: () => void;
 }
 
-export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
+export const fetchRegister = ({ data, navigate, lang }: IPropsRegister) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -68,15 +81,23 @@ export const fetchRegister = ({ data, navigate }: IPropsRegister) => {
           password: data.password,
           login: response.data.login,
           navigate,
+          lang,
         })
       );
+      if (response.status >= 200 && response.status < 300) {
+        toast.success(
+          lang === LangKey.EN
+            ? `New user ${response.data.login} has been registered`
+            : `Зарегистрирован новый пользователь ${response.data.login}`
+        );
+      }
     } catch (e) {
       handleAuthError(dispatch, e, navigate);
     }
   };
 };
 
-export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
+export const fetchLogin = ({ login, password, navigate, lang }: IPropsLogin) => {
   return async (dispatch: AppDispatch) => {
     try {
       setLoadingStatus(dispatch);
@@ -92,6 +113,9 @@ export const fetchLogin = ({ login, password, navigate }: IPropsLogin) => {
           navigate,
         })
       );
+      if (response.status >= 200 && response.status < 300) {
+        toast.success(lang === LangKey.EN ? `Great you ${login}` : `Приветствуем Вас ${login}`);
+      }
     } catch (e) {
       handleAuthError(dispatch, e, navigate);
     }
@@ -108,7 +132,7 @@ export const loginReload = (navigate: navigateType) => {
   return (dispatch: AppDispatch) => {
     const token = localStorage.getItem(StorageKey.TOKEN);
     if (!token || isExpired(token)) {
-      dispatch(authSlice.actions.logout({ navigate }));
+      if (isAuth) dispatch(authSlice.actions.logout({ navigate }));
       return;
     }
     dispatch(authSlice.actions.loginReload({ token }));

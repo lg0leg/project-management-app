@@ -7,6 +7,8 @@ import type { navigateType, IWebSocket } from 'models/typescript';
 import { fetchCreatePoint, fetchGetPointsByTaskIdList } from './pointActionCreator';
 import { getBoardText } from 'utils/getBoardText';
 import { NotifyTipe } from 'constants/notifyType';
+import { toast } from 'react-toastify';
+import { LangKey } from 'constants/lang';
 
 const setLoadingStatus = (dispatch: AppDispatch) => {
   dispatch(
@@ -100,6 +102,7 @@ interface IDeleteTaskProps {
   columnId: string;
   task: ITask;
   navigate: navigateType;
+  lang: string;
 }
 
 export const fetchGetTasks = ({ navigate, boardId, columnId }: ITasksProps) => {
@@ -187,28 +190,21 @@ export const fetchUpdateTask = ({
   };
 };
 // изменено под webSocket
-export const fetchDeleteTask = ({ columnId, navigate, board, task }: IDeleteTaskProps) => {
+export const fetchDeleteTask = ({ columnId, navigate, board, task, lang }: IDeleteTaskProps) => {
   return async (dispatch: AppDispatch) => {
-    const { title: taskName, _id: taskId } = task;
-    const { title: boardName, _id: boardId } = board;
+    const { _id: taskId, title } = task;
+    const { _id: boardId } = board;
+
     try {
       setLoadingStatus(dispatch);
-      const config = {
-        headers: {
-          guid: JSON.stringify({
-            taskName: taskName,
-            boardName: boardName,
-            time: Date.now(),
-          }),
-        },
-      };
+
       const response = await apiToken.delete<IUser>(
-        `/boards/${boardId}/columns/${columnId}/tasks/${taskId}`,
-        config
+        `/boards/${boardId}/columns/${columnId}/tasks/${taskId}`
       );
 
       if (response.status >= 200 && response.status < 300) {
         setCompleteStatus(dispatch);
+        toast.info(lang === LangKey.EN ? `"${title}" task deleted` : `Удалена задача "${title}"`);
       }
     } catch (e) {
       setErrorStatus(dispatch);
@@ -328,7 +324,7 @@ export const fetchCreateTaskWithPoint = ({
 
 export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
   return async (dispatch: AppDispatch) => {
-    const { action, ids, notify, guid } = data;
+    const { action, ids, notify } = data;
     const { pathname } = window.location;
     try {
       if (!ids || !ids.length) return;
@@ -382,44 +378,9 @@ export const webSocketTasks = ({ navigate, data, showNotify }: IWebSocket) => {
             deletedIds: ids,
           })
         );
-        if (notify) {
-          const { boardName, taskName } = JSON.parse(guid);
-          const { title: boardTitle } = getBoardText(boardName);
-          showNotify({
-            type: NotifyTipe.DELETE_TASK,
-            board: boardTitle,
-            task: taskName,
-          });
-        }
       }
     } catch (e) {
       handleError(dispatch, e, navigate);
     }
   };
 };
-
-// export const fetchCreateTaskWithImg = ({
-//   boardId,
-//   columnId,
-//   task,
-//   file,
-//   navigate,
-// }: ICreateTaskWithImgProps) => {
-//   return async (dispatch: AppDispatch) => {
-//     try {
-//       setLoadingStatus(dispatch);
-
-//       const response = await apiToken.post<ITask>(
-//         `/boards/${boardId}/columns/${columnId}/tasks/`,
-//         task
-//       );
-
-//       if (response.status >= 200 && response.status < 300) {
-//         dispatch(fetchAddFile({ boardId, taskId: response.data._id, file, navigate }));
-//       }
-//     } catch (e) {
-//       setErrorStatus(dispatch);
-//       handleError(dispatch, e, navigate);
-//     }
-//   };
-// };

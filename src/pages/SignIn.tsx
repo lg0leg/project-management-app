@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IAuthRequest } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
@@ -15,11 +15,14 @@ import {
   getValidatePassword,
 } from 'utils/getAuthValidation';
 import { InputLength } from 'constants/authValidation';
+import { toast } from 'react-toastify';
+
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { httpCode, isError, isLoading, isAuth } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
+
   const {
     register,
     handleSubmit,
@@ -27,15 +30,18 @@ export const SignIn: FC = () => {
   } = useForm<IAuthRequest>();
   const onSubmit: SubmitHandler<IAuthRequest> = (data) => {
     const { login, password } = data;
-    dispatch(fetchLogin({ login, password, navigate }));
+    dispatch(fetchLogin({ login, password, navigate, lang }));
   };
 
   let errorText = '';
   if (httpCode === 401) {
     errorText = lang === LangKey.EN ? 'Wrong login/password' : 'Неправильный пароль/логин';
   }
+  if (isAuth) {
+    return <Navigate to={RoutesPath.BOARDS}></Navigate>;
+  }
   return (
-    <div className="min-h-[100%] bg-gray-300">
+    <div className="min-h-[100%] bg-gradient-to-r from-gray-100 to-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
       <div className="flex min-h-[calc(100vh-180px)] flex-col justify-between pt-[8px]">
         <div className="flex min-h-[calc(100vh-212px)] w-full items-center justify-center  bg-login bg-contain bg-no-repeat">
