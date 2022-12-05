@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IAuthRequest } from 'models/typescript';
 import AuthInput from 'components/AuthInput';
@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 export const SignIn: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { httpCode, isError, isLoading, isAuth } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
 
   const {
@@ -36,6 +36,9 @@ export const SignIn: FC = () => {
   let errorText = '';
   if (httpCode === 401) {
     errorText = lang === LangKey.EN ? 'Wrong login/password' : 'Неправильный пароль/логин';
+  }
+  if (isAuth) {
+    return <Navigate to={RoutesPath.BOARDS}></Navigate>;
   }
   return (
     <div className="min-h-[100%] bg-gradient-to-r from-gray-100 to-gray-300">

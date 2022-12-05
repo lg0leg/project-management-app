@@ -14,11 +14,13 @@ import {
   getValidateName,
 } from 'utils/getAuthValidation';
 import { InputLength, ValidateKey } from 'constants/authValidation';
+import { RoutesPath } from 'constants/routes';
+import { Navigate } from 'react-router-dom';
 
 export const SignUp: FC = () => {
   const navigate = useAppNavigate();
   const dispatch = useAppDispatch();
-  const { httpCode, isError, isLoading } = useAppSelector((state) => state.authReducer);
+  const { httpCode, isError, isLoading, isAuth } = useAppSelector((state) => state.authReducer);
   const { lang } = useAppSelector((state) => state.langReducer);
 
   const {
@@ -37,7 +39,9 @@ export const SignUp: FC = () => {
   if (httpCode === 409) {
     errorText = lang === LangKey.EN ? 'This login already exists' : 'Такой логин уже существует';
   }
-
+  if (isAuth) {
+    return <Navigate to={RoutesPath.BOARDS}></Navigate>;
+  }
   return (
     <div className="min-h-[100%] bg-gradient-to-r from-gray-100 to-gray-300">
       <SpinnerWithOverlay isLoading={isLoading} />
