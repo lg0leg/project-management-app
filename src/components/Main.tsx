@@ -8,7 +8,6 @@ import { SignUp } from 'pages/SignUp';
 import { Welcome } from 'pages/Welcome';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RoutesPath } from 'constants/routes';
-import TestPage from 'pages/TestPage';
 
 export const Main: FC = () => {
   return (
@@ -21,9 +20,6 @@ export const Main: FC = () => {
         <Route path={RoutesPath.BOARD} element={<Board />} />
         <Route path={RoutesPath.PROFILE} element={<Profile />} />
         <Route path={RoutesPath.NOT_FOUND} element={<NotFound />} />
-
-        <Route path={'/test'} element={<TestPage />} />
-
         <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
     </main>
