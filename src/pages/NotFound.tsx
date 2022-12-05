@@ -4,6 +4,7 @@ import NotFoundImage from '../assets/images/NotFound.jpg';
 import { MdKeyboardArrowLeft } from 'react-icons/md';
 import { RoutesPath } from 'constants/routes';
 import { useAppSelector } from 'app/hooks';
+import { LangKey } from 'constants/lang';
 
 export const NotFound: FC = () => {
   const { lang } = useAppSelector((state) => state.langReducer);
@@ -20,17 +21,17 @@ export const NotFound: FC = () => {
             target="_blank"
             rel="noreferrer noopener"
           >
-            {lang === 'en' ? 'Image by ' : 'Изображение от '}storyset
+            {lang === LangKey.EN ? 'Image by ' : 'Изображение от '}storyset
           </a>{' '}
-          {lang === 'en' ? 'on' : 'c'} Freepik
+          {lang === LangKey.EN ? 'on' : 'c'} Freepik
         </i>
       </div>
       <div className="block text-center">
         <h1 className="mb-2 text-2xl font-bold text-gray-900 sm:mb-5 sm:text-5xl">
-          {lang === 'en' ? 'Page not found' : 'Страница не найдена'}
+          {lang === LangKey.EN ? 'Page not found' : 'Страница не найдена'}
         </h1>
         <p className="mx-auto mb-5 text-sm font-normal text-gray-500 sm:w-4/5 sm:text-lg">
-          {lang === 'en'
+          {lang === LangKey.EN
             ? 'Oops! Looks like you followed a bad link. If you think this is a problem with us, please tell us.'
             : 'Ой! Похоже вы перешли по неправильной ссылке. Если вам кажется что проблема с нашим сайтом, пожалуйста, свяжитесь с нами.'}
         </p>
@@ -41,7 +42,7 @@ export const NotFound: FC = () => {
           }}
         >
           <MdKeyboardArrowLeft className="-ml-1 mr-2 h-5 w-5" />
-          {lang === 'en' ? 'Go back Home' : 'Вернутся на главную'}
+          {lang === LangKey.EN ? 'Go back Home' : 'Вернутся на главную'}
         </button>
       </div>
     </div>
