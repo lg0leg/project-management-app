@@ -175,7 +175,7 @@ function BoardsCardGrid(props: {
     >
       <div className="flex items-center gap-[5px]">
         <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
-        <h3 className="max-w-[210px] truncate text-xl font-semibold text-gray-700">
+        <h3 className="max-w-[165px] truncate text-xl font-semibold text-gray-700 sm:max-w-[200px]">
           {props.title}
         </h3>
       </div>
@@ -217,7 +217,9 @@ function BoardsCardList(props: {
     >
       <HiOutlineClipboardList size={35} color="rgb(59, 130, 246, 1)" />
 
-      <h3 className="truncate text-xl font-semibold text-gray-700">{props.title}</h3>
+      <h3 className="truncate pr-[30px] text-xl font-semibold text-gray-700 sm:pr-[10px]">
+        {props.title}
+      </h3>
 
       <textarea
         className="text-md col-span-2 h-[40px] cursor-pointer resize-none overflow-hidden rounded-md border border-slate-100 p-2 text-gray-500 focus:outline-none sm:col-auto sm:h-[60px]"
