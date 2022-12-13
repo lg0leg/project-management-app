@@ -1,0 +1,49 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.popup {
+  display: flex;
+}
+
+.external-animation-enter {
+  opacity: 0;
+}
+.external-animation-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+.external-animation-exit {
+  opacity: 1;
+}
+.external-animation-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+.inner-animation-enter {
+  transform: scale(0.3);
+}
+
+.inner-animation-enter-active {
+  transform: scale(1);
+  transition: transform 0.4s;
+}
+
+.inner-animation-exit {
+  transform: scale(1);
+}
+
+.inner-animation-exit-active {
+  transform: scale(0);
+  transition: transform 0.2s;
+}
