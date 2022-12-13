@@ -56,7 +56,7 @@ export const AddTaskModalContent: FC<IAddTaskModalContentProps> = ({ columnId, o
   };
 
   return (
-    <div className="max-h-[600px] min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
+    <div className="min-w-[300px] overflow-y-auto overflow-x-hidden p-4 md:min-w-[400px]">
       <div className="h-full w-full">
         <div className="relative rounded-lg bg-white shadow">
           <button

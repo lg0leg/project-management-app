@@ -11,7 +11,7 @@ export const NotFound: FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center px-6 pb-6">
+    <div className="mx-auto flex flex-col items-center justify-center px-6 pb-6 pt-[20%] sm:pt-[7%]">
       <div className="mb-7 block max-w-lg text-right text-xs font-medium">
         <img src={NotFoundImage} alt="Page not Found" />
         <i>
