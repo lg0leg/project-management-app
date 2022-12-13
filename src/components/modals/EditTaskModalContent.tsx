@@ -212,7 +212,7 @@ export const EditTaskModalContent: FC<IEditTaskModalContentProps> = ({
                   </p>
                 )}
               </div>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center">
                 <Button type="submit">{lang === LangKey.EN ? 'Edit' : 'Изменить '}</Button>
                 <Button
                   color="light"

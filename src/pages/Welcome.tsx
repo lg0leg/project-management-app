@@ -189,7 +189,7 @@ export const Welcome: FC = () => {
           </ol>
         </section>
 
-        <section className="flex flex-col items-center justify-center gap-[10px] px-[25px] pt-[100px] pb-[70px] sm:gap-[30px] sm:px-[50px]">
+        <section className="flex flex-col items-center justify-center gap-[10px] px-[25px] pt-[100px] sm:gap-[30px] sm:px-[50px]">
           <h4 className={h4Styles}>
             {lang == LangKey.EN
               ? 'How to learn how to create the same cool sites?'
