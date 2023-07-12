@@ -11,7 +11,7 @@ const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename="project-management-app">
       <App />
     </BrowserRouter>
   </Provider>
